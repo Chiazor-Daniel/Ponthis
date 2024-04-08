@@ -1,55 +1,36 @@
 import React, { useState,useEffect } from 'react'
 import { connect, useDispatch } from 'react-redux';
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { loadingToggleAction,loginAction,
-} from '../../store/actions/AuthActions';
-import axios from 'axios';
 
 import logo from '../../images/logo/logo-full.png'
 import bg6 from '../../images/background/bg6.jpg';
 
 function Login (props) {
 	const [heartActive, setHeartActive] = useState(true);
-	
 	const navigate = useNavigate();
     const [email, setEmail] = useState('demo@example.com');
     let errorsObj = { email: '', password: '' };
     const [errors, setErrors] = useState(errorsObj);
     const [password, setPassword] = useState('123456');
     const dispatch = useDispatch();
-	// useEffect(()=>{
-	// 	axios.get("https://trader-app.onrender.com/user/profile/users/", {
-	// 		headers: {
-	// 			"access_token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoxLCJ1c2VyX3R5cGUiOiJjdXN0b21lciIsImV4cCI6MTcxMjUwNzA0Mn0.8htPtugrKThDAgqLXXjGFjtzQa2DnIEP05sz60u6LnY"
-	// 		}
-	// 	}).then((res)=>console.log(res))
-	// }, [])
+
     function onLogin(e) {
         e.preventDefault();
-		// axios.post("https://trader-app.onrender.com/user/auth/login/?email=a%40a.com&password=string", {
-		// 	headers: {
-		// 		'Content-Type' : "application/json"
-		// 	}
-		// }).then((res)=>{
-		// 	console.log(res)
-		// })
-        let error = false;
-        const errorObj = { ...errorsObj };
-        if (email === '') {
-            errorObj.email = 'Email is Required';
-            error = true;
-        }
-        if (password === '') {
-            errorObj.password = 'Password is Required';
-            error = true;
-        }
-        setErrors(errorObj);
-        if (error) {
-			return ;
-		}
-		
-		dispatch(loadingToggleAction(true));
-		dispatch(loginAction(email, password, navigate));
+		navigate("/dashboard")
+        // let error = false;
+        // const errorObj = { ...errorsObj };
+        // if (email === '') {
+        //     errorObj.email = 'Email is Required';
+        //     error = true;
+        // }
+        // if (password === '') {
+        //     errorObj.password = 'Password is Required';
+        //     error = true;
+        // }
+        // setErrors(errorObj);
+        // if (error) {
+		// 	return ;
+		// }
     }
 
 
@@ -147,11 +128,4 @@ function Login (props) {
     )
 }
 
-const mapStateToProps = (state) => {
-    return {
-        errorMessage: state.auth.errorMessage,
-        successMessage: state.auth.successMessage,
-        showLoading: state.auth.showLoading,
-    };
-};
-export default connect(mapStateToProps)(Login);
+export default Login;
