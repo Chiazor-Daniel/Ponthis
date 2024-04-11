@@ -56,7 +56,7 @@ const OrderForm = () =>{
 					{/* <div id="slider"></div> */}
 				  {/* <div id="employees"></div> */}
 					{/* <Nouislider range={{ min: 0, max: 100 }} start={[20, 80]} connect /> */}
-					<ReactSlider
+					{/* <ReactSlider
 						min={5}
 						max={99}
 						defaultValue={27}
@@ -65,9 +65,9 @@ const OrderForm = () =>{
 						//trackClassName="example-track"
 						renderThumb={(props, state) => <div {...props}>{state.valueNow}</div>}
 					/>
-					
+					 */}
 				</div>
-				<div className="text-center">
+				<div className="text-center" style={{marginBottom: "10px"}}>
 					<Link to={"/exchange"} className="btn btn-primary w-75">BUY BTC</Link>
 				</div>
 					

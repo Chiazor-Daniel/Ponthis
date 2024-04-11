@@ -11,11 +11,11 @@
   }
   
   .IsLight {
-    background-color: var(--color-toggle-dark);
+    /* background-color: var(--color-toggle-dark); */
   }
   
   .IsDark {
-    background-color: #fff;
+    /* background-color: #fff; */
   }
   
   .container input {
@@ -71,7 +71,7 @@
   }
   
   .container input:checked + div::before {
-    background: var(--color-toggle-light, #eee);
+    /* background: var(--color-toggle-light, #eee); */
     transition: background 0.3s ease 0.1s;
   }
   

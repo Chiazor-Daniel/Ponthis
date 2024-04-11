@@ -5,5 +5,10 @@ export const MenuList = [
         to: "/dashboard",		
         iconStyle: <i className="material-icons">grid_view</i>,
         
+    }, 
+    {
+        title: 'Trading',
+        classsChange: 'mm-collapse',
+        iconStyle: <i className="material-icons">trending_up</i>,
     }
 ]

@@ -26,6 +26,7 @@ const NavHader = () => {
   const { navigationHader, openMenuToggle, background } = useContext(
     ThemeContext
   );
+  
   return (
     <div className="nav-header">
       <Link to="/dashboard" className="brand-logo">

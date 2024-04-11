@@ -14,9 +14,9 @@ const Error400 = () => {
                         <i className="fa fa-thumbs-down text-danger" /> Bad
                         Request
                      </h4>
-                     <p>Your Request resulted in an error</p>
+                     <p>Try Logging in</p>
                      <div>
-                        <Link className="btn btn-primary" to="/dashboard">
+                        <Link className="btn btn-primary" to="/">
                            Back to Home
                         </Link>
                      </div>

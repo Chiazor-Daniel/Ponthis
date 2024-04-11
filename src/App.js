@@ -4,7 +4,14 @@ import Login from './jsx/pages/Login';
 import "./vendor/bootstrap-select/dist/css/bootstrap-select.min.css";
 import "./css/style.css";
 import { MainLayout } from './jsx';
+import "./App.css"
 import Home from './jsx/components/Dashboard/Home';
+import { useEffect } from 'react';
+import { useContext } from 'react';
+import { ThemeContext } from './context/ThemeContext';
+import { useSelector } from 'react-redux';
+import Error400 from './jsx/pages/Error400';
+import Register from './jsx/pages/Registration';
 
 const LoginPage = () => <Login />;
 const DashboardPage = () => (
@@ -14,10 +21,14 @@ const DashboardPage = () => (
 );
 
 function App(props) {
+  const { changeBackground } = useContext(ThemeContext);
+  const {loading, userInfo, userToken, error, success} = useSelector(state => state.auth);
+
   return (
     <Routes>
       <Route index element={<LoginPage />} />
-      <Route path='/dashboard' element={<DashboardPage />} />
+      <Route path='/register' element={<Register />} />
+      <Route path='/dashboard' element={(userToken && userInfo) ? <DashboardPage /> : <Error400 />} />
     </Routes>
   );
 };
