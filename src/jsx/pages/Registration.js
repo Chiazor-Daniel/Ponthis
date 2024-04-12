@@ -8,6 +8,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { loginSuccess } from "../../redux/features/auth/authSlice";
+
+
 function Register(props) {
     const navigate = useNavigate()
     const dispatch = useDispatch();
@@ -23,7 +25,6 @@ function Register(props) {
 	const [load, setLoad] = useState(false);
     const [errors, setErrors] = useState({});
 
-    const notify = () => toast.success("Register Successfull");
 	const onSignUp = (e) => {
         e.preventDefault();
         setLoad(true);
@@ -45,7 +46,7 @@ function Register(props) {
         .then(response => {
             if (response.status === 200) {
                 if (response.data.message) {
-                    notify();
+                    toast.success("Registration Successful!", { autoClose: 2000 }); // Toast success message
                     axios.get("https://trader-app.onrender.com/user/profile/users/", {
                         headers: {
                             "x-token": response.data.message
@@ -64,21 +65,24 @@ function Register(props) {
                 console.log("reg", response.data);
             } else {
                 console.error("Error signing up:", response.statusText);
+                toast.error("Error signing up: " + response.statusText); // Toast error message
             }
         })
         .catch(error => {
             console.error("Error signing up:", error);
+            toast.error("Error signing up: " + error.message); // Toast error message
         })
         .finally(() => {
             setLoad(false);
         });
     };
+    
 
     return (
         <>
             <div className="page-wraper">
-                <div className="browse-job login-style3">
                 <ToastContainer />
+                <div className="browse-job login-style3">
                     <div className="bg-img-fix overflow-hidden" style={{ background: '#fff url(' + bg6 + ')', height: "100vh" }}>
                         <div className="row gx-0">
                             <div className="col-xl-4 col-lg-5 col-md-6 col-sm-12 vh-100 bg-white">

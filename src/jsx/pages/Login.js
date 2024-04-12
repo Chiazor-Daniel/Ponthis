@@ -7,16 +7,19 @@ import logo from '../../images/logo/logo-full.png'
 import { UseSelector } from 'react-redux/es/hooks/useSelector';
 import bg6 from '../../images/background/bg6.jpg';
 import Spinner from 'react-bootstrap/Spinner';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 function Login(props) {
 	const {loading, userInfo, userToken, error, success} = useSelector(state => state.auth);
 	const [load, setLoad] = useState(false)
 	const [heartActive, setHeartActive] = useState(true);
 	const navigate = useNavigate();
-	const [email, setEmail] = useState('a@a.com');
+	const [email, setEmail] = useState('steph@me.com');
 	let errorsObj = { email: '', password: '' };
 	const [errors, setErrors] = useState(errorsObj);
-	const [password, setPassword] = useState('string');
+	const [password, setPassword] = useState('rice');
 	const dispatch = useDispatch();
 
 	const loginUser = (email, password) => {
@@ -28,7 +31,12 @@ function Login(props) {
 	
 		if (token && userInfo) {
 			dispatch(loginSuccess({ userInfo, userToken: token }));
-			navigate("/dashboard");
+			toast.success("Logged in successfully!", {
+				autoClose: 1000, // Set autoClose to 1 second (1000 milliseconds)
+				onClose: () => {
+					navigate("/dashboard");
+				}
+			}); // Toast success message with onClose callback
 		} else {
 			dispatch(loginStart());
 	
@@ -61,9 +69,12 @@ function Login(props) {
 	
 						if (user) {
 							setLoad(false);
-							setTimeout(() => {
-								navigate("/dashboard");
-							}, 500);
+							toast.success("Login successful!", {
+								autoClose: 1000, // Set autoClose to 1 second (1000 milliseconds)
+								onClose: () => {
+									navigate("/dashboard");
+								}
+							}); // Toast success message with onClose callback
 						}
 					})
 					.catch(error => {
@@ -81,9 +92,12 @@ function Login(props) {
 				console.error("Error logging in:", error);
 				dispatch(loginFailure(error.message));
 				setLoad(false); 
+				toast.error("Incorrect email or password");
 			});
 		}
 	};
+	
+	
 	
 	
 	
@@ -91,25 +105,26 @@ function Login(props) {
 	function onLogin(e) {
 		e.preventDefault();
 		loginUser(email, password);
-		// let error = false;
-		// const errorObj = { ...errorsObj };
-		// if (email === '') {
-		//     errorObj.email = 'Email is Required';
-		//     error = true;
-		// }
-		// if (password === '') {
-		//     errorObj.password = 'Password is Required';
-		//     error = true;
-		// }
-		// setErrors(errorObj);
-		// if (error) {
-		// 	return ;
-		// }
+		let error = false;
+		const errorObj = { ...errorsObj };
+		if (email === '') {
+		    errorObj.email = 'Email is Required';
+		    error = true;
+		}
+		if (password === '') {
+		    errorObj.password = 'Password is Required';
+		    error = true;
+		}
+		setErrors(errorObj);
+		if (error) {
+			return ;
+		}
 	}
 
 
 	return (
 		<div className="page-wraper">
+			<ToastContainer />
 			<div className="browse-job login-style3">
 				<div className="bg-img-fix overflow-hidden" style={{ background: '#fff url(' + bg6 + ')', height: "100vh" }}>
 					<div className="row gx-0">

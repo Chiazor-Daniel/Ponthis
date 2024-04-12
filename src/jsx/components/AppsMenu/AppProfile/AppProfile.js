@@ -1,18 +1,24 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Tab, Nav } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { useGetProfileQuery } from "../../../../redux/services/profile";
 import { unwrapResult } from '@reduxjs/toolkit';
-import { useDispatch } from "react-redux";
 import { useUpdateProfileMutation } from "../../../../redux/services/profile";
 import { updateState } from "../../../../redux/features/auth/authSlice";
+import Spinner from 'react-bootstrap/Spinner';
+import MyToast from "../../myToast";
+import { toast, ToastContainer } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { clearState } from "../../../../redux/features/auth/authSlice";
+
 
 const AppProfile = () => {
     const { userInfo, userToken } = useSelector(state => state.auth);
     const [firstName, setFirstName] = useState(userInfo.first_name);
     const [lastName, setLastName] = useState(userInfo.last_name);
-	const [email, setEmail] = useState(userInfo.email)
+    const [email, setEmail] = useState(userInfo.email)
     const [phoneNumber, setPhoneNumber] = useState(userInfo.phone_number);
+    const dispatch = useDispatch()
     const [dob, setDob] = useState(userInfo.date_of_birth);
     const [country, setCountry] = useState(userInfo.country);
     const [city, setCity] = useState(userInfo.address);
@@ -20,32 +26,34 @@ const AppProfile = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [updateProfile, { isLoading, isError, error }] = useUpdateProfileMutation();
-	const dispatch = useDispatch();
 
     const handleSubmit = async (e) => {
-		e.preventDefault();
-		const userData = {
-			email: email,
-			first_name: firstName,
-			last_name: lastName,
-			phone_number: phoneNumber,
-			date_of_birth: dob,
-			country: country,
-			address: city,
-			token: userToken
-		};
-		try {
-			const resultAction = await updateProfile(userData);
-			const response = unwrapResult(resultAction);
-			console.log("Response:", resultAction.data);
-			dispatch(updateState(resultAction.data.data))
-		} catch (error) {
-			console.error("Errorrr:", error);
-		}
-	};
-
+        e.preventDefault();
+        const userData = {
+            email: email,
+            first_name: firstName,
+            last_name: lastName,
+            phone_number: phoneNumber,
+            date_of_birth: dob,
+            country: country,
+            address: city,
+            token: userToken
+        };
+        try {
+            const resultAction = await updateProfile(userData);
+                dispatch(updateState(resultAction.data.data));
+                toast.success("Profile updated successfully.");
+        } catch (error) {
+            console.error("Error:", error);
+            
+                localStorage.removeItem('userInfo');
+                localStorage.removeItem('token');
+                toast.error("An Error occurred");
+        }
+    };
     return (
         <Fragment>
+            <ToastContainer />
             <div className="row">
                 <div className="col-lg-12" style={{ alignItems: "center", display: "flex" }}>
                     <div className="profile-info" style={{ margin: "auto", display: "flex", alignItems: "center", gap: "20px" }}>
@@ -74,10 +82,10 @@ const AppProfile = () => {
                                                 <div className="pt-3">
                                                     <div className="settings-form">
                                                         <form onSubmit={handleSubmit}>
-														<div className="form-group mb-3 col-md-6">
-                                                                    <label className="form-label">Email</label>
-                                                                    <input type="text" placeholder="Email address" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} />
-                                                                </div>
+                                                            <div className="form-group mb-3 col-md-6">
+                                                                <label className="form-label">Email</label>
+                                                                <input type="text" placeholder="Email address" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} />
+                                                            </div>
                                                             <div className="row">
                                                                 <div className="form-group mb-3 col-md-6">
                                                                     <label className="form-label">First Name</label>
@@ -109,7 +117,11 @@ const AppProfile = () => {
                                                                 </div>
                                                             </div>
 
-                                                            <button className="btn btn-primary" type="submit">Save Changes</button>
+                                                            <button className="btn btn-primary" type="submit">{
+                                                                isLoading ? <Spinner animation="border" role="status" size="sm">
+                                                                    <span className="visually-hidden">Loading...</span>
+                                                                </Spinner> : "Edit Profile"
+                                                            }</button>
                                                         </form>
                                                     </div>
                                                 </div>

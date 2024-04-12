@@ -4,7 +4,7 @@ import { Link, NavLink } from "react-router-dom";
 import { MenuList } from './Menu';
 import { useScrollPosition } from "@n8tb1t/use-scroll-position";
 import { ThemeContext } from "../../../context/ThemeContext";
-
+import { Collapse } from "react-bootstrap";
 const reducer = (previousState, updatedState) => ({
   ...previousState,
   ...updatedState,
@@ -92,10 +92,51 @@ const SideBar = () => {
                   onClick={() => handleMenuActive(data.title)} // Added onClick handler
                 >
                   {data.content && data.content.length > 0 ?
+                  <>
                     <Link to={"#"} className="has-arrow">
                       {data.iconStyle}
                       <span className="nav-text">{data.title}</span>
                     </Link>
+                    <Collapse in={state.active === data.title ? true :false}>
+                          <ul className={`${menuClass === "mm-collapse" ? "mm-show" : ""}`}>
+                            {data.content && data.content.map((data,index) => {									
+                              return(	
+                                  <li key={index}
+                                    className={`${ state.activeSubmenu === data.title ? "mm-active" : ""}`}                                    
+                                  >
+                                    {data.content && data.content.length > 0 ?
+                                        <>
+                                          <NavLink to={data.to} className={data.hasMenu ? 'has-arrow' : ''}
+                                          >
+                                            {data.title}
+                                          </NavLink>
+                                          <Collapse in={state.activeSubmenu === data.title ? true :false}>
+                                              <ul className={`${menuClass === "mm-collapse" ? "mm-show" : ""}`}>
+                                                {data.content && data.content.map((data,index) => {
+                                                  return(	
+                                                    <>
+                                                      <li key={index}>
+                                                        <Link className={`${path === data.to ? "mm-active" : ""}`} to={data.to}>{data.title}</Link>
+                                                      </li>
+                                                    </>
+                                                  )
+                                                })}
+                                              </ul>
+                                          </Collapse>
+                                        </>
+                                      :
+                                      <Link to={data.to}>
+                                        {data.title}
+                                      </Link>
+                                    }
+                                    
+                                  </li>
+                                
+                              )
+                            })}
+                          </ul>
+                        </Collapse>
+                  </>
                     :
                     <NavLink to={data.to}>
                       {data.iconStyle}
