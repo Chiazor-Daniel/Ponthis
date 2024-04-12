@@ -88,13 +88,6 @@ const Header = ({ onNote }) => {
 								style={{ textTransform: "capitalize", display: "flex", alignItems: "center", gap: "10px", gap: "20px" }}
 							>
 								{userInfo.first_name + " " + userInfo.last_name}
-								<nav aria-label="breadcrumb">
-									<ol className="breadcrumb">
-										<li className="breadcrumb-item fs-6"><a href="#">Home</a></li>
-										<li className="breadcrumb-item active fs-6" aria-current="page">Dashboard</li>
-									</ol>
-								</nav>
-
 							</div>
 						</div>
 					</div>
@@ -112,7 +105,7 @@ const Header = ({ onNote }) => {
 						<img src={"https://i.guim.co.uk/img/media/70a2fd5f5acddd683b892245209974fa4c768498/324_0_1429_858/master/1429.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=e2b8991e17e7bd966a29f5c706fe2552"} width={40} alt="" />
 					</Dropdown.Toggle>
 					<Dropdown.Menu align="right" className="dropdown-menu dropdown-menu-end">
-						<Link to="/app-profile" className="dropdown-item ai-icon">
+						<Link to="/dashboard/profile" className="dropdown-item ai-icon">
 							<svg id="icon-user1" xmlns="http://www.w3.org/2000/svg" className="text-primary me-1" width={18} height={18} viewBox="0 0 24 24" fill="none"
 								stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"
 							>
@@ -121,17 +114,7 @@ const Header = ({ onNote }) => {
 							</svg>
 							<span className="ms-2">Profile</span>
 						</Link>
-						<Link to="/email-inbox" className="dropdown-item ai-icon">
-							<svg
-								id="icon-inbox" xmlns="http://www.w3.org/2000/svg" className="text-success me-1" width={18}
-								height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
-								strokeLinecap="round" strokeLinejoin="round"
-							>
-								<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-								<polyline points="22,6 12,13 2,6" />
-							</svg>
-							<span className="ms-2">Inbox</span>
-						</Link>
+						
 						<LogoutPage />
 					</Dropdown.Menu>
 				</Dropdown>

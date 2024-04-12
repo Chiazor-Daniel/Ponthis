@@ -1,59 +1,84 @@
-import React, { useState } from "react";
-import { NavLink, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { NavLink, Link, Navigate } from "react-router-dom";
 import bg6 from '../../images/background/bg6.jpg';
 import Spinner from 'react-bootstrap/Spinner';
 import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { loginSuccess } from "../../redux/features/auth/authSlice";
 function Register(props) {
-	const [email, setEmail] = useState('me@me.com');
-	const [firstName, setFirstName] = useState('John');
-	const [lastName, setLastName] = useState('Doe');
+    const navigate = useNavigate()
+    const dispatch = useDispatch();
+	const [email, setEmail] = useState('steph@me.com');
+	const [firstName, setFirstName] = useState('MIly');
+	const [lastName, setLastName] = useState('Larry');
 	const [dob, setDob] = useState('1990-01-01'); // Format: YYYY-MM-DD
 	const [country, setCountry] = useState('United States');
-	const [phoneNumber, setPhoneNumber] = useState('1234567890');
+	const [phoneNumber, setPhoneNumber] = useState('787567890');
 	const [address, setAddress] = useState("Lousiana")
-	const [password, setPassword] = useState('mepass');
-	const [terms, setTerms] = useState(false)
-	const [load, setLoad] = useState(false)
+	const [password, setPassword] = useState('rice');
+	const [terms, setTerms] = useState(false);
+	const [load, setLoad] = useState(false);
     const [errors, setErrors] = useState({});
 
+    const notify = () => toast.success("Register Successfull");
 	const onSignUp = (e) => {
-		e.preventDefault();
-		setLoad(true);
-	
-		axios.post("https://trader-app.onrender.com/user/auth/signup/", null, {
-			params: {
-				email,
-				first_name: firstName,
-				last_name: lastName,
-				address: '', 
-				country,
-				phone_number: phoneNumber,
-				date_of_birth: dob,
-				password
-			},
-			headers: {
-				"Content-Type": "application/json"
-			}
-		})
-		.then(response => {
-			console.log("reg",response.data);
-		})
-		.catch(error => {
-			console.error("Error signing up:", error);
-			setLoad(false);
-
-		})
-		.finally(() => {
-			setLoad(false);
-		});
-	};
-	
-	
+        e.preventDefault();
+        setLoad(true);
+        axios.post("https://trader-app.onrender.com/user/auth/register/", null, {
+            params: {
+                email,
+                first_name: firstName,
+                last_name: lastName,
+                address: '', 
+                country,
+                phone_number: phoneNumber,
+                date_of_birth: dob,
+                password
+            },
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+        .then(response => {
+            if (response.status === 200) {
+                if (response.data.message) {
+                    notify();
+                    axios.get("https://trader-app.onrender.com/user/profile/users/", {
+                        headers: {
+                            "x-token": response.data.message
+                        }
+                    })
+                    .then(user => {
+                        localStorage.setItem("userInfo", JSON.stringify(user.data));
+                        console.log("resuser", user.data)
+                        dispatch(loginSuccess({ userInfo: user.data, userToken: response.data.message }));
+                        navigate("/dashboard");
+                    })
+                    .catch(error => {
+                        console.error("Error fetching user data:", error);
+                    });
+                }
+                console.log("reg", response.data);
+            } else {
+                console.error("Error signing up:", response.statusText);
+            }
+        })
+        .catch(error => {
+            console.error("Error signing up:", error);
+        })
+        .finally(() => {
+            setLoad(false);
+        });
+    };
 
     return (
         <>
             <div className="page-wraper">
                 <div className="browse-job login-style3">
+                <ToastContainer />
                     <div className="bg-img-fix overflow-hidden" style={{ background: '#fff url(' + bg6 + ')', height: "100vh" }}>
                         <div className="row gx-0">
                             <div className="col-xl-4 col-lg-5 col-md-6 col-sm-12 vh-100 bg-white">

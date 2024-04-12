@@ -5,20 +5,22 @@ import "./vendor/bootstrap-select/dist/css/bootstrap-select.min.css";
 import "./css/style.css";
 import { MainLayout } from './jsx';
 import "./App.css"
-import Home from './jsx/components/Dashboard/Home';
 import { useEffect } from 'react';
 import { useContext } from 'react';
 import { ThemeContext } from './context/ThemeContext';
 import { useSelector } from 'react-redux';
 import Error400 from './jsx/pages/Error400';
 import Register from './jsx/pages/Registration';
+import AppProfile from './jsx/components/AppsMenu/AppProfile/AppProfile';
+import Home from './jsx/components/Dashboard/Home';
 
-const LoginPage = () => <Login />;
-const DashboardPage = () => (
-  <MainLayout>
-    <Home />
-  </MainLayout>
-);
+
+const pages = [
+  { path: '/', component: Login },
+  { path: '/register', component: Register },
+  { path: '/dashboard', component: Home },
+  { path: '/dashboard/profile', component: AppProfile }
+];
 
 function App(props) {
   const { changeBackground } = useContext(ThemeContext);
@@ -26,9 +28,13 @@ function App(props) {
 
   return (
     <Routes>
-      <Route index element={<LoginPage />} />
-      <Route path='/register' element={<Register />} />
-      <Route path='/dashboard' element={(userToken && userInfo) ? <DashboardPage /> : <Error400 />} />
+      {pages.map(({ path, component: Component }) => (
+        <Route
+          key={path}
+          path={path}
+          element={path === '/' || path === '/register' ? <Component /> : (userToken && userInfo) ? <MainLayout><Component /></MainLayout> : <Error400 />}
+        />
+      ))}
     </Routes>
   );
 };

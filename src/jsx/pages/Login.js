@@ -22,63 +22,69 @@ function Login(props) {
 	const loginUser = (email, password) => {
 		setLoad(true);
 		console.log("Login Start...");
-	  
-		// Check if local storage has token and user info
+	
 		const token = localStorage.getItem("token");
 		const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-	  
+	
 		if (token && userInfo) {
-		  dispatch(loginSuccess({ userInfo, userToken: token }));
-		  navigate("/dashboard");
+			dispatch(loginSuccess({ userInfo, userToken: token }));
+			navigate("/dashboard");
 		} else {
-		  dispatch(loginStart());
-	  
-		  axios.post("https://trader-app.onrender.com/user/auth/login/", {
-			email,
-			password
-		  }, {
-			params: {
-			  email,
-			  password
-			},
-			headers: {
-			  "Content-Type": "application/json"
-			}
-		  })
-		  .then(response => {
-			console.log(response.data);
-			const accessToken = response.data.access_token;
-			localStorage.setItem("token", accessToken);
-	  
-			axios.get("https://trader-app.onrender.com/user/profile/users/", {
-			  headers: {
-				"x-token": accessToken
-			  }
+			dispatch(loginStart());
+	
+			axios.post("https://trader-app.onrender.com/user/auth/login/", {
+				email,
+				password
+			}, {
+				params: {
+					email,
+					password
+				},
+				headers: {
+					"Content-Type": "application/json"
+				}
 			})
-			.then(user => {
-			  localStorage.setItem("userInfo", JSON.stringify(user.data));
-			  dispatch(loginSuccess({ userInfo: user.data, userToken: accessToken }));
-	  
-			  if (user) {
-				setLoad(false);
-				setTimeout(() => {
-				  navigate("/dashboard");
-				}, 500);
-			  }
+			.then(response => {
+				console.log(response.data);
+				if (response.status === 200) {
+					const accessToken = response.data.access_token;
+					localStorage.setItem("token", accessToken);
+	
+					axios.get("https://trader-app.onrender.com/user/profile/users/", {
+						headers: {
+							"x-token": accessToken
+						}
+					})
+					.then(user => {
+						localStorage.setItem("userInfo", JSON.stringify(user.data));
+						dispatch(loginSuccess({ userInfo: user.data, userToken: accessToken }));
+	
+						if (user) {
+							setLoad(false);
+							setTimeout(() => {
+								navigate("/dashboard");
+							}, 500);
+						}
+					})
+					.catch(error => {
+						console.error("Error fetching user data:", error);
+						dispatch(loginFailure(error.message));
+						setLoad(false); 
+					});
+				} else {
+					console.error("Invalid response status:", response.status);
+					dispatch(loginFailure("Invalid response status"));
+					setLoad(false); 
+				}
 			})
 			.catch(error => {
-			  console.error("Error fetching user data:", error);
-			  dispatch(loginFailure(error.message));
-			  setLoad(false); // Set load to false when there is an error
+				console.error("Error logging in:", error);
+				dispatch(loginFailure(error.message));
+				setLoad(false); 
 			});
-		  })
-		  .catch(error => {
-			console.error("Error logging in:", error);
-			dispatch(loginFailure(error.message));
-			setLoad(false); // Set load to false when there is an error
-		  });
 		}
-	  };
+	};
+	
 	
 	
 
