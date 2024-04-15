@@ -116,7 +116,7 @@ const SideBar = () => {
                                                   return(	
                                                     <>
                                                       <li key={index}>
-                                                        <Link className={`${path === data.to ? "mm-active" : ""}`} to={data.to}>{data.title}</Link>
+                                                        <Link className={`${path === data.to ? "mm-active" : ""}`} to={`data.to/:${data.content.p}`}>{data.title}</Link>
                                                       </li>
                                                     </>
                                                   )

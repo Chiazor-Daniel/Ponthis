@@ -18,7 +18,18 @@ export const profileApi = createApi({
         params: userData,
       }),
     }),
+    changePassword: builder.mutation({
+      query: ({ token, newPassword, oldPassword }) => ({
+        url: '/profile/users/change-password', 
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          "x-token": token
+        },
+        params: { old_password: oldPassword ,new_password: newPassword },
+      }),
+    }),
   }),
 });
 
-export const { useGetProfileQuery, useUpdateProfileMutation } = profileApi;
+export const { useGetProfileQuery, useUpdateProfileMutation, useChangePasswordMutation } = profileApi;

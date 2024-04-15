@@ -7,6 +7,7 @@ import { LtcIcon, BtcIcon, XtzIcon, EthIcon } from './SvgIcon';
 import TradingViewWidget from '../TradingView/TradinView';
 import AssetsChart from './Dashboard/AssetsChart';
 import TradingViewMarketOverview from '../TradingView/TradingStock';
+import { Form } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { MyChart } from '../myChart';
@@ -28,7 +29,7 @@ const pickerData = [
 	{ fillcolor: 'var(--primary)', datatitle: 'BCCBTC', price: '763' },
 ];
 
-const Home = () => {
+const Home = ({theme}) => {
 	const navigate = useNavigate()
 	const [tradePair, setTradePair] = useState("NEOBTC")
 	const [showChart, setShowChart] = useState(true);
@@ -42,7 +43,7 @@ const Home = () => {
 	return (
 		<>
 			<div className="row">
-				<div className="col-xl-9">
+				<div className="col-9">
 					<div className="row">
 						<div className="col-xl-12">
 							<BalanceCardSlider />
@@ -56,6 +57,7 @@ const Home = () => {
 									<div className="card-body text-center pt-0 pb-2 rm" style={{overflow: "auto"}}>
 											<div className="row">
 												<div className=" col-xl-12 col-sm-12">
+												<Form.Control type="email" placeholder="Search pair" className="form-control-sm" />
 													<div className="text-start" style={{ display: "flex", flexDirection: "column", justifyContent: "space-around", gap: "10px", marginTop: "20px"}}>
 														{pickerData.map((data, ind) => (
 															<div
@@ -99,7 +101,7 @@ const Home = () => {
 								</div>
 								{
 									showChart && (
-										<MyChart tradePair={tradePair} />
+										<MyChart tradePair={tradePair} newTheme={theme}/>
 									)
 								}
 								<div className="card-body">
@@ -110,7 +112,7 @@ const Home = () => {
 						</div>
 					</div>
 				</div>
-				<div className="col-xl-3">
+				<div className="col-3">
 					<div className="row">
 						<div className="col-xl-12 col-sm-6">
 							<div className="card" style={{maxHeight: "250px",}}>
@@ -168,7 +170,7 @@ const Home = () => {
 															<Tab.Pane eventKey="Navbuylimit"></Tab.Pane>
 														</Tab.Content>
 														<div className="sell-element">
-															<OrderForm />
+														<OrderForm tradePair={tradePair} />
 														</div>
 													</Tab.Container>
 												</Tab.Pane>
@@ -185,7 +187,7 @@ const Home = () => {
 															<Tab.Pane id="Navselllimit" ></Tab.Pane>
 														</Tab.Content>
 														<div className="sell-element">
-															<OrderForm />
+														<OrderForm tradePair={tradePair} />
 														</div>
 													</Tab.Container>
 												</Tab.Pane>

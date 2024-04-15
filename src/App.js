@@ -13,13 +13,21 @@ import Error400 from './jsx/pages/Error400';
 import Register from './jsx/pages/Registration';
 import AppProfile from './jsx/components/AppsMenu/AppProfile/AppProfile';
 import Home from './jsx/components/Dashboard/Home';
-
+import IntradayTrading from './jsx/components/Trading/IntradayTrading';
+import ViewTransactions from './jsx/components/transactions';
+import Deposit from './jsx/components/transactions/depost';
 
 const pages = [
   { path: '/', component: Login },
   { path: '/register', component: Register },
   { path: '/dashboard', component: Home },
-  { path: '/dashboard/profile', component: AppProfile }
+  { path: '/dashboard/profile/:profileId', component: AppProfile },
+  { path: '/dashboard/profile', component: AppProfile },
+  { path: '/dashboard/profile/edit', component: AppProfile },
+  // {path: "/dashboard/edit-profile", component: EditProfile}
+  {path: '/dashboard/trading', component: IntradayTrading}, 
+  {path: '/dashboard/view-transactions', component: ViewTransactions},
+  {path: '/dashboard/deposit', component: Deposit}
 ];
 
 function App(props) {
@@ -35,6 +43,7 @@ function App(props) {
           element={path === '/' || path === '/register' ? <Component /> : (userToken && userInfo) ? <MainLayout><Component /></MainLayout> : <Error400 />}
         />
       ))}
+      <Route path='/error' element={<Error400 />} />
     </Routes>
   );
 };

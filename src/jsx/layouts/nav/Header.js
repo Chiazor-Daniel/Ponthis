@@ -58,7 +58,7 @@ const timelineData = [
 		description: "Quisque a consequat ante Sit amet magna at volutapt...",
 	}
 ];
-const Header = ({ onNote }) => {
+const Header = ({ onNote, onThemeChange }) => {
 	const [rightSelect, setRightSelect] = useState('Eng');
 	const { loading, userInfo, userToken, error, success } = useSelector(state => state.auth);
 	const [isDark, setDark] = useState(false);
@@ -75,6 +75,10 @@ const Header = ({ onNote }) => {
 			setheaderFix(window.scrollY > 50);
 		});
 	}, []);
+	const handleThemeChange = (newTheme) => {
+		setDark(newTheme);
+		onThemeChange(newTheme); // Callback to pass isDark to the parent component
+	  };
 
 	var path = window.location.pathname.split("/");
 	return (
@@ -95,7 +99,7 @@ const Header = ({ onNote }) => {
 				<ToggleTheme
 					isDark={isDark}
 					invertedIconLogic
-					onChange={() => setDark((prev) => !prev)}
+					onChange={() =>{ setDark((prev) => !prev); onThemeChange(isDark)}}
 				/>
 				<Dropdown as="li" className="nav-item dropdown header-profile">
 					<Dropdown.Toggle variant="" as="a" className="nav-link i-false c-pointer">
