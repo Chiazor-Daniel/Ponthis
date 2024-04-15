@@ -61,7 +61,7 @@ const timelineData = [
 const Header = ({ onNote, onThemeChange }) => {
 	const [rightSelect, setRightSelect] = useState('Eng');
 	const { loading, userInfo, userToken, error, success } = useSelector(state => state.auth);
-	const [isDark, setDark] = useState(false);
+	const [isDark, setDark] = useState(true);
 	const { changeBackground } = useContext(ThemeContext);
 	const [headerFix, setheaderFix] = useState(false);
 	useEffect(() => {

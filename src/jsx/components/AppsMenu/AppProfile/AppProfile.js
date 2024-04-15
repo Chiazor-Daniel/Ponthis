@@ -25,6 +25,7 @@ const AppProfile = () => {
     const [email, setEmail] = useState(userInfo.email)
     const [phoneNumber, setPhoneNumber] = useState(userInfo.phone_number);
     const dispatch = useDispatch()
+    const navigate = useNavigate();
     const [dob, setDob] = useState(userInfo.date_of_birth);
     const [country, setCountry] = useState(userInfo.country);
     const [city, setCity] = useState(userInfo.address);
@@ -55,8 +56,9 @@ const AppProfile = () => {
         };
         try {
             const resultAction = await updateProfile(userData);
+            console.log(resultAction)
             dispatch(updateState(resultAction.data.data));
-            toast.success("Profile updated successfully.");
+            resultAction.data.status && toast.success("Profile updated successfully.", {autoClose: 500, onClose: ()=>navigate("/dashboard/profile")});
         } catch (error) {
             console.error("Error:", error);
             localStorage.removeItem('userInfo');
