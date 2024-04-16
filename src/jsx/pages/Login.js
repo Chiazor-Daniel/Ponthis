@@ -16,10 +16,10 @@ function Login(props) {
 	const [load, setLoad] = useState(false)
 	const [heartActive, setHeartActive] = useState(true);
 	const navigate = useNavigate();
-	const [email, setEmail] = useState('steph@me.com');
+	const [email, setEmail] = useState('john@example.com');
 	let errorsObj = { email: '', password: '' };
 	const [errors, setErrors] = useState(errorsObj);
-	const [password, setPassword] = useState('rice');
+	const [password, setPassword] = useState('default123');
 	const dispatch = useDispatch();
 
 	const loginUser = (email, password) => {
@@ -97,10 +97,6 @@ function Login(props) {
 		}
 	};
 	
-	
-	
-	
-	
 
 	function onLogin(e) {
 		e.preventDefault();
@@ -162,7 +158,7 @@ function Login(props) {
 															</div>
 															<div className="form-group mb-3">
 																{/* <input name="dzName" required="" className="form-control " placeholder="Type Password" type="password" /> */}
-																<input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} />
+																<input type="text" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} />
 																{errors.password && <div className="text-danger fs-12">{errors.password}</div>}
 															</div>
 															<div className="form-group text-left mb-5">

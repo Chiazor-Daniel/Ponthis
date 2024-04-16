@@ -16,6 +16,7 @@ import Home from './jsx/components/Dashboard/Home';
 import IntradayTrading from './jsx/components/Trading/IntradayTrading';
 import ViewTransactions from './jsx/components/transactions';
 import Deposit from './jsx/components/transactions/depost';
+import Withdraw from './jsx/components/transactions/withdraw';
 
 const pages = [
   { path: '/', component: Login },
@@ -27,7 +28,8 @@ const pages = [
   // {path: "/dashboard/edit-profile", component: EditProfile}
   {path: '/dashboard/trading', component: IntradayTrading}, 
   {path: '/dashboard/view-transactions', component: ViewTransactions},
-  {path: '/dashboard/deposit', component: Deposit}
+  {path: '/dashboard/deposit', component: Deposit}, 
+  {path: "/dashboard/withdraw", component: Withdraw}
 ];
 
 function App(props) {

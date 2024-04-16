@@ -10,7 +10,10 @@ import TradingViewMarketOverview from '../TradingView/TradingStock';
 import { Form } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { MyChart } from '../myChart';
+import { setUserAccount } from '../../../redux/features/account/accountSlice';
+import { useGetUserAccountQuery } from '../../../redux/services/account';
 const marketBlog = [
 	{ icon: LtcIcon, classBg: 'bg-success', Name: 'LTC', },
 	{ icon: BtcIcon, classBg: 'bg-warning', Name: 'BTC', },
@@ -31,15 +34,23 @@ const pickerData = [
 
 const Home = ({theme}) => {
 	const navigate = useNavigate()
+	const dispatch = useDispatch();
 	const [tradePair, setTradePair] = useState("NEOBTC")
 	const [showChart, setShowChart] = useState(true);
 	const { loading, userInfo, userToken, error, success } = useSelector(state => state.auth);
-	// useEffect(() => {
-	// 	console.log("token", userToken); 
-	// 	if (!userToken) {
-	// 		navigate("/");
-	// 	}
-	// }, []); 
+	const {user_id} = useSelector(state => state.userAccount)
+	const { data, isLoadingError, isLoading } = useGetUserAccountQuery(userToken);
+	
+	useEffect(() => {
+		console.log("token", userToken)
+		console.log("userData", data)
+		if (data) {
+			const { user_id, account_type, referral_balance, id, main_balance, bonus_balance } = data;
+			dispatch(setUserAccount({ user_id, account_type, referral_balance, id, main_balance, bonus_balance }));
+			console.log("userid", user_id);
+		  }
+		  
+	}, []); 
 	return (
 		<>
 			<div className="row">

@@ -4,24 +4,26 @@ import "swiper/css";
 import TotalBalanceArea from './TotalBalanceArea';
 import ProfitLossArea from './ProfitLossArea';
 import TotaldipositChart from './TotaldipositChart';
+import { UseSelector, useSelector } from 'react-redux/es/hooks/useSelector';
 
 const BalanceCardSlider = () => {
     // Define an array of data representing each slide
+    const { user_id, account_type, referral_balance, id, main_balance, bonus_balance } = useSelector(state=> state.userAccount);
     const slidesData = [
         {
-            countNum: "$2,478.90",
+            countNum: `$ ${main_balance}`,
             title: "Main Balance",
-            info: "0.11857418",
+            info: "0",
             chartComponent: <TotalBalanceArea />
         },
         {
-            countNum: "$3,27.23",
+            countNum: `$ ${referral_balance}`,
             title: "Referral Balance",
-            info: "+3.02%",
+            info: "",
             chartComponent: <ProfitLossArea />
         },
         {
-            countNum: "$2,478.90",
+            countNum: `$ ${bonus_balance}`,
             title: "Bonuses",
             chartComponent: <TotaldipositChart />
         }
@@ -39,7 +41,7 @@ const BalanceCardSlider = () => {
                                 <p>{slide.title}</p>
                                 {slide.info && (
                                     <div>
-                                        <span className="text-success">{slide.info}</span>
+                                        <span className="text-success" style={{opacity: 0}}>{slide.info}</span>
                                     </div>
                                 )}
                             </div>

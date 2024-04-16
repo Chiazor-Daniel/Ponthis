@@ -27,7 +27,7 @@ export const MenuList = [
             },
             {
                 title: 'Withdraw',
-                to: '',
+                to: '/dashboard/withdraw',
             },
             
         ]
