@@ -1,26 +1,63 @@
-import React,{ useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import PageTitle from "../../../layouts/PageTitle";
 import { useTable, useGlobalFilter, useFilters, usePagination } from 'react-table';
-import MOCK_DATA from './MOCK_DATA_2.json';
-import { COLUMNS } from './Columns';
-import { GlobalFilter } from './GlobalFilter'; 
-//import './table.css';
+import { GlobalFilter } from './GlobalFilter';
 import './filtering.css';
 
+export const FilteringTable = ({ data }) => {
+	const columns = useMemo(() => [
+		{
+			Header: 'Id',
+			accessor: 'id'
+		},
+		{
+			Header: 'Transaction Method',
+			accessor: 'transaction_method'
+		},
+		{
+			Header: 'Status',
+			accessor: 'status'
+		},
+		{
+			Header: 'Created At',
+			accessor: 'created_at',
+			Cell: ({ value }) => {
+				const formattedDate = new Date(value).toLocaleString('en-US', {
+					year: 'numeric',
+					month: 'long',
+					day: 'numeric',
+					hour: 'numeric',
+					minute: 'numeric',
+					second: 'numeric'
+				});
+				return formattedDate;
+			}
+		},
+		{
+			Header: 'Transaction Amount',
+			accessor: 'transaction_amount'
+		},
+		{
+			Header: 'Transaction Type',
+			accessor: 'transaction_type'
+		}
+	], []);
 
-export const FilteringTable = () => {
-	const columns = useMemo( () => COLUMNS, [] )
-	const data = useMemo( () => MOCK_DATA, [] )
-	const tableInstance = useTable({
-		columns,
-		data,	
-		initialState : {pageIndex : 0}
-	}, useFilters, useGlobalFilter, usePagination)
-	
-	const { 
-		getTableProps, 
-		getTableBodyProps, 
-		headerGroups, 
+	const tableInstance = useTable(
+		{
+			columns,
+			data,
+			initialState: { pageIndex: 0 }
+		},
+		useFilters,
+		useGlobalFilter,
+		usePagination
+	);
+
+	const {
+		getTableProps,
+		getTableBodyProps,
+		headerGroups,
 		prepareRow,
 		state,
 		page,
@@ -32,48 +69,49 @@ export const FilteringTable = () => {
 		canNextPage,
 		canPreviousPage,
 		setGlobalFilter,
-	} = tableInstance
-	
-	
-	const {globalFilter, pageIndex} = state
-	
-	
-	return(
+	} = tableInstance;
+
+	const { globalFilter, pageIndex } = state;
+
+	return (
 		<>
-			<PageTitle activeMenu="Filtering" motherMenu="Table" />
 			<div className="card">
 				<div className="card-header">
-					<h4 className="card-title">Table Filtering</h4>
-                </div>
+					<h4 className="card-title">View Transactions</h4>
+				</div>
 				<div className="card-body">
 					<div className="table-responsive">
 						<GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} />
 						<table {...getTableProps()} className="table dataTable display">
 							<thead>
-							   {headerGroups.map(headerGroup => (
+								{headerGroups.map(headerGroup => (
 									<tr {...headerGroup.getHeaderGroupProps()}>
 										{headerGroup.headers.map(column => (
 											<th {...column.getHeaderProps()}>
 												{column.render('Header')}
-												{column.canFilter ? column.render('Filter') : null}
 											</th>
 										))}
 									</tr>
-							   ))}
-							</thead> 
-							<tbody {...getTableBodyProps()} className="" >
-							
+								))}
+							</thead>
+							<tbody {...getTableBodyProps()} className="">
 								{page.map((row) => {
 									prepareRow(row)
-									return(
+									return (
 										<tr {...row.getRowProps()}>
-											{row.cells.map((cell) => {
-												return <td {...cell.getCellProps()}> {cell.render('Cell')} </td>
+											{row.cells.map((cell, index) => {
+												// Check if the current cell corresponds to the "Transaction Amount" column
+												if (index === 4) { // Assuming "Transaction Amount" is the fifth column (index 4)
+													return <td {...cell.getCellProps()}>$ {cell.render('Cell')} </td>; // Prepend '$' to the cell value
+												} else {
+													return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>; // Render other columns normally
+												}
 											})}
 										</tr>
 									)
 								})}
 							</tbody>
+
 						</table>
 						<div className="d-flex justify-content-between">
 							<span>
@@ -84,34 +122,33 @@ export const FilteringTable = () => {
 							</span>
 							<span className="table-index">
 								Go to page : {' '}
-								<input type="number" 
+								<input type="number"
 									className="ml-2"
-									defaultValue={pageIndex + 1} 
-									onChange = {e => { 
-										const pageNumber = e.target.value ? Number(e.target.value) - 1 : 0 
+									defaultValue={pageIndex + 1}
+									onChange={e => {
+										const pageNumber = e.target.value ? Number(e.target.value) - 1 : 0
 										gotoPage(pageNumber)
-									} } 
+									}}
 								/>
 							</span>
 						</div>
-						<div className="text-center mb-3">	
-							<div className="filter-pagination  mt-3">
-								<button className=" previous-button" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>{'<<'}</button>
-								
-								<button className="previous-button" onClick={() => previousPage()} disabled={!canPreviousPage}>
-									Previous
-								</button>
-								<button className="next-button" onClick={() => nextPage()} disabled={!canNextPage}>
-									Next
-								</button>
-								<button className=" next-button" onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>{'>>'}</button>
-							</div>
-						</div>
+						{/* <div className="text-center mb-3">
+                            <div className="filter-pagination  mt-3">
+                                <button className=" previous-button" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>{'<<'}</button>
+
+                                <button className="previous-button" onClick={() => previousPage()} disabled={!canPreviousPage}>
+                                    Previous
+                                </button>
+                                <button className="next-button" onClick={() => nextPage()} disabled={!canNextPage}>
+                                    Next
+                                </button>
+                                <button className=" next-button" onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>{'>>'}</button>
+                            </div>
+                        </div> */}
 					</div>
 				</div>
 			</div>
 		</>
 	)
-	
 }
 export default FilteringTable;

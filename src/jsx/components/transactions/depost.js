@@ -14,6 +14,8 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
 import Tooltip from 'react-bootstrap/Tooltip';
 import ExampleComponent from '../sweetAlert';
+import { MdErrorOutline } from "react-icons/md";
+import { MdRunningWithErrors } from "react-icons/md";
 import swal from 'sweetalert';
 
 const buttons = [
@@ -101,37 +103,44 @@ const Deposit = () => {
             console.error('Failed to copy: ', error);
         });
     };
-
     const onPick = value => {
         swal({
-          title: "Amount in USDT",
-          content: {
-            element: "div",
-            attributes: {
-              innerHTML: `
+            title: "Amount in USDT",
+            content: {
+                element: "div",
+                attributes: {
+                    innerHTML: `
                 <div class="input-group mb-0">
                   <span class="input-group-text">$</span>
                   <input type="text" class="form-control" placeholder="Enter Amount">
                 </div>
               `,
+                },
             },
-          },
-          icon: "info",
-          buttons: true,
-          dangerMode: true,
+            icon: "info",
+            buttons: true,
+            dangerMode: true,
+            customClass: 'my-modal',
         }).then((inputValue) => {
-          if (inputValue !== null) {
-            swal({
-              title: "Deposit Successful!",
-              text: `You have successfully deposited $ ${inputValue} USDT.`,
-              icon: "success",
-            });
-          }
-        });
-      }
-      
+            if (inputValue !== null) {
+                const modal = document.querySelector('.swal2-modal');
+                const overlay = document.querySelector('.swal2-container.in');
 
- useEffect(()=> console.log(data), [])      
+                if (modal && overlay) {
+                    modal.style.backgroundColor = '#000';
+                    overlay.style.backgroundColor = 'rgba(43, 165, 137, 0.45)';
+                }
+
+                swal({
+                    title: "Deposit Successful!",
+                    text: `You have successfully deposited $ ${inputValue} USDT.`,
+                    icon: "success",
+                });
+            }
+        });
+    }
+
+    useEffect(() => console.log(data), [])
     return (
         <div className='row p-4' style={{ display: 'flex', gap: '30px', height: 'auto' }}>
             {/* <ExampleComponent /> */}
@@ -150,91 +159,106 @@ const Deposit = () => {
             </div>
             <div className='card col-lg-9 p-4' style={{ height: '100%' }}>
                 <h1>Deposit via <span>{buttons[activeButton]?.text}</span></h1>
-                {(activeButton === 1 && !isLoading) && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <div>
-                            <p>Network Chain</p>
-                            <Form.Select size='lg' onChange={handleNetworkChange}>
-                                <option value="" disabled selected>Select Network</option>
-                                {cryptoDetails && data?.data?.crypto_details.map(detail => (
-                                    <option key={detail.id} value={detail.network_chain}>{detail.network_chain}</option>
-                                ))}
-                            </Form.Select>
-                        </div>
-                        <div>
-                            <p>Preferred Token:</p>
-                            <Form.Control
-                                aria-label='Wallet Address'
-                                placeholder='Preferred Token'
-                                value={preferredToken}
-                                readOnly
-                            />
-                        </div>
-
-                        {cryptoDetails && (
-                            <div>
-                                <p>Wallet Address:</p>
-                                <InputGroup className='mb-3' size='lg'>
+                {
+                    activeButton === 1 ? (
+                        !isLoading && cryptoDetails.length > 1 ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                                <div>
+                                    <p>Network Chain</p>
+                                    <Form.Select size='lg' onChange={handleNetworkChange}>
+                                        <option value="" disabled selected>Select Network</option>
+                                        {cryptoDetails && data?.data?.crypto_details.map(detail => (
+                                            <option key={detail.id} value={detail.network_chain}>{detail.network_chain}</option>
+                                        ))}
+                                    </Form.Select>
+                                </div>
+                                <div>
+                                    <p>Preferred Token:</p>
                                     <Form.Control
                                         aria-label='Wallet Address'
-                                        placeholder='Wallet Address'
-                                        value={formData.walletAddress}
+                                        placeholder='Preferred Token'
+                                        value={preferredToken}
                                         readOnly
                                     />
-                                    <OverlayTrigger
-                                        trigger="hover"
-                                        placement="top"
-                                        overlay={
-                                            <Tooltip id={`tooltip-top`}>
-                                                {copied ? "Copied" : "Copy"} to Clipboard
-                                            </Tooltip>
-                                        }
-                                    >
-                                        <InputGroup.Text style={{ cursor: 'pointer' }} onClick={handleWalletAddressCopy}>
-                                            <FaCopy />
-                                        </InputGroup.Text>
-                                    </OverlayTrigger>
-                                </InputGroup>
-                            </div>
-                        )}
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }} className='p-4' onClick={()=>onPick()}>
-                            <button className='btn btn-primary'>Make Deposit</button>
-                        </div>
-                    </div>
-                )}
-                {activeButton === 0 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <div>
-                            {bankDetails.map((detail, index) => (
-                                <div key={index} style={{ fontSize: "1.2rem" }}>
-                                    <p>Bank Name: {detail.bank_name}</p>
-                                    <p>Account Name: {detail.account_name}</p>
-                                    <p>IBAN: {detail.iban}</p>
-                                    <p>BIC: {detail.bic}</p>
                                 </div>
-                            ))}
-                        </div>
-                        <div className='row'>
-                            <div className='col-4'>
-                                <p style={{ fontSize: "1.2rem" }}>Bank Account Number: </p>
-                                <InputGroup className='mb-0' size='lg'>
-                                    <InputGroup.Text style={{ cursor: 'pointer' }} ><FaCopy /></InputGroup.Text>
-                                    <Form.Control aria-label='Bank Account Number' placeholder={bankDetails[0]?.iban} readOnly />
-                                </InputGroup>
+
+                                {cryptoDetails && (
+                                    <div>
+                                        <p>Wallet Address:</p>
+                                        <InputGroup className='mb-3' size='lg'>
+                                            <Form.Control
+                                                aria-label='Wallet Address'
+                                                placeholder='Wallet Address'
+                                                value={formData.walletAddress}
+                                                readOnly
+                                            />
+                                            <OverlayTrigger
+                                                trigger="hover"
+                                                placement="top"
+                                                overlay={
+                                                    <Tooltip id={`tooltip-top`}>
+                                                        {copied ? "Copied" : "Copy"} to Clipboard
+                                                    </Tooltip>
+                                                }
+                                            >
+                                                <InputGroup.Text style={{ cursor: 'pointer' }} onClick={handleWalletAddressCopy}>
+                                                    <FaCopy />
+                                                </InputGroup.Text>
+                                            </OverlayTrigger>
+                                        </InputGroup>
+                                    </div>
+                                )}
+                                <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }} className='p-4' onClick={() => onPick()}>
+                                    <button className='btn btn-primary'>Make Deposit</button>
+                                </div>
                             </div>
-                            <div className='col-4'>
-                                <p style={{ fontSize: "1.2rem" }}>Amount: </p>
-                                <InputGroup className='mb-0' size='lg'>
-                                    <InputGroup.Text style={{ cursor: 'pointer' }} >$</InputGroup.Text>
-                                    <Form.Control aria-label='Amount (to the nearest dollar)' placeholder='Enter Amount' />
-                                </InputGroup>
+                        ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', height: "400px", justifyContent: "center", alignItems: "center" }}>
+                                <MdRunningWithErrors color='gray' size={50} style={{ fontSize: "1rem", opacity: 0.5 }} />
+                                <p style={{ fontSize: "2rem", opacity: 0.5 }}>Method Unavialable in your Region</p>
                             </div>
+                        )
+                    ) : null
+                }
+                {activeButton === 0 ? (
+                    !isLoading && cryptoDetails.length > 1 ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                            <div>
+                                {bankDetails.map((detail, index) => (
+                                    <div key={index} style={{ fontSize: "1.2rem" }}>
+                                        <p>Bank Name: {detail.bank_name}</p>
+                                        <p>Account Name: {detail.account_name}</p>
+                                        <p>IBAN: {detail.iban}</p>
+                                        <p>BIC: {detail.bic}</p>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className='row'>
+                                <div className='col-4'>
+                                    <p style={{ fontSize: "1.2rem" }}>Bank Account Number: </p>
+                                    <InputGroup className='mb-0' size='lg'>
+                                        <InputGroup.Text style={{ cursor: 'pointer' }} ><FaCopy /></InputGroup.Text>
+                                        <Form.Control aria-label='Bank Account Number' placeholder={bankDetails[0]?.iban} readOnly />
+                                    </InputGroup>
+                                </div>
+                                <div className='col-4'>
+                                    <p style={{ fontSize: "1.2rem" }}>Amount: </p>
+                                    <InputGroup className='mb-0' size='lg'>
+                                        <InputGroup.Text style={{ cursor: 'pointer' }} >$</InputGroup.Text>
+                                        <Form.Control aria-label='Amount (to the nearest dollar)' placeholder='Enter Amount' />
+                                    </InputGroup>
+                                </div>
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }} className='p-4'>
+                                <button className='btn btn-primary'>Make Deposit</button>
+                            </div>
+                        </div>) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', height: "400px", justifyContent: "center", alignItems: "center" }}>
+                            <MdRunningWithErrors color='gray' size={50} style={{ fontSize: "1rem", opacity: 0.5 }} />
+                            <p style={{ fontSize: "2rem", opacity: 0.5 }}>Method Unavialable in your Region</p>
                         </div>
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }} className='p-4'>
-                            <button className='btn btn-primary'>Make Deposit</button>
-                        </div>
-                    </div>
-                )}
+                    )
+                ) : null}
 
 
                 {activeButton === 2 && (

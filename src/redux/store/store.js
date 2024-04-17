@@ -7,6 +7,7 @@ import { paymentDetailsApi } from '../services/paymentDetails';
 import { setupListeners } from '@reduxjs/toolkit/query/react';
 import { profileApi } from '../services/profile';
 import { userAccountApi } from '../services/account';
+import { transactionsApi } from '../services/transactions';
 
 const store = configureStore({
   reducer: {
@@ -17,9 +18,10 @@ const store = configureStore({
     [paymentDetailsApi.reducerPath]: paymentDetailsApi.reducer,
     [profileApi.reducerPath]: profileApi.reducer,
     [userAccountApi.reducerPath]: userAccountApi.reducer,
+    [transactionsApi.reducerPath]: transactionsApi.reducer
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(profileApi.middleware, userAccountApi.middleware, paymentDetailsApi.middleware),
+    getDefaultMiddleware().concat(profileApi.middleware, userAccountApi.middleware, paymentDetailsApi.middleware, transactionsApi.middleware),
 });
 
 setupListeners(store.dispatch);
