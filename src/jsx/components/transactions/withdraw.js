@@ -78,60 +78,66 @@ const Withdraw = () => {
     };
     const onCryptoWithdraw = async () => {
         try {
-          // Show loading spinner
-          const loadingElement = ReactDOMServer.renderToString(
-            <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
-              <RingLoader color="#36d7b7" size={100} />
-              <p>Processing Withdrawal...</p>
-            </div>
-          );
-      
-          let loadingToast = swal({
-            title: '',
-            content: {
-              element: 'div',
-              attributes: {
-                innerHTML: loadingElement,
-              },
-            },
-            buttons: false,
-            closeOnClickOutside: false,
-            closeOnEsc: false,
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-          })
-      
-          const response = await withdraw({
-            amount: 100, 
-            type: "cryptocurrency", 
-            wallet_address: withdrawAddress, 
-            network_chain: myPreferredToken,
-            preferred_token: selectedNetwork, 
-            token: userToken 
-          });
-      
-          swal.close();
-      
-          const status = response.data[0]?.data?.status;
-      
-          console.log("Withdrawal status:", status);
-      
-          if (status === "success") {
-            swal({
-              title: "Withdrawal Successful",
-              text: `Your withdrawal has been successfully processed!`,
-              icon: "success",
+            // Show loading spinner
+            const loadingElement = ReactDOMServer.renderToString(
+                <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
+                    <RingLoader color="#36d7b7" size={100} />
+                    <p>Processing Withdrawal...</p>
+                </div>
+            );
+    
+            let loadingToast = swal({
+                title: '',
+                content: {
+                    element: 'div',
+                    attributes: {
+                        innerHTML: loadingElement,
+                    },
+                },
+                buttons: false,
+                closeOnClickOutside: false,
+                closeOnEsc: false,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+            })
+    
+            const response = await withdraw({
+                amount: 100,
+                type: "cryptocurrency",
+                wallet_address: withdrawAddress,
+                network_chain: myPreferredToken,
+                preferred_token: selectedNetwork,
+                token: userToken
             });
-          }
+    
+            // Delay closing the loading spinner for 3 seconds
+            setTimeout(() => {
+                // Close loading spinner
+                swal.close();
+    
+                const status = response.data[0]?.data?.status;
+    
+                console.log("Withdrawal status:", status);
+    
+                if (status === "success") {
+                    swal({
+                        title: "Withdrawal Successful",
+                        text: `Your withdrawal has been successfully processed!`,
+                        icon: "success",
+                    });
+                }
+            }, 3000); // 3000 milliseconds (3 seconds)
+    
         } catch (error) {
-          console.error("Error occurred during withdrawal:", error);
-          swal({
-            title: "Error",
-            text: "An error occurred during withdrawal. Please try again later.",
-            icon: "error",
-          });
+            console.error("Error occurred during withdrawal:", error);
+            swal({
+                title: "Error",
+                text: "An error occurred during withdrawal. Please try again later.",
+                icon: "error",
+            });
         }
-      };
+    };
+    
 
     const handleInputChange = (e) => {
         const { id, value } = e.target;
@@ -200,8 +206,13 @@ const Withdraw = () => {
     }, [expMonth, expYear]);
 
     const handleContinueButtonClick = async () => {
-        const loadingElement = ReactDOMServer.renderToString(<div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}><RingLoader color="#36d7b7" size={100} /><p>Processing Withdrawal...</p></div>);
-
+        const loadingElement = ReactDOMServer.renderToString(
+            <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
+                <RingLoader color="#36d7b7" size={100} />
+                <p>Processing Withdrawal...</p>
+            </div>
+        );
+    
         let loadingToast = swal({
             title: '',
             content: {
@@ -216,32 +227,42 @@ const Withdraw = () => {
             allowOutsideClick: false,
             allowEscapeKey: false,
         });
-
+    
         try {
-            const response = await withdraw({ amount: amount, type: "card-payment", card_number: cardFormData.card.cardNumber, expiry_date: expMonth + '/' + expYear, cvv: cardFormData.card.cvv, token: userToken });
-
+            const response = await withdraw({
+                amount: amount,
+                type: "card-payment",
+                card_number: cardFormData.card.cardNumber,
+                expiry_date: expMonth + '/' + expYear,
+                cvv: cardFormData.card.cvv,
+                token: userToken
+            });
+    
             // Extracting the status from the response
             const status = response.data[0]?.data?.status;
-
+    
             console.log("Withdrawal status:", status);
             console.log("card", cardFormData);
-
+    
             if (status === "success") {
-                // Close loading spinner
-                swal.close();
-
-                // Custom SweetAlert for success
-                swal({
-                    title: "Withdrawal Submitted",
-                    text: "Your withdrawal has been successfully processed!",
-                    icon: "success",
-                });
+                // Delay closing the loading spinner for 3 seconds
+                setTimeout(() => {
+                    // Close loading spinner
+                    swal.close();
+    
+                    // Custom SweetAlert for success
+                    swal({
+                        title: "Withdrawal Submitted",
+                        text: "Your withdrawal has been successfully processed!",
+                        icon: "success",
+                    });
+                }, 3000); // 3000 milliseconds (3 seconds)
             }
-
+    
         } catch (error) {
             // Close loading spinner
             swal.close();
-
+    
             console.error("Error occurred during withdrawal:", error);
             // Handle error, such as displaying an error message to the user
             swal({
@@ -251,6 +272,7 @@ const Withdraw = () => {
             });
         }
     };
+    
 
 
     return (
