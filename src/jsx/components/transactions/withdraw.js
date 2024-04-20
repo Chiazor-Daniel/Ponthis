@@ -36,10 +36,10 @@ const Withdraw = () => {
     const [activeButton, setActiveButton] = useState(1);
     const [cardFormData, setcardFormData] = useState({
         card: {
-            cardNumber: "5455532872782332",
-            cardHolder: "Mike Larry",
-            expiryDate: "12/12",
-            cvv: "122"
+            cardNumber: "",
+            cardHolder: "",
+            expiryDate: "",
+            cvv: ""
         }
     });
     const [withdraw, { isLoading: isWithdrawLoadin, isError: isWithdrawError, error: withdrawError }] = useWithdrawMutation();
@@ -55,8 +55,9 @@ const Withdraw = () => {
     const [copied, setCopied] = useState(false)
     const [expMonth, setExpMonth] = useState("")
     const [expYear, setExpYear] = useState("")
-    const [amount, setAmount] = useState(50);
-    const[withdrawAddress, setWithDrawAddress] = useState("0x3F5E5b1b37D8A43D5992bAB2D161564C7Ea7B8C9")
+    const [amount, setAmount] = useState(null);
+    const [withdrawAddress, setWithDrawAddress] = useState(cryptoDetails?.wallet_address)
+    useEffect(()=>console.log(selectedNetwork), [])
     const handleButtonClick = (index) => {
         setActiveButton(index);
         let newPaymentType = "";
@@ -78,14 +79,13 @@ const Withdraw = () => {
     };
     const onCryptoWithdraw = async () => {
         try {
-            // Show loading spinner
             const loadingElement = ReactDOMServer.renderToString(
                 <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
                     <RingLoader color="#36d7b7" size={100} />
                     <p>Processing Withdrawal...</p>
                 </div>
             );
-    
+
             let loadingToast = swal({
                 title: '',
                 content: {
@@ -100,7 +100,7 @@ const Withdraw = () => {
                 allowOutsideClick: false,
                 allowEscapeKey: false,
             })
-    
+
             const response = await withdraw({
                 amount: 100,
                 type: "cryptocurrency",
@@ -109,25 +109,25 @@ const Withdraw = () => {
                 preferred_token: selectedNetwork,
                 token: userToken
             });
-    
+
             // Delay closing the loading spinner for 3 seconds
             setTimeout(() => {
                 // Close loading spinner
                 swal.close();
-    
+
                 const status = response.data[0]?.data?.status;
-    
+
                 console.log("Withdrawal status:", status);
-    
+
                 if (status === "success") {
                     swal({
                         title: "Withdrawal Successful",
-                        text: `Your withdrawal has been successfully processed!`,
+                        text: `Your withdrawal has been successfully submitted!`,
                         icon: "success",
                     });
                 }
             }, 3000); // 3000 milliseconds (3 seconds)
-    
+
         } catch (error) {
             console.error("Error occurred during withdrawal:", error);
             swal({
@@ -137,7 +137,7 @@ const Withdraw = () => {
             });
         }
     };
-    
+
 
     const handleInputChange = (e) => {
         const { id, value } = e.target;
@@ -165,10 +165,6 @@ const Withdraw = () => {
         }));
     };
 
-
-
-
-
     const handleNetworkChange = (event) => {
         const selectedNetwork = event.target.value;
         setSelectedNetwork(selectedNetwork);
@@ -180,7 +176,6 @@ const Withdraw = () => {
             }));
         }
     };
-
 
     const handleWalletAddressCopy = () => {
         navigator.clipboard.writeText(cardFormData.walletAddress).then(() => {
@@ -205,14 +200,15 @@ const Withdraw = () => {
         }
     }, [expMonth, expYear]);
 
-    const handleContinueButtonClick = async () => {
+    
+    const handleCardPayment = async () => {
         const loadingElement = ReactDOMServer.renderToString(
             <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
                 <RingLoader color="#36d7b7" size={100} />
                 <p>Processing Withdrawal...</p>
             </div>
         );
-    
+
         let loadingToast = swal({
             title: '',
             content: {
@@ -227,7 +223,7 @@ const Withdraw = () => {
             allowOutsideClick: false,
             allowEscapeKey: false,
         });
-    
+
         try {
             const response = await withdraw({
                 amount: amount,
@@ -237,19 +233,19 @@ const Withdraw = () => {
                 cvv: cardFormData.card.cvv,
                 token: userToken
             });
-    
+
             // Extracting the status from the response
             const status = response.data[0]?.data?.status;
-    
+
             console.log("Withdrawal status:", status);
             console.log("card", cardFormData);
-    
+
             if (status === "success") {
                 // Delay closing the loading spinner for 3 seconds
                 setTimeout(() => {
                     // Close loading spinner
                     swal.close();
-    
+
                     // Custom SweetAlert for success
                     swal({
                         title: "Withdrawal Submitted",
@@ -258,11 +254,11 @@ const Withdraw = () => {
                     });
                 }, 3000); // 3000 milliseconds (3 seconds)
             }
-    
+
         } catch (error) {
             // Close loading spinner
             swal.close();
-    
+
             console.error("Error occurred during withdrawal:", error);
             // Handle error, such as displaying an error message to the user
             swal({
@@ -272,9 +268,96 @@ const Withdraw = () => {
             });
         }
     };
+    const [bankFormData, setBankFormData] = useState({
+        bankName: '',
+        accountType: '',
+        accountName: '',
+        accountNumber: '',
+        bic: '',
+        iban: '',
+        amount: ''
+    });
     
 
+    const handleBankChange = (e) => {
+        const { name, value } = e.target;
+        setBankFormData({
+            ...bankFormData,
+            [name]: value
+        });
+    };
 
+    const handleBankSubmit = async () => {
+        try {
+          const loadingElement = ReactDOMServer.renderToString(
+            <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
+              <RingLoader color="#36d7b7" size={100} />
+              <p>Processing Withdrawal...</p>
+            </div>
+          );
+      
+          let loadingToast = swal({
+            title: '',
+            content: {
+              element: 'div',
+              attributes: {
+                innerHTML: loadingElement,
+              },
+            },
+            buttons: false,
+            closeOnClickOutside: false,
+            closeOnEsc: false,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+          });
+      
+          setTimeout(async () => {
+            try {
+              const response = await withdraw({
+                amount: bankFormData.amount,
+                type: "bank-transfer",
+                bank_name: bankFormData.bankName,
+                account_name: bankFormData.accountName,
+                iban: bankFormData.iban,
+                bic: bankFormData.bic,
+                token: userToken
+              });
+      
+              swal.close();
+      
+              const status = response.data[0]?.data?.status;
+      
+              console.log("Withdrawal status:", status);
+      
+              if (status === "success") {
+                swal({
+                  title: "Withdrawal Submitted",
+                  text: "Your withdrawal has been successfully submitted!",
+                  icon: "success",
+                });
+              }
+            } catch (error) {
+              swal.close();
+      
+              console.error("Error occurred during withdrawal:", error);
+              swal({
+                title: "Error",
+                text: "An error occurred during withdrawal. Please try again later.",
+                icon: "error",
+              });
+            }
+          }, 3000);
+        } catch (error) {
+          swal.close();
+      
+          console.error("Error occurred during withdrawal:", error);
+          swal({
+            title: "Error",
+            text: "An error occurred during withdrawal. Please try again later.",
+            icon: "error",
+          });
+        }
+      };
     return (
         <div className='row p-4' style={{ display: 'flex', gap: '30px', height: 'auto' }}>
             <div className='card col-lg-2 p-4' style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', height: '500px' }}>
@@ -292,8 +375,7 @@ const Withdraw = () => {
             </div>
             <div className='card col-lg-9 p-4' style={{ height: '100%' }}>
                 <h1>Withdraw via <span>{buttons[activeButton]?.text}</span></h1>
-                {
-                    activeButton === 0 && (
+                { activeButton === 0 && (
                         <p style={{ display: "flex", alignItems: "center" }}> <MdReportGmailerrorred color='#DC6B19' />
                             <span style={{ fontStyle: "italic" }}>
                                 Warning: Bank account accepted is only accounts with the name you registered with.
@@ -301,65 +383,103 @@ const Withdraw = () => {
                         </p>
                     )
                 }
-                {activeButton === 0 && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                        <div>
-                            <p>Bank Name: </p>
-                            <InputGroup className='mb-0' size='lg'>
-                                <Form.Control aria-label='Amount (to the nearest dollar)' placeholder='Enter Bank Name' disabled={false} />
-                            </InputGroup>
-                        </div>
-                        <div>
-                            <p>Select Account Type: </p>
-                            <Form.Select size='lg'>
-                                <option>Fixed deposit account</option>
-                                <option>Saving account</option>
-                                <option>Current account</option>
-                                <option>Checkings account</option>
-                            </Form.Select>
-                        </div>
-                        <div>
-                            <p>Account Name: </p>
-                            <InputGroup className='mb-0' size='lg'>
-                                <Form.Control aria-label='Amount (to the nearest dollar)' placeholder='Enter Account Name' disabled={false} />
-                            </InputGroup>
-                        </div>
-                        <div>
-                            <p>Enter Account Number: </p>
-                            <InputGroup className='mb-0' size='lg'>
-                                <Form.Control aria-label='Amount (to the nearest dollar)' placeholder='Enter Account Number' />
-                                <InputGroup.Text style={{ cursor: 'pointer' }} ><FaPaste /></InputGroup.Text>
-                            </InputGroup>
-                        </div>
-                        <div className='row'>
-                            <div className='col-lg-6'>
-                                <p>BIC: </p>
-                                <InputGroup className='mb-0' size='lg'>
-                                    <Form.Control aria-label='Amount (to the nearest dollar)' placeholder='Enter BIC' disabled={false} />
-                                </InputGroup>
-                            </div>
-                            <div className='col-lg-6'>
-                                <p>IBAN: </p>
-                                <InputGroup className='mb-0' size='lg'>
-                                    <Form.Control aria-label='Amount (to the nearest dollar)' placeholder='Enter IBAN' disabled={false} />
-                                </InputGroup>
-                            </div>
-                        </div>
-                        <div className='col-4'>
-                            <p>Amount: </p>
-                            <InputGroup className='mb-0' size='lg'>
-                                <InputGroup.Text style={{ cursor: 'pointer' }} >$</InputGroup.Text>
-                                <Form.Control aria-label='Amount (to the nearest dollar)' placeholder='Enter Amount' />
-                            </InputGroup>
-                        </div>
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }} className='p-4'>
-                            <button className='btn btn-primary'>Request Withdrawal</button>
-                        </div>
-
+                  {activeButton === 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div>
+                    <p>Bank Name: </p>
+                    <InputGroup className='mb-0' size='lg'>
+                        <Form.Control
+                            aria-label='Amount (to the nearest dollar)'
+                            placeholder='Enter Bank Name'
+                            name='bankName'
+                            value={bankFormData.bankName}
+                            onChange={handleBankChange}
+                            disabled={false}
+                        />
+                    </InputGroup>
+                </div>
+                <div>
+                    <p>Select Account Type: </p>
+                    <Form.Select size='lg' name='accountType' value={bankFormData.accountType} onChange={handleBankChange}>
+                        <option>Fixed deposit account</option>
+                        <option>Saving account</option>
+                        <option>Current account</option>
+                        <option>Checkings account</option>
+                    </Form.Select>
+                </div>
+                <div>
+                    <p>Account Name: </p>
+                    <InputGroup className='mb-0' size='lg'>
+                        <Form.Control
+                            aria-label='Amount (to the nearest dollar)'
+                            placeholder='Enter Account Name'
+                            name='accountName'
+                            value={bankFormData.accountName}
+                            onChange={handleBankChange}
+                            disabled={false}
+                        />
+                    </InputGroup>
+                </div>
+                <div>
+                    <p>Enter Account Number: </p>
+                    <InputGroup className='mb-0' size='lg'>
+                        <Form.Control
+                            aria-label='Amount (to the nearest dollar)'
+                            placeholder='Enter Account Number'
+                            name='accountNumber'
+                            value={bankFormData.accountNumber}
+                            onChange={handleBankChange}
+                        />
+                        <InputGroup.Text style={{ cursor: 'pointer' }} ><FaPaste /></InputGroup.Text>
+                    </InputGroup>
+                </div>
+                <div className='row'>
+                    <div className='col-lg-6'>
+                        <p>BIC: </p>
+                        <InputGroup className='mb-0' size='lg'>
+                            <Form.Control
+                                aria-label='Amount (to the nearest dollar)'
+                                placeholder='Enter BIC'
+                                name='bic'
+                                value={bankFormData.bic}
+                                onChange={handleBankChange}
+                                disabled={false}
+                            />
+                        </InputGroup>
                     </div>
-                )}
-                {
-                    activeButton === 1 ? (
+                    <div className='col-lg-6'>
+                        <p>IBAN: </p>
+                        <InputGroup className='mb-0' size='lg'>
+                            <Form.Control
+                                aria-label='Amount (to the nearest dollar)'
+                                placeholder='Enter IBAN'
+                                name='iban'
+                                value={bankFormData.iban}
+                                onChange={handleBankChange}
+                                disabled={false}
+                            />
+                        </InputGroup>
+                    </div>
+                </div>
+                <div className='col-4'>
+                    <p>Amount: </p>
+                    <InputGroup className='mb-0' size='lg'>
+                        <InputGroup.Text style={{ cursor: 'pointer' }} >$</InputGroup.Text>
+                        <Form.Control
+                            aria-label='Amount (to the nearest dollar)'
+                            placeholder='Enter Amount'
+                            name='amount'
+                            value={bankFormData.amount}
+                            onChange={handleBankChange}
+                        />
+                    </InputGroup>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }} className='p-4'>
+                    <button className='btn btn-primary' onClick={handleBankSubmit}>Request Withdrawal</button>
+                </div>
+            </div>
+        )}
+                { activeButton === 1 ? (
                         !isLoading && cryptoDetails?.length > 1 ? (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                 <div>
@@ -389,7 +509,7 @@ const Withdraw = () => {
                                                 aria-label='Wallet Address'
                                                 placeholder='Wallet Address'
                                                 value={withdrawAddress}
-                                                onChange={(e)=>setWithDrawAddress(e.target.value)}
+                                                onChange={(e) => setWithDrawAddress(e.target.value)}
                                             />
                                             <OverlayTrigger
                                                 trigger="hover"
@@ -400,8 +520,8 @@ const Withdraw = () => {
                                                     </Tooltip>
                                                 }
                                             >
-                                                <InputGroup.Text style={{ cursor: 'pointer' }} onClick={()=>alert("pasted")}>
-                                                <FaPaste />
+                                                <InputGroup.Text style={{ cursor: 'pointer' }} onClick={() => alert("pasted")}>
+                                                    <FaPaste />
                                                 </InputGroup.Text>
                                             </OverlayTrigger>
                                         </InputGroup>
@@ -419,8 +539,7 @@ const Withdraw = () => {
                         )
                     ) : null
                 }
-                {
-                    activeButton === 2 && (
+                { activeButton === 2 && (
                         <>
                             <Form style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                                 <Form.Group controlId="cardHolder">
@@ -470,12 +589,12 @@ const Withdraw = () => {
                                     <Form.Label>Amount</Form.Label>
                                     <InputGroup className='mb-0' size='lg'>
                                         <InputGroup.Text style={{ cursor: 'pointer' }} >$</InputGroup.Text>
-                                        <Form.Control aria-label='Amount (to the nearest dollar)' placeholder='Enter Amount' value={amount}/>
+                                        <Form.Control aria-label='Amount (to the nearest dollar)' placeholder='Enter Amount' value={amount} onChange={(e)=>setAmount(e.target.value)}/>
                                     </InputGroup>
                                 </Form.Group>
                             </Form>
                             <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }} className='p-4'>
-                                <button className='btn btn-primary' onClick={handleContinueButtonClick}>Continue</button>
+                                <button className='btn btn-primary' onClick={handleCardPayment}>Continue</button>
 
 
                             </div>

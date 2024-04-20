@@ -10,6 +10,17 @@ export const MenuList = [
         classsChange: 'mm-collapse',
         to: "/dashboard/trading",
         iconStyle: <i className="material-icons">trending_up</i>,
+        content: [
+            {
+                title: 'Open Trade',
+                to: '/dashboard/trading/open',
+            },
+            {
+                title: 'View Trade',
+                to: '/dashboard/trading/view',
+            },
+            
+        ]
     },
     {
         title: 'Transactions',

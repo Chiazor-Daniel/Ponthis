@@ -1,25 +1,20 @@
 import React, {useEffect, useState, useRef } from 'react';
+import { Button } from 'react-bootstrap';
 import {Link} from 'react-router-dom';
+import { FaUserCircle } from "react-icons/fa";
+import { RiAdminFill } from "react-icons/ri";
 
 const tableData = [
-    {title:'BTC/Bitcoin'},
-    {title:'ETH/Ethereum'},
-    {title:'BNB/BNB'},
-    {title:'XRP/XRP'},
-    {title:'DOGE/Dogecoin'},
-    {title:'DOT/Polkadot'},
-    {title:'TRX/TRON'},
-    {title:'LTC/Litecoin'},
-    {title:'SOL/Solana'},
-    {title:'UNI/Uniswap'},
-    {title:'AVAX/Avalanche'},
-];
+    { title1: 'USDT', title2:'BTC', type: "ADMIN", price: '$0.1478', change: '+11%', volume: 'Bank', cap:'Monday 9:12 AM'   },
+    { title1: 'BTC', title2:'BND',type: "SELF", price: '$0.6932',change: '+22%', volume: 'Crypto', cap:'Friday 10:11 PM'   },
+    
+];    
 
-const TradeHistory = () =>{
+const FutureTable = () =>{
     const [data, setData] = useState(
-		document.querySelectorAll("#tradehistory_wrapper tbody tr")
+		document.querySelectorAll("#future_wrapper tbody tr")
 	);
-	const sort = 10;
+	const sort = 6;
 	const activePag = useRef(0);
 	const [test, settest] = useState(0);
 
@@ -35,7 +30,7 @@ const TradeHistory = () =>{
 	};
    // use effect
     useEffect(() => {
-      setData(document.querySelectorAll("#tradehistory_wrapper tbody tr"));
+      setData(document.querySelectorAll("#future_wrapper tbody tr"));
       //chackboxFun();
 	}, [test]);
 
@@ -55,39 +50,54 @@ const TradeHistory = () =>{
 	};
     return(
         <>
-            <div id="tradehistory_wrapper"  className="table-responsive dataTablehistory">
-                <div  className="dataTables_wrapper no-footer">   
-                    <table id="example" className="table shadow-hover dataTable display" style={{minWidth:"845px"}}>
+            <div className="table-responsive dataTablemarket">
+                <div  id="future_wrapper" className="dataTables_wrapper no-footer">   
+                    <table  className="table dataTable  shadow-hover display" style={{minWidth:"845px"}}>
                         <thead>
                             <tr>
-                                <th>Date</th>
-                                <th>Pair</th>
-                                <th>Side</th>
-                                <th>Order</th>
-                                <th>Filled</th>
-                                <th>Price</th>
-                                <th>Total</th>
-                                <th className="text-end">Action</th>
+                                <th>Asset Pair</th>
+                                <th className="text-center">Transaction Type</th>
+                                <th className="text-center">Amount</th>
+                                <th className="text-center">Profit</th>
+                                <th className="text-center">Created By</th>
+                                <th className="text-center">Created At</th>
+                                <th className="text-end">Status</th>
+                                <th className="text-end"></th>
                             </tr>
                         </thead>
                         <tbody>
                             {tableData.map((item, index)=>(
                                 <tr key={index}>
-                                    <td>2022-11-10 3:10</td>
-                                    <td>{item.title}</td>
-                                    <td>Sell</td>
-                                    <td>Limit</td>
-                                    <td>-</td>
-                                    <td>100.00</td>
-                                    <td>576.76</td>
+                                    <td>
+                                        <Link to={"#"} className="market-title d-flex align-items-center">   
+                                            <h5 className="mb-0 ms-2"> {item.title1}</h5>
+                                            <span className="text-muted ms-2"> {item.title2}</span>
+                                        </Link>
+                                    </td>
+                                    <td>{item.volume}</td>
+                                   
+                                    <td>{item.price}</td>
+                                    <td className={`${index % 2 == 0  ? "text-danger" : "text-success"} `}>{item.change}</td>
+                                    <td style={{display: "flex", alignItems: "center", gap: "10px", justifyContent: "center"}}>
+                                        {
+                                            item.type == "SELF" ? (
+                                                <FaUserCircle />
+                                            ): (
+                                                <RiAdminFill />
+                                            )
+                                        }
+                                    <span>
+                                        {item.type}
+                                    </span>
+                                    </td>
+                                    <td>{item.cap}</td>
+                                    <td className="text-end"><Link to={"#"}>Closed</Link></td>
                                     <td className="text-end">
-                                        <div className="d-flex justify-content-end">
-                                            <Link to={"#"} className="btn btn-primary shadow btn-xs sharp me-3"><i className="fas fa-pencil-alt"></i></Link>
-                                            <Link to={"#"} className="btn btn-danger shadow btn-xs sharp"><i className="fa fa-trash"></i></Link>
-                                        </div>												
+                                        <button style={{background: "red", border: "none", padding: "10px", color: "white", borderRadius: "10px", cursor: "not-allowed", opacity: 0.5}}>Close Trade</button>
                                     </td>
                                 </tr>
                             ))}
+                            
                         </tbody>
                     </table>
                     <div className="d-sm-flex text-center justify-content-between align-items-center mt-3 mb-3">
@@ -104,7 +114,7 @@ const TradeHistory = () =>{
                         >
                             <Link
                                 className="paginate_button previous "
-                                to="/history"
+                                to="/market"
                                 onClick={() =>
                                     activePag.current > 0 &&
                                     onClick(activePag.current - 1)
@@ -116,7 +126,7 @@ const TradeHistory = () =>{
                                 {paggination.map((number, i) => (
                                     <Link
                                         key={i}
-                                        to="/history"
+                                        to="/market"
                                         className={`paginate_button  ${
                                             activePag.current === i ? "current" : ""
                                         } `}
@@ -129,7 +139,7 @@ const TradeHistory = () =>{
 
                             <Link
                                 className="paginate_button next"
-                                to="/history"
+                                to="/market"
                                 onClick={() =>
                                     activePag.current + 1 < paggination.length &&
                                     onClick(activePag.current + 1)
@@ -145,4 +155,4 @@ const TradeHistory = () =>{
     )
 }
 
-export default TradeHistory;
+export default FutureTable;

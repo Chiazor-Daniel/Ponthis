@@ -17,6 +17,7 @@ import IntradayTrading from './jsx/components/Trading/IntradayTrading';
 import ViewTransactions from './jsx/components/transactions';
 import Deposit from './jsx/components/transactions/depost';
 import Withdraw from './jsx/components/transactions/withdraw';
+import ViewTrade from './jsx/components/Trading/ViewTrade';
 
 const pages = [
   { path: '/', component: Login },
@@ -27,6 +28,9 @@ const pages = [
   { path: '/dashboard/profile/edit', component: AppProfile },
   // {path: "/dashboard/edit-profile", component: EditProfile}
   {path: '/dashboard/trading', component: IntradayTrading}, 
+  {path: '/dashboard/trading/view', component: ViewTrade}, 
+  {path: '/dashboard/trading/open', component: IntradayTrading}, 
+
   {path: '/dashboard/view-transactions', component: ViewTransactions},
   {path: '/dashboard/deposit', component: Deposit}, 
   {path: "/dashboard/withdraw", component: Withdraw}

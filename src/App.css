@@ -17,10 +17,23 @@
   padding: 10px;
   border-radius: 10px;cursor: pointer;
 }
-.singleAsset:hover, .singleAssetActive {
-  background-color: #362465;
+
+.singleAsset2{
+  align-items: center;
+  background-color: transparent;
+  flex: 1;
+  padding: 20px;
+  font-size: 2rem;
+  border-radius: 10px;cursor: pointer;
+}
+.singleAsset:hover, .singleAssetActive, .singleAsset2:hover {
+  background-color: #5a458f;
+  color: white;
 }
 
 .my-modal {
   background-color: black ;
+}
+.r {
+  color: red !important;
 }

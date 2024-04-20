@@ -16,7 +16,10 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import ExampleComponent from '../sweetAlert';
 import { MdErrorOutline } from "react-icons/md";
 import { MdRunningWithErrors } from "react-icons/md";
+import ReactDOMServer from 'react-dom/server';
+import RingLoader from 'react-spinners/RingLoader';
 import swal from 'sweetalert';
+import { useDepositMutation } from '../../../redux/services/transactions';
 
 const buttons = [
     { icon: <AiFillBank size={25} />, text: 'Bank transfer' },
@@ -27,21 +30,37 @@ const buttons = [
 const Deposit = () => {
     const [activeButton, setActiveButton] = useState(1);
     const { userToken } = useSelector(state => state.auth);
-    const { data, isLoading, error } = useGetPaymentDetailsQuery(userToken)
+    const { data, isLoading, error, refetch } = useGetPaymentDetailsQuery(userToken)
     const [formData, setFormData] = useState({
         cardNumber: "",
         cardHolder: "",
         expiryDate: "",
         cvv: "",
-        walletAddress: "" // Added walletAddress field
     });
-    const [cardType, setCardType] = useState(null);
-    const [cryptoDetails, setCryptoDetails] = useState(!isLoading && data.data?.crypto_details);
+    const [cardType, setCardType] = useState("");
+    const [cryptoDetails, setCryptoDetails] = useState(data?.data?.crypto_details);
     const [selectedNetwork, setSelectedNetwork] = useState('');
-    const preferredToken = data?.data?.crypto_details.find(detail => detail.network_chain === selectedNetwork)?.preferred_token;
-    const bankDetails = data?.data?.bank_details;
+    const [amount, setAmount] = useState(50)
+    const [cryptoForm, setCryptoForm] = useState({
+        amount: amount,
+        type: "crypto"
+    })
+    const [preferredToken, setPreferredToken] = useState("")
+    const [bankDetails, setBankDetails] = useState("")
     const [paymentType, setPaymentType] = useState('');
     const [copied, setCopied] = useState(false)
+    useEffect(() => {
+        if (!data && !isLoading && !error) {
+            refetch();
+        } else if (data) {
+            setCryptoDetails(data?.data?.crypto_details);
+            const preferredToken = data?.data?.crypto_details.find(detail => detail.network_chain === selectedNetwork)?.preferred_token;
+            setPreferredToken(preferredToken);
+            setBankDetails(data?.data?.bank_details);
+        }
+    }, [data, isLoading, error, selectedNetwork]);
+
+
     const handleButtonClick = (index) => {
         setActiveButton(index);
         let newPaymentType = "";
@@ -92,7 +111,6 @@ const Deposit = () => {
         }
     };
 
-
     const handleWalletAddressCopy = () => {
         navigator.clipboard.writeText(formData.walletAddress).then(() => {
             setCopied(true);
@@ -103,44 +121,240 @@ const Deposit = () => {
             console.error('Failed to copy: ', error);
         });
     };
-    const onPick = value => {
-        swal({
-            title: "Amount in USDT",
-            content: {
-                element: "div",
-                attributes: {
-                    innerHTML: `
-                <div class="input-group mb-0">
-                  <span class="input-group-text">$</span>
-                  <input type="text" class="form-control" placeholder="Enter Amount">
+
+    const [deposit, { isDespoitError, depositErro }] = useDepositMutation()
+    const handleCryptoDeposit = async () => {
+        try {
+            // Render loading element
+            const loadingElement = ReactDOMServer.renderToString(
+                <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
+                    <RingLoader color="#36d7b7" size={100} />
+                    <p>Processing Deposit...</p>
                 </div>
-              `,
+            );
+
+            // Show loading dialog
+            const loadingToast = swal({
+                title: '',
+                content: {
+                    element: 'div',
+                    attributes: {
+                        innerHTML: loadingElement,
+                    },
                 },
-            },
-            icon: "info",
-            buttons: true,
-            dangerMode: true,
-            customClass: 'my-modal',
-        }).then((inputValue) => {
-            if (inputValue !== null) {
-                const modal = document.querySelector('.swal2-modal');
-                const overlay = document.querySelector('.swal2-container.in');
+                buttons: false,
+                closeOnClickOutside: false,
+                closeOnEsc: false,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+            });
 
-                if (modal && overlay) {
-                    modal.style.backgroundColor = '#000';
-                    overlay.style.backgroundColor = 'rgba(43, 165, 137, 0.45)';
+            // Simulate deposit processing
+            setTimeout(async () => {
+                try {
+                    // Call deposit API with appropriate data
+                    console.log(cryptoForm)
+                    const response = await deposit({
+                        amount: cryptoForm.amount, // Adjust as needed
+                        type: cryptoForm.type, // Adjust as needed
+                        token: userToken
+                        // wallet_address: formData.walletAddress,
+                        // preferred_token: preferredToken,
+                        // token: userToken
+                    });
+
+                    // Close loading dialog
+                    swal.close();
+
+                    // Handle deposit response
+                    const status = response.data[0]?.status;
+                    console.log("Deposit status:", status);
+
+                    if (status === "success") {
+                        // Show success message
+                        swal({
+                            title: "Deposit Pending",
+                            text: "Await deposit approval!",
+                            icon: "info",
+                        });
+                    } else{
+                        swal({
+                            title: "Error",
+                            text: response.data[1]?.data,
+                            icon: "error",
+                        });
+                    }
+                } catch (error) {
+                    // Close loading dialog
+                    swal.close();
+
+                    // Handle deposit error
+                    console.error("Error occurred during deposit:", error);
+                    swal({
+                        title: "Error",
+                        text: "An error occurred during deposit. Please try again later.",
+                        icon: "error",
+                    });
                 }
+            }, 3000); // Simulated deposit processing time
+        } catch (error) {
+            // Handle any unexpected errors
+            console.error("Error occurred during deposit:", error);
+            swal({
+                title: "Error",
+                text: "An unexpected error occurred during deposit. Please try again later.",
+                icon: "error",
+            });
+        }
+    };
+    const handleBankPayment = async () => {
+        try {
+            const loadingElement = ReactDOMServer.renderToString(
+                <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
+                    <RingLoader color="#36d7b7" size={100} />
+                    <p>Processing Deposit...</p>
+                </div>
+            );
 
-                swal({
-                    title: "Deposit Successful!",
-                    text: `You have successfully deposited $ ${inputValue} USDT.`,
-                    icon: "success",
-                });
-            }
-        });
-    }
+            const loadingToast = swal({
+                title: '',
+                content: {
+                    element: 'div',
+                    attributes: {
+                        innerHTML: loadingElement,
+                    },
+                },
+                buttons: false,
+                closeOnClickOutside: false,
+                closeOnEsc: false,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+            });
 
+            // Simulate deposit processing
+            setTimeout(async () => {
+                try {
+                    // Call deposit API with appropriate data
+                    const response = await deposit({
+                        amount: amount, // Adjust as needed
+                        type: "bank-transfer", // Adjust as needed
+                        token: userToken
+                    });
+
+                    // Close loading dialog
+                    swal.close();
+
+                    // Handle deposit response
+                    const status = response.data[0]?.status;
+                    console.log("Deposit status:", status);
+
+                    if (status === "success") {
+                        // Show success message
+                        swal({
+                            title: "Deposit Pending",
+                            text: "Await deposit approval!",
+                            icon: "info",
+                        });
+                    }
+                } catch (error) {
+                    // Close loading dialog
+                    swal.close();
+
+                    // Handle deposit error
+                    console.error("Error occurred during deposit:", error);
+                    swal({
+                        title: "Error",
+                        text: "An error occurred during deposit. Please try again later.",
+                        icon: "error",
+                    });
+                }
+            }, 3000); // Simulated deposit processing time
+        } catch (error) {
+            // Handle any unexpected errors
+            console.error("Error occurred during deposit:", error);
+            swal({
+                title: "Error",
+                text: "An unexpected error occurred during deposit. Please try again later.",
+                icon: "error",
+            });
+        }
+    };
+    const handleCardPay = async () => {
+        try {
+            const loadingElement = ReactDOMServer.renderToString(
+                <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
+                    <RingLoader color="#36d7b7" size={100} />
+                    <p>Processing Deposit...</p>
+                </div>
+            );
+
+            const loadingToast = swal({
+                title: '',
+                content: {
+                    element: 'div',
+                    attributes: {
+                        innerHTML: loadingElement,
+                    },
+                },
+                buttons: false,
+                closeOnClickOutside: false,
+                closeOnEsc: false,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+            });
+
+            // Simulate deposit processing
+            setTimeout(async () => {
+                try {
+                    // Call deposit API with appropriate data
+                    const response = await deposit({
+                        amount: amount, // Adjust as needed
+                        type: "card-payment", // Adjust as needed
+                        token: userToken,
+                        cardData: formData
+
+                    });
+
+                    // Close loading dialog
+                    swal.close();
+
+                    // Handle deposit response
+                    const status = response.data[0]?.status;
+                    console.log("Deposit status:", status);
+
+                    if (status === "success") {
+                        // Show success message
+                        swal({
+                            title: "Deposit Pending",
+                            text: "Await deposit approval!",
+                            icon: "info",
+                        });
+                    }
+                } catch (error) {
+                    // Close loading dialog
+                    swal.close();
+
+                    // Handle deposit error
+                    console.error("Error occurred during deposit:", error);
+                    swal({
+                        title: "Error",
+                        text: "An error occurred during deposit. Please try again later.",
+                        icon: "error",
+                    });
+                }
+            }, 3000); // Simulated deposit processing time
+        } catch (error) {
+            // Handle any unexpected errors
+            console.error("Error occurred during deposit:", error);
+            swal({
+                title: "Error",
+                text: "An unexpected error occurred during deposit. Please try again later.",
+                icon: "error",
+            });
+        }
+    };
     useEffect(() => console.log(data), [])
+    if(cryptoDetails)
     return (
         <div className='row p-4' style={{ display: 'flex', gap: '30px', height: 'auto' }}>
             {/* <ExampleComponent /> */}
@@ -161,7 +375,7 @@ const Deposit = () => {
                 <h1>Deposit via <span>{buttons[activeButton]?.text}</span></h1>
                 {
                     activeButton === 1 ? (
-                        !isLoading && cryptoDetails.length > 1 ? (
+                        !isLoading && cryptoDetails ? (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                 <div>
                                     <p>Network Chain</p>
@@ -208,8 +422,15 @@ const Deposit = () => {
                                         </InputGroup>
                                     </div>
                                 )}
-                                <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }} className='p-4' onClick={() => onPick()}>
-                                    <button className='btn btn-primary'>Make Deposit</button>
+                                <div className='row col-4'>
+                                    <InputGroup className='mb-0' size='lg'>
+                                        <InputGroup.Text style={{ cursor: 'pointer' }} >$</InputGroup.Text>
+                                        <Form.Control aria-label='Amount (to the nearest dollar)' placeholder='Enter Amount' value={amount} onChange={(e)=>setAmount(e.target.value)}/>
+                                    </InputGroup>
+                                </div>
+
+                                <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }} className='p-4' >
+                                    <button className='btn btn-primary' onClick={() => handleCryptoDeposit()}>Make Deposit</button>
                                 </div>
                             </div>
                         ) : (
@@ -221,7 +442,7 @@ const Deposit = () => {
                     ) : null
                 }
                 {activeButton === 0 ? (
-                    !isLoading && cryptoDetails.length > 1 ? (
+                    !isLoading && cryptoDetails ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                             <div>
                                 {bankDetails.map((detail, index) => (
@@ -245,12 +466,12 @@ const Deposit = () => {
                                     <p style={{ fontSize: "1.2rem" }}>Amount: </p>
                                     <InputGroup className='mb-0' size='lg'>
                                         <InputGroup.Text style={{ cursor: 'pointer' }} >$</InputGroup.Text>
-                                        <Form.Control aria-label='Amount (to the nearest dollar)' placeholder='Enter Amount' />
+                                        <Form.Control aria-label='Amount (to the nearest dollar)' placeholder='Enter Amount' value={amount} onChange={(e)=>setAmount(e.target.value)} />
                                     </InputGroup>
                                 </div>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }} className='p-4'>
-                                <button className='btn btn-primary'>Make Deposit</button>
+                                <button className='btn btn-primary' onClick={handleBankPayment}>Make Deposit</button>
                             </div>
                         </div>) : (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', height: "400px", justifyContent: "center", alignItems: "center" }}>
@@ -268,6 +489,16 @@ const Deposit = () => {
                                 <Form.Label> Card Holder Name</Form.Label>
                                 <Form.Control type="text" placeholder="Enter card holder name" value={formData.cardHolder} onChange={handleInputChange} />
                             </Form.Group>
+                            {/* <Form.Group controlId="cardHolder" className='row'>
+                                <div className='row col-6'>
+                                    <Form.Label>First Name</Form.Label>
+                                    <Form.Control type="text" placeholder="Enter card holder name" value={cardFirstname} readOnly/>
+                                </div>
+                                <div className='row col-6'>
+                                    <Form.Label>Last Name</Form.Label>
+                                    <Form.Control type="text" placeholder="Enter card holder name" value={cardLastname} readOnly/>
+                                </div>
+                            </Form.Group> */}
                             <Form.Group controlId="cardNumber">
                                 <Form.Label>Card Number</Form.Label>
                                 <InputGroup>
@@ -306,9 +537,15 @@ const Deposit = () => {
                                     <Form.Control type="text" placeholder="Enter CVV" value={formData.cvv} onChange={handleInputChange} />
                                 </Form.Group>
                             </div>
+                             <div className='row col-4'>
+                                    <InputGroup className='mb-0' size='lg'>
+                                        <InputGroup.Text style={{ cursor: 'pointer' }} >$</InputGroup.Text>
+                                        <Form.Control aria-label='Amount (to the nearest dollar)' placeholder='Enter Amount' onChange={(e)=>setAmount(e.target.value)} value={amount}/>
+                                    </InputGroup>
+                                </div>
                         </Form>
                         <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }} className='p-4'>
-                            <button className='btn btn-primary'>Continue</button>
+                            <button className='btn btn-primary' onClick={handleCardPay}>Continue</button>
                         </div>
                     </React.Fragment>
                 )}

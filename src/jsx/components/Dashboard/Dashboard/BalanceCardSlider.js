@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import TotalBalanceArea from './TotalBalanceArea';
@@ -9,6 +9,7 @@ import { UseSelector, useSelector } from 'react-redux/es/hooks/useSelector';
 const BalanceCardSlider = () => {
     // Define an array of data representing each slide
     const { user_id, account_type, referral_balance, id, main_balance, bonus_balance } = useSelector(state=> state.userAccount);
+    useEffect(()=>console.log(main_balance));
     const slidesData = [
         {
             countNum: `$ ${main_balance}`,
