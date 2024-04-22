@@ -2,16 +2,23 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaUserCircle } from 'react-icons/fa';
 import { RiAdminFill } from 'react-icons/ri';
-import { useGetAllTradesQuery } from '../../../../redux/services/trades';
-import { useSelector } from 'react-redux';
+// import { useGetAllTradesQuery } from '../../../../redux/services/trades';
+// import { useSelector } from 'react-redux';
 import robo from '../../../../images/robot.png';
 
 const FutureTable = () => {
-  const { userToken } = useSelector((state) => state.auth);
+  // const { userToken } = useSelector((state) => state.auth);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize] = useState(10); // Set page size to 10
-  const { data: trades = [], isFetching } = useGetAllTradesQuery(userToken);
-  const paginatedTrades = trades[1]?.data || [];
+  // const { data: trades = [], isFetching } = useGetAllTradesQuery(userToken);
+  // const paginatedTrades = trades[1]?.data || [];
+
+  // Dummy data for testing
+  const dummyData = [
+    { asset_pair_type: 'BTCUSD', trade_type: 'Buy', amount: 1000, profit: 10, created_by: 'auto-trader', created_at: new Date(), status: 'open' },
+    { asset_pair_type: 'ETHUSD', trade_type: 'Sell', amount: 500, profit: -5, created_by: 'admin', created_at: new Date(), status: 'closed' },
+    // Add more dummy data here as needed
+  ];
 
   const handleChangePage = (page) => {
     setCurrentPage(page);
@@ -35,7 +42,7 @@ const FutureTable = () => {
               </tr>
             </thead>
             <tbody>
-              {paginatedTrades.slice(currentPage * pageSize, (currentPage + 1) * pageSize).map((trade, index) => (
+              {dummyData.slice(currentPage * pageSize, (currentPage + 1) * pageSize).map((trade, index) => (
                 <tr key={index}>
                   <td>
                     <Link to={'#'} className="market-title d-flex align-items-center">
@@ -76,7 +83,7 @@ const FutureTable = () => {
           <div className="d-flex justify-content-center mt-3">
             <nav>
               <ul className="pagination">
-                {Array.from({ length: Math.ceil(paginatedTrades.length / pageSize) }, (_, index) => (
+                {Array.from({ length: Math.ceil(dummyData.length / pageSize) }, (_, index) => (
                   <li key={index} className={`page-item ${currentPage === index ? 'active' : ''}`}>
                     <button className="page-link" onClick={() => handleChangePage(index)}>
                       {index + 1}
