@@ -8,7 +8,8 @@ export const FilteringTable = ({ data, isLoading }) => {
 	const columns = useMemo(() => [
 		{
 			Header: 'Id',
-			accessor: 'id'
+			accessor: 'id',
+      Cell: ({ row }) => row.index + 1 // Use index to assign IDs starting from 1
 		},
 		{
 			Header: 'Transaction Method',
@@ -115,7 +116,6 @@ export const FilteringTable = ({ data, isLoading }) => {
                     )
                   })}
                 </tbody>
-
               </table>
               <div className="d-flex justify-content-between">
                 <span>
@@ -136,19 +136,14 @@ export const FilteringTable = ({ data, isLoading }) => {
                   />
                 </span>
               </div>
-              {/* <div className="text-center mb-3">
-                              <div className="filter-pagination  mt-3">
-                                  <button className=" previous-button" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>{'<<'}</button>
-
-                                  <button className="previous-button" onClick={() => previousPage()} disabled={!canPreviousPage}>
-                                      Previous
-                                  </button>
-                                  <button className="next-button" onClick={() => nextPage()} disabled={!canNextPage}>
-                                      Next
-                                  </button>
-                                  <button className=" next-button" onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>{'>>'}</button>
-                              </div>
-                          </div> */}
+              <div className="text-center mb-3">
+                <div className="filter-pagination  mt-3">
+                  <button className=" previous-button" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>{'<<'}</button>
+                  <button className="previous-button" onClick={() => previousPage()} disabled={!canPreviousPage}>Previous</button>
+                  <button className="next-button" onClick={() => nextPage()} disabled={!canNextPage}>Next</button>
+                  <button className=" next-button" onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>{'>>'}</button>
+                </div>
+              </div>
             </div>
           </div>
           )

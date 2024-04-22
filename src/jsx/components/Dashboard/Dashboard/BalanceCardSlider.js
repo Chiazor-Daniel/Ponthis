@@ -1,30 +1,28 @@
-import React, { useEffect } from 'react';
-import { Swiper, SwiperSlide } from "swiper/react";
+import React from 'react';
 import "swiper/css";
 import TotalBalanceArea from './TotalBalanceArea';
 import ProfitLossArea from './ProfitLossArea';
 import TotaldipositChart from './TotaldipositChart';
-import { UseSelector, useSelector } from 'react-redux/es/hooks/useSelector';
+import { useSelector } from 'react-redux/es/hooks/useSelector';
 
-const BalanceCardSlider = () => {
-    // Define an array of data representing each slide
-    const { user_id, account_type, referral_balance, id, main_balance, bonus_balance } = useSelector(state=> state.userAccount);
-    useEffect(()=>console.log(main_balance));
+const BalanceCardSlider = ({ accountData }) => {
+    const { referral_balance, main_balance, bonus_balance } = useSelector(state => state.userAccount || {});
+
     const slidesData = [
         {
-            countNum: `$ ${main_balance}`,
+            countNum: `$ ${main_balance || (accountData && accountData.main_balance) || "***"}`,
             title: "Main Balance",
             info: "0",
             chartComponent: <TotalBalanceArea />
         },
         {
-            countNum: `$ ${referral_balance}`,
+            countNum: `$ ${referral_balance || (accountData && accountData.referral_balance) || "***"}`,
             title: "Referral Balance",
             info: "",
             chartComponent: <ProfitLossArea />
         },
         {
-            countNum: `$ ${bonus_balance}`,
+            countNum: `$ ${bonus_balance || (accountData && accountData.bonus_balance) || "***"}`,
             title: "Bonuses",
             chartComponent: <TotaldipositChart />
         }
@@ -42,7 +40,7 @@ const BalanceCardSlider = () => {
                                 <p>{slide.title}</p>
                                 {slide.info && (
                                     <div>
-                                        <span className="text-success" style={{opacity: 0}}>{slide.info}</span>
+                                        <span className="text-success" style={{ opacity: 0 }}>{slide.info}</span>
                                     </div>
                                 )}
                             </div>
@@ -57,5 +55,4 @@ const BalanceCardSlider = () => {
         </div>
     );
 }
-
-export default BalanceCardSlider;
+export default BalanceCardSlider

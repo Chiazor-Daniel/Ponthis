@@ -1,6 +1,5 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
-import { Link } from "react-router-dom";
 
 class TotaldipositChart extends React.Component {  
 	constructor(props) {

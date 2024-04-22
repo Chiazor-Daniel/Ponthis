@@ -1,15 +1,10 @@
-import React, { useContext, useEffect, useReducer, useState } from 'react';
-import { Dropdown, Nav, Tab } from 'react-bootstrap';
-import { ThemeContext } from "../../../context/ThemeContext";
+import React, { useEffect, useState } from 'react';
+import { Nav, Tab } from 'react-bootstrap';
 import BalanceCardSlider from './Dashboard/BalanceCardSlider';
 import OrderForm from './Dashboard/OrderForm';
 import { LtcIcon, BtcIcon, XtzIcon, EthIcon } from './SvgIcon';
-import TradingViewWidget from '../TradingView/TradinView';
-import AssetsChart from './Dashboard/AssetsChart';
-import TradingViewMarketOverview from '../TradingView/TradingStock';
 import { Form } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { MyChart } from '../myChart';
 import { setUserAccount } from '../../../redux/features/account/accountSlice';
@@ -33,29 +28,24 @@ const pickerData = [
 ];
 
 const Home = ({theme}) => {
-	const navigate = useNavigate()
 	const dispatch = useDispatch();
 	const [tradePair, setTradePair] = useState("NEOBTC")
 	const [showChart, setShowChart] = useState(true);
-	const { loading, userInfo, userToken, error, success } = useSelector(state => state.auth);
+	const { userToken } = useSelector(state => state.auth);
 	const {user_id} = useSelector(state => state.userAccount)
-	const { data, isLoadingError, isLoading } = useGetUserAccountQuery(userToken);
+	const { data, isLoadingError } = useGetUserAccountQuery(userToken);
 	
-	useEffect(() => {
-		console.log("token", userToken);
-		console.log("userData", data);
-		
-		const fetchData = async () => {
+	useEffect(() => {		
+		const fetchData = () => {
 		  if (data && !isLoadingError) { // Check if data exists
 			const { account_type, referral_balance, id, main_balance, bonus_balance } = data;
 			dispatch(setUserAccount({ user_id, account_type, referral_balance, id, main_balance, bonus_balance }));
-			console.log("userid", user_id);
 		  }
 		};
 	  
 		fetchData();
 	  
-	  }, []);
+	  }, [data,dispatch, isLoadingError, user_id]);
 	if(!isLoadingError)  
 	return (
 		<>
@@ -63,7 +53,7 @@ const Home = ({theme}) => {
 				<div className="col-9">
 					<div className="row">
 						<div className="col-xl-12">
-							<BalanceCardSlider />
+							<BalanceCardSlider accountData={data}/>
 						</div>
 						<div className="col-xl-12 row rm" style={{height: "520px"}}>
 							<div className="col-xl-3 assets-al col-lg-12" style={{height: "100%"}}>
@@ -78,6 +68,7 @@ const Home = ({theme}) => {
 													<div className="text-start" style={{ display: "flex", flexDirection: "column", justifyContent: "space-around", gap: "10px", marginTop: "20px"}}>
 														{pickerData.map((data, ind) => (
 															<div
+															// eslint-disable-next-line
 															className={data.datatitle == tradePair? "singleAssetActive": "singleAsset"}
 															key={ind}
 															onClick={() => {
@@ -138,7 +129,7 @@ const Home = ({theme}) => {
 												</div>
 												<div className="count">
 													<h6>120.45</h6>
-													<span className={ind % 2 == 0 ? "text-success" : ""}>1,24%</span>
+													<span className={ind % 2 === 0 ? "text-success" : ""}>1,24%</span>
 												</div>
 											</div>
 										))}

@@ -9,12 +9,8 @@ import { FaCcVisa } from "react-icons/fa";
 import { MdError } from "react-icons/md";
 import { useSelector } from 'react-redux/es/hooks/useSelector';
 import { useGetPaymentDetailsQuery } from '../../../redux/services/paymentDetails';
-import Button from 'react-bootstrap/Button';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Popover from 'react-bootstrap/Popover';
 import Tooltip from 'react-bootstrap/Tooltip';
-import ExampleComponent from '../sweetAlert';
-import { MdErrorOutline } from "react-icons/md";
 import { MdRunningWithErrors } from "react-icons/md";
 import ReactDOMServer from 'react-dom/server';
 import RingLoader from 'react-spinners/RingLoader';
@@ -255,6 +251,12 @@ const Deposit = () => {
                             text: "Await deposit approval!",
                             icon: "info",
                         });
+                    }else{
+                        swal({
+                            title: "Error",
+                            text: response.data[1]?.data,
+                            icon: "error",
+                        });
                     }
                 } catch (error) {
                     // Close loading dialog
@@ -328,6 +330,12 @@ const Deposit = () => {
                             title: "Deposit Pending",
                             text: "Await deposit approval!",
                             icon: "info",
+                        });
+                    }else{
+                        swal({
+                            title: "Error",
+                            text: response.data[1]?.data,
+                            icon: "error",
                         });
                     }
                 } catch (error) {

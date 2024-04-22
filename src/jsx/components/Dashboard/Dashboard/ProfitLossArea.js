@@ -1,6 +1,5 @@
 import React, {useState} from "react";
 import ReactApexChart from "react-apexcharts";
-import { Link } from "react-router-dom";
 
 function ProfitLossArea () {  
 	const [state, setState] = useState({

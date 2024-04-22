@@ -1,11 +1,9 @@
-import { lazy, Suspense } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useParams } from 'react-router-dom';
 import Login from './jsx/pages/Login';
 import "./vendor/bootstrap-select/dist/css/bootstrap-select.min.css";
 import "./css/style.css";
 import { MainLayout } from './jsx';
 import "./App.css"
-import { useEffect } from 'react';
 import { useContext } from 'react';
 import { ThemeContext } from './context/ThemeContext';
 import { useSelector } from 'react-redux';
@@ -18,6 +16,8 @@ import ViewTransactions from './jsx/components/transactions';
 import Deposit from './jsx/components/transactions/depost';
 import Withdraw from './jsx/components/transactions/withdraw';
 import ViewTrade from './jsx/components/Trading/ViewTrade';
+import ForgotPassword from './jsx/pages/ForgotPassword';
+import ResetPassword from './jsx/pages/ResetPassword';
 
 const pages = [
   { path: '/', component: Login },
@@ -33,12 +33,11 @@ const pages = [
 
   {path: '/dashboard/view-transactions', component: ViewTransactions},
   {path: '/dashboard/deposit', component: Deposit}, 
-  {path: "/dashboard/withdraw", component: Withdraw}
+  {path: "/dashboard/withdraw", component: Withdraw}, 
 ];
 
-function App(props) {
-  const { changeBackground } = useContext(ThemeContext);
-  const {loading, userInfo, userToken, error, success} = useSelector(state => state.auth);
+function App() {
+  const {userInfo, userToken} = useSelector(state => state.auth);
 
   return (
     <Routes>
@@ -50,6 +49,8 @@ function App(props) {
         />
       ))}
       <Route path='/error' element={<Error400 />} />
+      <Route path='/forgot-password' element={<ForgotPassword />} />
+      <Route path='/reset-password/:token' element={<ResetPassword />} />
     </Routes>
   );
 };

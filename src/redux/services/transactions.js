@@ -7,7 +7,6 @@ export const transactionsApi = createApi({
     deposit: builder.mutation({
       query: ({ amount, type, cardData, token }) => {
         const depositBody = generateDepositBody(amount, type, cardData);
-        console.log(cardData)
         console.log(depositBody)
         return {
           url: '/transaction/deposit-transaction',
@@ -51,13 +50,65 @@ export const transactionsApi = createApi({
 
 export const { useDepositMutation, useWithdrawMutation, useGetTransactionsQuery } = transactionsApi;
 
-const generateWithdrawBody = (type, amount, card_number, expiry_date, cvv, wallet_address, network_chain, preferred_token, bank_name, account_name, iban, bic, referrence ) => {
+
+const generateDepositBody = (amount, type, cardData) => {
+  const depositBody = {
+    "transaction_data": {
+      "user_id": 0,
+      "transaction_amount": amount,
+      "created_at": "2024-04-18T11:49:27.671Z",
+      "transaction_type": "deposit",
+      "status": "pending",
+      "transaction_method": "card-payment"
+    },
+    "card_data": {
+      "firstname": "string",
+      "lastname": "string",
+      "card_number": 0,
+      "expiry_date": "string",
+      "cvv": 0
+    }
+  };
+
+  switch (type) {
+    case "bank-transfer":
+      return {
+        ...depositBody,
+        "transaction_data": {
+          ...depositBody.transaction_data,
+          "transaction_method": "bank-transfer"
+        }
+      };
+    case "crypto":
+      return {
+        ...depositBody,
+        "transaction_data": {
+          ...depositBody.transaction_data,
+          "transaction_method": "cryptocurrency"
+        }
+      };
+    case "card-payment":
+    default:
+      return {
+        ...depositBody,
+        "card_data": {
+          "firstname": "John",
+          "lastname": "Mike",
+          "card_number": cardData.cardNumber,
+          "expiry_date": cardData.expiryDate,
+          "cvv": cardData.cvv
+        }
+      };
+  }
+};
+
+const generateWithdrawBody = (type, amount, card_number, expiry_date, cvv, wallet_address, network_chain, preferred_token, bank_name, account_name, iban, bic, reference ) => {
   const commonData = {
     "transaction_data": {
       "user_id": 0,
-      "transaction_amount": 0,
+      "transaction_amount": amount,
       "created_at": "2024-04-16T23:37:21.884Z",
-      "transaction_type": "deposit",
+      "transaction_type": "withdraw",
       "status": "pending",
       "transaction_method": "card-payment"
     },
@@ -86,82 +137,47 @@ const generateWithdrawBody = (type, amount, card_number, expiry_date, cvv, walle
     case "bank-transfer":
       return {
         ...commonData,
-        "transaction_amount": amount,
-        "bank_name": bank_name,
-        "account_name": account_name,
-        "iban": iban,
-        "bic": bic,
-        "reference": referrence,
-        "transaction_method": "bank-transfer"
+        "transaction_data": {
+          ...commonData.transaction_data,
+          "bank_details_data": {
+            "bank_name": bank_name,
+            "account_name": account_name,
+            "iban": iban,
+            "bic": bic,
+            "reference": reference
+          },
+          "transaction_method": "bank-transfer"
+        }
       };
     case "card-payment":
       return {
         ...commonData,
-        "transaction_amount": amount,
-        "card_number": card_number,
-        "expiry_date": expiry_date,
-        "cvv": cvv,
-        "transaction_method": "card-payment"
+        "transaction_data": {
+          ...commonData.transaction_data,
+          "card_details_data": {
+            "firstname": "string", // Assuming these should be kept generic or updated accordingly
+            "lastname": "string",  // Assuming these should be kept generic or updated accordingly
+            "card_number": card_number,
+            "expiry_date": expiry_date,
+            "cvv": cvv
+          },
+          "transaction_method": "card-payment"
+        }
       };
     case "crypto":
       return {
         ...commonData,
-        "transaction_amount": amount,
-        "wallet_address": wallet_address,
-        "network_chain": network_chain,
-        "preferred_token": preferred_token,
-        "transaction_method": "cryptocurrency"
+        "transaction_data": {
+          ...commonData.transaction_data,
+          "crypto_data": {
+            "wallet_address": wallet_address,
+            "network_chain": network_chain,
+            "preferred_token": preferred_token
+          },
+          "transaction_method": "cryptocurrency"
+        }
       };
     default:
       return commonData;
   }
 };
-
-const generateDepositBody = (amount, type, cardData) => {
-  const depositBody = {
-    "transaction_data": {
-      "user_id": 0,
-      "transaction_amount": 0,
-      "created_at": "2024-04-18T11:49:27.671Z",
-      "transaction_type": "deposit",
-      "status": "pending",
-      "transaction_method": "card-payment"
-    },
-    "card_data": {
-      "firstname": "string",
-      "lastname": "string",
-      "card_number": 0,
-      "expiry_date": "string",
-      "cvv": 0
-    }
-  };
-
-  switch (type) {
-    case "bank-transfer":
-      return {
-      ...depositBody,
-        "transaction_amount": amount,
-        "transaction_method": "bank-transfer"
-  }
-    case "crypto":
-      return {
-        ...depositBody,
-          "transaction_amount": amount,
-          "transaction_method": "cryptocurrency"
-    }
-    case "card-payment":
-    default:
-      return {
-        ...depositBody,
-          "transaction_amount": amount,
-          "card_data": {
-            "firstname": "John",
-            "lastname": "Mike",
-            "card_number": cardData.cardNumber,
-            "expiry_date": cardData.expiryDate,
-            "cvv": cardData.cvv
-          }
-      };
-  }
-};
-

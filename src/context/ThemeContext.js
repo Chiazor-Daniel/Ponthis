@@ -1,4 +1,4 @@
-import React, { createContext, useEffect, useState, useReducer } from "react";
+import React, { createContext, useEffect, useReducer } from "react";
 import {dezThemeSet} from './ThemeDemo';
 
 export const ThemeContext = createContext();

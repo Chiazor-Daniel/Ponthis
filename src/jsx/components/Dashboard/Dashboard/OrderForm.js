@@ -1,7 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import ReactSlider from 'react-slider';
-import Nouislider from "nouislider-react";
 
 const OrderForm = ({ tradePair }) => {
     // Extracting the first and second currencies from the trade pair
