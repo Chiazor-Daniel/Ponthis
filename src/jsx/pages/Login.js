@@ -12,10 +12,10 @@ import logo from '../../images/logo/logo-full.png'
 function Login(props) {
 	const [load, setLoad] = useState(false)
 	const navigate = useNavigate();
-	const [email, setEmail] = useState('john@example.com');
+	const [email, setEmail] = useState('danieltari873@gmail.com');
 	let errorsObj = { email: '', password: '' };
 	const [errors, setErrors] = useState(errorsObj);
-	const [password, setPassword] = useState('default123');
+	const [password, setPassword] = useState('string');
 	const dispatch = useDispatch();
 
 	const loginUser = (email, password) => {
@@ -182,6 +182,9 @@ function Login(props) {
 													<div className='row' style={{ padding: "10px" }}>
 														<Link to="/forgot-password">
 															Forgot password ?
+														</Link>
+														<Link to="/verify-email/irueorueorieojrofojf9988">
+															v ?
 														</Link>
 													</div>
 												</div>

@@ -1,11 +1,9 @@
-import { Route, Routes, useParams } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import Login from './jsx/pages/Login';
 import "./vendor/bootstrap-select/dist/css/bootstrap-select.min.css";
 import "./css/style.css";
 import { MainLayout } from './jsx';
 import "./App.css"
-import { useContext } from 'react';
-import { ThemeContext } from './context/ThemeContext';
 import { useSelector } from 'react-redux';
 import Error400 from './jsx/pages/Error400';
 import Register from './jsx/pages/Registration';
@@ -18,6 +16,7 @@ import Withdraw from './jsx/components/transactions/withdraw';
 import ViewTrade from './jsx/components/Trading/ViewTrade';
 import ForgotPassword from './jsx/pages/ForgotPassword';
 import ResetPassword from './jsx/pages/ResetPassword';
+import VerifyAccount from './jsx/pages/verify-account';
 
 const pages = [
   { path: '/', component: Login },
@@ -27,17 +26,16 @@ const pages = [
   { path: '/dashboard/profile', component: AppProfile },
   { path: '/dashboard/profile/edit', component: AppProfile },
   // {path: "/dashboard/edit-profile", component: EditProfile}
-  {path: '/dashboard/trading', component: IntradayTrading}, 
-  {path: '/dashboard/trading/view', component: ViewTrade}, 
-  {path: '/dashboard/trading/open', component: IntradayTrading}, 
-
-  {path: '/dashboard/view-transactions', component: ViewTransactions},
-  {path: '/dashboard/deposit', component: Deposit}, 
-  {path: "/dashboard/withdraw", component: Withdraw}, 
+  { path: '/dashboard/trading', component: IntradayTrading },
+  { path: '/dashboard/trading/view', component: ViewTrade },
+  { path: '/dashboard/trading/open', component: IntradayTrading },
+  { path: '/dashboard/view-transactions', component: ViewTransactions },
+  { path: '/dashboard/deposit', component: Deposit },
+  { path: "/dashboard/withdraw", component: Withdraw },
 ];
 
 function App() {
-  const {userInfo, userToken} = useSelector(state => state.auth);
+  const { userInfo, userToken } = useSelector(state => state.auth);
 
   return (
     <Routes>
@@ -50,7 +48,10 @@ function App() {
       ))}
       <Route path='/error' element={<Error400 />} />
       <Route path='/forgot-password' element={<ForgotPassword />} />
-      <Route path='/reset-password/:token' element={<ResetPassword />} />
+      <Route path='/reset-password/*' element={<ResetPassword />} />
+
+      <Route path='/verify-email/:token' element={<VerifyAccount />} />
+      <Route path='/dashboard/verify-email/*' element={<VerifyAccount />} />
     </Routes>
   );
 };

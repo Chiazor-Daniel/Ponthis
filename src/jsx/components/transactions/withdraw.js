@@ -4,20 +4,15 @@ import { HiBanknotes } from 'react-icons/hi2';
 import { FaCoins } from 'react-icons/fa';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
-import { FaCopy } from 'react-icons/fa';
-import { Button } from 'react-bootstrap';
+
 import { SiMastercard } from "react-icons/si";
-import { RiVisaFill } from "react-icons/ri";
 import { MdError } from "react-icons/md";
 import { FaCcVisa } from "react-icons/fa";
 import { FaPaste } from "react-icons/fa6";
 import { MdReportGmailerrorred } from "react-icons/md";
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Popover from 'react-bootstrap/Popover';
 import Tooltip from 'react-bootstrap/Tooltip';
-import ExampleComponent from '../sweetAlert';
 import { useEffect } from 'react';
-import { MdErrorOutline } from "react-icons/md";
 import { MdRunningWithErrors } from "react-icons/md";
 import swal from 'sweetalert';
 import { useSelector } from 'react-redux';
@@ -32,7 +27,8 @@ const buttons = [
     { icon: <HiBanknotes size={25} />, text: 'Card payment' }
 ];
 
-const Withdraw = () => {
+
+const Withdraw = ({fetchDataAndDispatch}) => {
     const [activeButton, setActiveButton] = useState(1);
     const [cardFormData, setcardFormData] = useState({
         card: {
@@ -120,6 +116,7 @@ const Withdraw = () => {
                 console.log("Withdrawal status:", status);
 
                 if (status === "success") {
+                    fetchDataAndDispatch()
                     swal({
                         title: "Withdrawal Successful",
                         text: `Your withdrawal has been successfully submitted!`,
@@ -247,6 +244,7 @@ const Withdraw = () => {
             console.log("card", cardFormData);
 
             if (status === "success") {
+                fetchDataAndDispatch()
                 // Delay closing the loading spinner for 3 seconds
                 setTimeout(() => {
                     // Close loading spinner
@@ -342,6 +340,7 @@ const Withdraw = () => {
                     console.log("Withdrawal status:", status);
 
                     if (status === "success") {
+                        fetchDataAndDispatch()
                         swal({
                             title: "Withdrawal Submitted",
                             text: "Your withdrawal has been successfully submitted!",

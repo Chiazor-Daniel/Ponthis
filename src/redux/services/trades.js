@@ -15,7 +15,27 @@ export const tradeDetailsApi = createApi({
         }
       }),
     }),
+    getAllAssets: builder.query({
+      query: (token) => ({
+        url: '/user/trader/get-assets',
+        headers: {
+          'Content-Type': 'application/json',
+          "x-token": token
+        }
+      }),
+    }),
+    openTrade: builder.mutation({
+      query: ({ token, data }) => ({
+        url: '/user/trader/open-trade/',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          "x-token": token
+        },
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const { useGetAllTradesQuery } = tradeDetailsApi;
+export const { useGetAllTradesQuery, useGetAllAssetsQuery, useOpenTradeMutation } = tradeDetailsApi;

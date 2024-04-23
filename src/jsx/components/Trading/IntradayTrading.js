@@ -1,31 +1,141 @@
-// eslint-disable-next-line
-import React from 'react';
+import React, { useState } from 'react';
 import { Tab, Nav } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { Form } from 'react-bootstrap';
 import OrderForm from '../Dashboard/Dashboard/OrderForm';
-import { LtcIcon, BtcIcon, XtzIcon, EthIcon } from '../Dashboard/SvgIcon';
 import { MyChart } from '../myChart';
-import robo from "../../../images/robot.png"
 import ToggleTrade from '../toggleTrade';
-const IntradayTrading = () => {
-    const tradePair = "NEOBTC"
-    const marketBlog = [
-        { icon: LtcIcon, classBg: 'bg-success', Name: 'LTC', },
-        { icon: BtcIcon, classBg: 'bg-warning', Name: 'BTC', },
-        { icon: XtzIcon, classBg: 'bg-primary', Name: 'XTZ', },
-        { icon: EthIcon, classBg: 'bg-pink', Name: 'ETH', },
-        { icon: LtcIcon, classBg: 'bg-success', Name: 'LTC', },
-        { icon: BtcIcon, classBg: 'bg-warning', Name: 'BTC', },
-        { icon: XtzIcon, classBg: 'bg-primary', Name: 'XTZ', },
-        { icon: EthIcon, classBg: 'bg-pink', Name: 'ETH', },
-        { icon: XtzIcon, classBg: 'bg-primary', Name: 'XTZ', },
-        { icon: XtzIcon, classBg: 'bg-primary', Name: 'XTZ', },
-    ];
+import { useSelector } from 'react-redux';
+import { useGetAllAssetsQuery } from '../../../redux/services/trades';
+import { RiTokenSwapFill } from "react-icons/ri";
+import ReactDOMServer from 'react-dom/server';
+import { useOpenTradeMutation } from '../../../redux/services/trades';
+import { RingLoader } from 'react-spinners';
+import swal from 'sweetalert';
+const IntradayTrading = ({fetchDataAndDispatch}) => {
+    const { userToken } = useSelector(state => state.auth);
+    const { data: allAssets = [], error, isLoading } = useGetAllAssetsQuery(userToken);
+    const [tradePair, setTradePair] = useState("NEOBTC"); // Initialize tradePair state
+    const [orderType, setOrderType] = useState("market");
+    const [activeTab, setActiveTab] = useState("buy");
+    const [openTradeMutation] = useOpenTradeMutation();
+
+    // Function to generate random color
+    const getRandomColor = () => {
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    };
+
+    // Function to handle click event and set tradePair
+    const handleClick = (pair) => {
+        setTradePair(pair);
+    };
+    const handleTabClick = (tab) => {
+        setActiveTab(tab);
+    };
+    const handleOrderTypeClick = (type) => {
+        setOrderType(type);
+    };
+    const [price, setPrice] = useState('');
+    const [amount, setAmount] = useState('');
+    const [total, setTotal] = useState('');
+
+    const handlePriceChange = (event) => {
+        setPrice(event.target.value);
+    };
+
+    const handleAmountChange = (event) => {
+        setAmount(event.target.value);
+    };
+
+    const handleTotalChange = (event) => {
+        setTotal(event.target.value);
+    };
+    const transactionProcessing = () => {
+        const loadingElement = ReactDOMServer.renderToString(
+            <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
+                <RingLoader color="#36d7b7" size={100} />
+                <p>Processing Trade...</p>
+            </div>
+        );
+    
+        return swal({
+            title: '',
+            content: {
+                element: 'div',
+                attributes: {
+                    innerHTML: loadingElement,
+                },
+            },
+            buttons: false,
+            closeOnClickOutside: false,
+            closeOnEsc: false,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+        });
+    };
+    
+    const handleTradeOrder = (e) => {
+        e.preventDefault();
+        // Display loading spinner
+        const loadingToast = transactionProcessing();
+    
+        const tradeData = {
+            asset_pair_type: tradePair,
+            amount: parseInt(amount),
+            trade_type: orderType,
+            created_by: "self",
+            trade_transaction_type: activeTab === 'buy' ? 'buy' : 'sell'
+        };
+    
+        openTradeMutation({ token: userToken, data: tradeData })
+            .unwrap()
+            .then((response) => {
+                console.log("Trade response:", response);
+                // Hide loading spinner on success
+                swal.close();
+                // Check if the response status is success
+                if (response && response[0] && response[0].status === "success") {
+                    // Show success modal
+                    fetchDataAndDispatch()
+                    swal({
+                        title: "Trade Opened!",
+                        text: "Trade opened successfully.",
+                        icon: "success",
+                    });
+                    // Add any success handling code here
+                } else {
+                    // Show error modal if status is not success
+                    swal({
+                        title: "Error!",
+                        text: "Something went wrong. Please try again later.",
+                        icon: "error",
+                    });
+                }
+            })
+            .catch((error) => {
+                console.error("Error opening trade:", error);
+                // Hide loading spinner on error
+                swal.close();
+                // Show error swal for insufficient balance
+                swal({
+                    title: "Error!",
+                    text: "Insufficient Balance. Please deposit funds to your account.",
+                    icon: "error",
+                });
+                // Add any error handling code here
+            });
+    };
+    
+
     return (
         <>
-          <div className='' style={{display: "flex", justifyContent: "flex-end", marginBottom: "20px"}}>
-                <ToggleTrade autoTrader={true} handleAutoTrader={()=>alert("Enabled auto trading")}/>
+            <div className='' style={{ display: "flex", justifyContent: "flex-end", marginBottom: "20px" }}>
+                <ToggleTrade />
             </div>
             <div className="row">
                 <div className="col-xl-8">
@@ -47,17 +157,17 @@ const IntradayTrading = () => {
                                     <div className="">
                                         <div className="buy-sell">
                                             <Nav className="nav nav-tabs" eventKey="nav-tab2" role="tablist" style={{ padding: 12 }}>
-                                                <Nav.Link as="button" className="nav-link" eventKey="Navbuy" type="button">buy</Nav.Link>
-                                                <Nav.Link as="button" className="nav-link" eventKey="Navsell" type="button">sell</Nav.Link>
+                                                <Nav.Link as="button" className={`nav-link ${activeTab === 'buy' ? 'active' : ''}`} onClick={() => handleTabClick('buy')} eventKey="Navbuy" type="button">Buy</Nav.Link>
+                                                <Nav.Link as="button" className={`nav-link ${activeTab === 'sell' ? 'active' : ''}`} onClick={() => handleTabClick('sell')} eventKey="Navsell" type="button">Sell</Nav.Link>
                                             </Nav>
                                         </div>
-                                        <Tab.Content className='col-11' style={{ margin: "auto" }}>
+                                        <Tab.Content className='col-11' style={{ margin: "auto", padding: "10px" }}>
                                             <Tab.Pane eventKey="Navbuy" >
                                                 <Tab.Container defaultActiveKey="Navbuymarket">
                                                     <div className="limit-sell">
                                                         <Nav className="nav nav-tabs" id="nav-tab3" role="tablist">
-                                                            <Nav.Link as="button" eventKey="Navbuymarket" type="button"  >market order</Nav.Link>
-                                                            <Nav.Link as="button" eventKey="Navbuylimit" type="button" >limit order</Nav.Link>
+                                                            <Nav.Link as="button" eventKey="Navsellmarket" className={`nav-link ${orderType === 'market' ? 'active' : ''}`} onClick={() => handleOrderTypeClick('market')}>Market Order</Nav.Link>
+                                                            <Nav.Link as="button" eventKey="Navselllimit" className={`nav-link ${orderType === 'limit' ? 'active' : ''}`} onClick={() => handleOrderTypeClick('limit')}>Limit Order</Nav.Link>
                                                         </Nav>
                                                     </div>
                                                     <Tab.Content id="nav-tabContent1">
@@ -65,7 +175,13 @@ const IntradayTrading = () => {
                                                         <Tab.Pane eventKey="Navbuylimit"></Tab.Pane>
                                                     </Tab.Content>
                                                     <div className="sell-element">
-                                                        <OrderForm tradePair={tradePair} />
+                                                        <OrderForm
+                                                            tradePair={tradePair}
+                                                            onPriceChange={handlePriceChange}
+                                                            onSubmit={handleTradeOrder}
+                                                            onAmountChange={handleAmountChange}
+                                                            onTotalChange={handleTotalChange}
+                                                        />
                                                     </div>
                                                 </Tab.Container>
                                             </Tab.Pane>
@@ -82,7 +198,14 @@ const IntradayTrading = () => {
                                                         <Tab.Pane id="Navselllimit" ></Tab.Pane>
                                                     </Tab.Content>
                                                     <div className="sell-element">
-                                                        <OrderForm tradePair={tradePair} />
+                                                        <OrderForm
+                                                            tradePair={tradePair}
+                                                            orderType={activeTab}
+                                                            onPriceChange={handlePriceChange}
+                                                            onAmountChange={handleAmountChange}
+                                                            onSubmit={handleTradeOrder}
+                                                            onTotalChange={handleTotalChange}
+                                                        />
                                                     </div>
                                                 </Tab.Container>
                                             </Tab.Pane>
@@ -103,37 +226,27 @@ const IntradayTrading = () => {
                                 <Form.Control type="email" placeholder="Search pair" className="form-control-sm col-6" />
                                 <Form.Select style={{ marginTop: "10px" }}>
                                     <option>Crypto</option>
-                                    <option>Forecx</option>
+                                    <option>Forex</option>
                                 </Form.Select>
                             </div>
-                            <div className="row">
+                            <div className="row" style={{ flex: 1, overflow: 'auto', maxHeight: '100%' }}>
                                 <div className="col-12">
                                     <div className="">
                                         <div className="card-body pt-0 px-0">
-                                            {marketBlog.map((data, ind) => (
-                                                <div className="previews-info-list" key={ind} style={{position:"relative"}}>
-                                                
+                                            {allAssets.map((asset, index) => (
+                                                <div className="previews-info-list" key={index} style={{ position: "relative", cursor: "pointer" }} onClick={() => handleClick(asset.asset_pair)}> {/* Add onClick handler */}
                                                     <div className="pre-icon">
-                                                        <span className={`icon-box icon-box-sm ${data.classBg}`}>
-                                                            {data.icon}
-                                                        </span>
-                                                        <div className="ms-2">
-                                                            <h6>{data.Name}/Year</h6>
-                                                            <span>March</span>
+                                                        <div className="ms-2" style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                                                            <RiTokenSwapFill size={30} color={getRandomColor()} />
+                                                            <h6>{asset.asset_pair}</h6>
                                                         </div>
-                                                    </div>
-                                                    <div className="count">
-                                                        <h6>120.45</h6>
-                                                        <span className={ind % 2 == 0 ? "text-success" : ""}>1,24%</span>
                                                     </div>
                                                 </div>
                                             ))}
-
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>

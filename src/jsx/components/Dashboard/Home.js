@@ -31,11 +31,12 @@ const Home = ({theme}) => {
 	const dispatch = useDispatch();
 	const [tradePair, setTradePair] = useState("NEOBTC")
 	const [showChart, setShowChart] = useState(true);
-	const { userToken } = useSelector(state => state.auth);
+	const { userToken, userInfo } = useSelector(state => state.auth);
 	const {user_id} = useSelector(state => state.userAccount)
 	const { data, isLoadingError } = useGetUserAccountQuery(userToken);
 	
-	useEffect(() => {		
+	useEffect(() => {
+		console.log(userInfo)		
 		const fetchData = () => {
 		  if (data && !isLoadingError) { // Check if data exists
 			const { account_type, referral_balance, id, main_balance, bonus_balance } = data;
@@ -45,7 +46,7 @@ const Home = ({theme}) => {
 	  
 		fetchData();
 	  
-	  }, [data,dispatch, isLoadingError, user_id]);
+	  }, [data,dispatch, isLoadingError, user_id, userInfo]);
 	if(!isLoadingError)  
 	return (
 		<>

@@ -1,32 +1,47 @@
 import React, { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import bg6 from '../../images/background/bg6.jpg';
-import logo from "../../images/logo/logo-full.png";
-import { BiMailSend } from "react-icons/bi";
+import axios from "axios";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const ResetPassword = ({ history }) => {
+const ResetPassword = () => {
   const navigate = useNavigate();
-  const { token } = useParams(); // Grab the token from URL parameters
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const token = searchParams.get('token');
+  const [newPassword, setNewPassword] = useState('love');
+  const [confirmPassword, setConfirmPassword] = useState('love');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle password reset logic here
     if (newPassword !== confirmPassword) {
       alert("Passwords do not match");
       return;
     }
-    // You can make an API call here to reset the password using the token and new password
-    console.log("Token:", token);
-    console.log("New Password:", newPassword);
-    console.log("Confirm Password:", confirmPassword);
-    // Redirect to login page after password reset
-    navigate("/"); // Navigate to login page
+    try {
+      // Make an API call to reset the password
+      const response = await axios.put(`https://trader-app.onrender.com/user/verify-and-reset/reset-password/?email_token=${token}&password=${newPassword}`, {
+        token: token,
+        newPassword: newPassword
+      });
+      console.log(response)
+      // Check if the password was reset successfully
+      if (response.data.status === "success") {
+        toast.success('Password updated successfully', {
+          onClose: () => navigate("/")
+        });
+      }
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      alert("Failed to reset password. Please try again.");
+    }
   };
 
   return (
     <div className="authincation h-100 p-meddle">
+      <ToastContainer />
       <div className="bg-img-fix overflow-hidden col-12" style={{ background: '#fff url(' + bg6 + ')', height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
         <div className="col-lg-6 bg-white rounded" style={{padding: "20px"}}>
           <h4 className="text-center mb-4">Reset Password</h4>

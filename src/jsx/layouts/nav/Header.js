@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Dropdown } from "react-bootstrap";
-import PerfectScrollbar from "react-perfect-scrollbar";
 import { Link } from "react-router-dom";
 import LogoutPage from './Logout';
 import { ThemeContext } from "../../../context/ThemeContext";
 import { useContext } from "react";
-import United from "../../../images/United.png";
 import avatar from "../../../images/avatar/1.jpg";
-import profile from "../../../images/profile/pic1.jpg";
-import ReactThemeToggleButton from "../../components/toggleTheme/index.";
 import ToggleTheme from "../../components/toggleTheme/index.";
 import { useSelector } from "react-redux";
 import { FaCircle } from "react-icons/fa6";
-
+import Avatar from "react-avatar";
 const NotificationBlog = ({ classChange }) => {
 	return (
 		<>
@@ -106,7 +102,7 @@ const Header = ({ onNote, onThemeChange }) => {
 						<div className="position-absolute" style={{ top: -8, right: 0 }}>
 							<FaCircle color="#74E291" size={15} />
 						</div>
-						<img src={"https://i.guim.co.uk/img/media/70a2fd5f5acddd683b892245209974fa4c768498/324_0_1429_858/master/1429.jpg?width=1200&height=1200&quality=85&auto=format&fit=crop&s=e2b8991e17e7bd966a29f5c706fe2552"} width={40} alt="" />
+						<Avatar name={userInfo.first_name + " " + userInfo.last_name} size={50} round />
 					</Dropdown.Toggle>
 					<Dropdown.Menu align="right" className="dropdown-menu dropdown-menu-end">
 						<Link to="/dashboard/profile" className="dropdown-item ai-icon">

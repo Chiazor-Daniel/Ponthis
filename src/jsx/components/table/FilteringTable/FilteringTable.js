@@ -1,5 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
-import PageTitle from "../../../layouts/PageTitle";
+import React, { useMemo } from 'react';
 import { useTable, useGlobalFilter, useFilters, usePagination } from 'react-table';
 import { GlobalFilter } from './GlobalFilter';
 import './filtering.css';

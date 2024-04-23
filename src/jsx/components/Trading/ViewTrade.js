@@ -24,7 +24,7 @@ const ViewTrade = () => {
                                 </Nav.Item>
                             </Nav>
                            
-                            <ToggleTrade autoTrader={autoTrader} handleAutoTrader={handleAutoTrader}/>
+                            <ToggleTrade />
                         
                         </div>
                         <div className="card-body pt-0">

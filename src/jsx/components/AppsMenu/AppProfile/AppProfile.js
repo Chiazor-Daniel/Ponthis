@@ -2,21 +2,15 @@ import React, { Fragment, useEffect, useState } from "react";
 import { Tab, Nav } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useGetProfileQuery } from "../../../../redux/services/profile";
-import { unwrapResult } from '@reduxjs/toolkit';
 import { useUpdateProfileMutation } from "../../../../redux/services/profile";
 import { useChangePasswordMutation } from "../../../../redux/services/profile";
 import { updateState } from "../../../../redux/features/auth/authSlice";
 import Spinner from 'react-bootstrap/Spinner';
-import MyToast from "../../myToast";
 import { toast, ToastContainer } from "react-toastify";
 import { useDispatch } from "react-redux";
-import { clearState } from "../../../../redux/features/auth/authSlice";
-import { logout } from "../../../../redux/features/auth/authSlice";
 import { FaMedal } from "react-icons/fa6";
 import Avatar from 'react-avatar';
 import { FaEdit } from "react-icons/fa";
-import { useParams } from "react-router-dom";
 
 const AppProfile = () => {
     const { userInfo, userToken } = useSelector(state => state.auth);

@@ -23,7 +23,7 @@ const buttons = [
     { icon: <HiBanknotes size={25} />, text: 'Card payment' }
 ];
 
-const Deposit = () => {
+const Deposit = ({fetchDataAndDispatch }) => {
     const [activeButton, setActiveButton] = useState(1);
     const { userToken } = useSelector(state => state.auth);
     const { data, isLoading, error, refetch } = useGetPaymentDetailsQuery(userToken)
@@ -46,6 +46,7 @@ const Deposit = () => {
     const [paymentType, setPaymentType] = useState('');
     const [copied, setCopied] = useState(false)
     useEffect(() => {
+        console.log(cryptoDetails)
         if (!data && !isLoading && !error) {
             refetch();
         } else if (data) {
@@ -168,6 +169,7 @@ const Deposit = () => {
 
                     if (status === "success") {
                         // Show success message
+                        fetchDataAndDispatch()
                         swal({
                             title: "Deposit Pending",
                             text: "Await deposit approval!",
@@ -245,6 +247,7 @@ const Deposit = () => {
                     console.log("Deposit status:", status);
 
                     if (status === "success") {
+                        fetchDataAndDispatch()
                         // Show success message
                         swal({
                             title: "Deposit Pending",
@@ -325,6 +328,8 @@ const Deposit = () => {
                     console.log("Deposit status:", status);
 
                     if (status === "success") {
+                        fetchDataAndDispatch()
+
                         // Show success message
                         swal({
                             title: "Deposit Pending",
@@ -383,7 +388,7 @@ const Deposit = () => {
                 <h1>Deposit via <span>{buttons[activeButton]?.text}</span></h1>
                 {
                     activeButton === 1 ? (
-                        !isLoading && cryptoDetails ? (
+                        !isLoading && cryptoDetails.length > 0 ? (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                 <div>
                                     <p>Network Chain</p>

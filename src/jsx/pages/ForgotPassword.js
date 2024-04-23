@@ -3,10 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import bg6 from '../../images/background/bg6.jpg';
 import logo from "../../images/logo/logo-full.png";
 import { BiMailSend } from "react-icons/bi";
+import { useSelector } from "react-redux";
+import axios from "axios";
 
 const ForgotPassword = ({ history }) => {
   const navigate = useNavigate();
   const [sentEmail, setSentEmail] = useState(false);
+  const [email, setEmail] = useState("danieltari873@gmail.com")
+  const { userToken } = useSelector(state => state.auth);
   const [verificationCode, setVerificationCode] = useState(''); // Change to a single string
 
   const handleChange = (index, value) => {
@@ -14,12 +18,26 @@ const ForgotPassword = ({ history }) => {
     setVerificationCode(updatedCode);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Verification Code:", verificationCode);
-    // You can handle the verification code here
-    navigate("/");
+    try {
+      // Send the email using Axios
+      const response = await axios.post(`https://trader-app.onrender.com/user/verify-and-reset/send-reset-password/?email=${email}`, {
+        email: email // Assuming you have the email value here
+      });
+      if (response.status === 200) {
+        setSentEmail(true); // Update state to indicate email sent
+      } else {
+        throw new Error("Failed to send email");
+      }
+    } catch (error) {
+      console.error("Error sending email:", error);
+      // Handle error appropriately (e.g., display an error message to the user)
+      // For example, you could use a state to display an error message to the user
+      // setError(true);
+    }
   };
+
 
   return (
     <div className="authincation h-100 p-meddle">
@@ -40,18 +58,19 @@ const ForgotPassword = ({ history }) => {
                   </label>
                   <input
                     type="email"
+                    value={email}
                     className="form-control mb-4"
-                    defaultValue="hello@example.com"
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
                 <div className="text-center">
                   <button
                     type="submit"
-                    onClick={() => setSentEmail(true)}
                     className="btn btn-primary btn-block"
                   >
                     SUBMIT
                   </button>
+
                   <div style={{ padding: "8px" }}>
                     <Link to="/" >Go to Login</Link>
                   </div>
