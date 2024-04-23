@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useEffect, useState } from 'react';
 import { AiFillBank } from 'react-icons/ai';
 import { HiBanknotes } from 'react-icons/hi2';

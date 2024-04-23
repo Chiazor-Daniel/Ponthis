@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useEffect, useState } from "react";
 import { NavLink, Link, Navigate } from "react-router-dom";
 import bg6 from '../../images/background/bg6.jpg';

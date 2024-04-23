@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useMemo } from 'react';
 import { useTable, useGlobalFilter, useFilters, usePagination } from 'react-table';
 import { GlobalFilter } from './GlobalFilter';

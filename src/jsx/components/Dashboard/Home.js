@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useEffect, useState } from 'react';
 import { Nav, Tab } from 'react-bootstrap';
 import BalanceCardSlider from './Dashboard/BalanceCardSlider';

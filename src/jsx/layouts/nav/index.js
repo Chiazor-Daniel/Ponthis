@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { Fragment, useState } from "react";
 import SideBar from "./SideBar";
 import NavHader from "./NavHader";

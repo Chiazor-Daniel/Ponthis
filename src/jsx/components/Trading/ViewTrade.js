@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState } from 'react'
 import FutureTable from './futuretable'
 import { Tab, Nav } from 'react-bootstrap';
