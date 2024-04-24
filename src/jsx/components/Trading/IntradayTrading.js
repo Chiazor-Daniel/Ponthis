@@ -13,7 +13,7 @@ import ReactDOMServer from 'react-dom/server';
 import { useOpenTradeMutation } from '../../../redux/services/trades';
 import { RingLoader } from 'react-spinners';
 import swal from 'sweetalert';
-const IntradayTrading = ({fetchDataAndDispatch}) => {
+const IntradayTrading = ({ fetchDataAndDispatch }) => {
     const { userToken } = useSelector(state => state.auth);
     const { data: allAssets = [], error, isLoading } = useGetAllAssetsQuery(userToken);
     const [tradePair, setTradePair] = useState("NEOBTC"); // Initialize tradePair state
@@ -42,12 +42,14 @@ const IntradayTrading = ({fetchDataAndDispatch}) => {
         setOrderType(type);
     };
     const [price, setPrice] = useState('');
-    const [amount, setAmount] = useState('');
+    const [amount, setAmount] = useState('232');
     const [total, setTotal] = useState('');
 
     const handlePriceChange = (event) => {
         setPrice(event.target.value);
+        setAmount(event.target.value !== "" ? event.target.value - 0.04 : 0.00);
     };
+
 
     const handleAmountChange = (event) => {
         setAmount(event.target.value);
@@ -63,7 +65,7 @@ const IntradayTrading = ({fetchDataAndDispatch}) => {
                 <p>Processing Trade...</p>
             </div>
         );
-    
+
         return swal({
             title: '',
             content: {
@@ -79,20 +81,20 @@ const IntradayTrading = ({fetchDataAndDispatch}) => {
             allowEscapeKey: false,
         });
     };
-    
+
     const handleTradeOrder = (e) => {
         e.preventDefault();
         // Display loading spinner
         const loadingToast = transactionProcessing();
-    
+
         const tradeData = {
             asset_pair_type: tradePair,
-            amount: parseInt(amount),
+            amount: parseInt(price),
             trade_type: orderType,
             created_by: "self",
             trade_transaction_type: activeTab === 'buy' ? 'buy' : 'sell'
         };
-    
+
         openTradeMutation({ token: userToken, data: tradeData })
             .unwrap()
             .then((response) => {
@@ -131,7 +133,7 @@ const IntradayTrading = ({fetchDataAndDispatch}) => {
                 // Add any error handling code here
             });
     };
-    
+
 
     return (
         <>
@@ -180,6 +182,7 @@ const IntradayTrading = ({fetchDataAndDispatch}) => {
                                                             tradePair={tradePair}
                                                             onPriceChange={handlePriceChange}
                                                             onSubmit={handleTradeOrder}
+                                                            amountVal={amount}
                                                             onAmountChange={handleAmountChange}
                                                             onTotalChange={handleTotalChange}
                                                         />
@@ -217,12 +220,11 @@ const IntradayTrading = ({fetchDataAndDispatch}) => {
                         </div>
                     </div>
                 </div>
-                <div className="col-xl-4">
+                <div className="col-xl-4" style={{ height: "1200px", overflow: "hidden" }}>
                     <div className="card h-100">
                         <div className="card-header">
                             <h4 className="fs-20 text-black">Asset List</h4>
                         </div>
-                        <div className="card-body" style={{ padding: "10px" }}>
                             <div>
                                 <Form.Control type="email" placeholder="Search pair" className="form-control-sm col-6" />
                                 <Form.Select style={{ marginTop: "10px" }}>
@@ -230,27 +232,23 @@ const IntradayTrading = ({fetchDataAndDispatch}) => {
                                     <option>Forex</option>
                                 </Form.Select>
                             </div>
-                            <div className="row" style={{ flex: 1, overflow: 'auto', maxHeight: '100%' }}>
-                                <div className="col-12">
-                                    <div className="">
-                                        <div className="card-body pt-0 px-0">
-                                            {allAssets.map((asset, index) => (
-                                                <div className="previews-info-list" key={index} style={{ position: "relative", cursor: "pointer" }} onClick={() => handleClick(asset.asset_pair)}> {/* Add onClick handler */}
-                                                    <div className="pre-icon">
-                                                        <div className="ms-2" style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                                                            <RiTokenSwapFill size={30} color={getRandomColor()} />
-                                                            <h6>{asset.asset_pair}</h6>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ))}
+                        <div className="card-body" style={{ padding: "10px", maxHeight: "calc(100% - 50px)", overflow: "auto" }}>
+                            <div className="row" style={{ flex: 1 }}>
+                                {allAssets.map((asset, index) => (
+                                    <div className="previews-info-list" key={index} style={{ position: "relative", cursor: "pointer", marginBottom: "10px" }} onClick={() => handleClick(asset.asset_pair)}> {/* Add onClick handler */}
+                                        <div className="pre-icon">
+                                            <div className="ms-2" style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                                                <RiTokenSwapFill size={30} color={getRandomColor()} />
+                                                <h6>{asset.asset_pair}</h6>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                ))}
                             </div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </>
     );

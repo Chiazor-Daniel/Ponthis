@@ -2,7 +2,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-const OrderForm = ({ tradePair, onPriceChange, onAmountChange, onTotalChange,  onSubmit, orderType }) => {
+const OrderForm = ({ tradePair, onPriceChange, onAmountChange, onTotalChange,  onSubmit, orderType, amountVal }) => {
     // Extracting the first and second currencies from the trade pair
     const currency1 = tradePair.substring(0, 3);
     const currency2 = tradePair.substring(3);
@@ -22,7 +22,7 @@ const OrderForm = ({ tradePair, onPriceChange, onAmountChange, onTotalChange,  o
                 <div className="sell-blance">
                     <label className="form-label text-primary">Amount</label>
                     <div className="input-group">
-                        <input type="text" className="form-control" placeholder="Amount" onChange={onAmountChange} />
+                        <input type="text" className="form-control" placeholder="Amount" onChange={onAmountChange} value={amountVal}/>
                         <span className="input-group-text">{currency1}</span> {/* Displaying first currency */}
                     </div>
                 </div>
