@@ -10,10 +10,12 @@ import { useDispatch } from 'react-redux';
 import { useOpenTradeMutation } from '../../../redux/services/trades';
 import { MyChart } from '../myChart';
 import swal from 'sweetalert';
+import { RingLoader } from 'react-spinners';
 import ReactDOMServer from 'react-dom/server';
 import { useGetAllAssetsQuery } from '../../../redux/services/trades';
 import { setUserAccount } from '../../../redux/features/account/accountSlice';
 import { useGetUserAccountQuery } from '../../../redux/services/account';
+
 import { RiTokenSwapFill } from "react-icons/ri";
 const marketBlog = [
 	{ icon: LtcIcon, classBg: 'bg-success', Name: 'LTC', },
@@ -33,7 +35,7 @@ const pickerData = [
 	{ fillcolor: 'var(--primary)', datatitle: 'BCCBTC', price: '763' },
 ];
 
-const Home = ({ theme }) => {
+const Home = ({ theme, fetchDataAndDispatch }) => {
 	const dispatch = useDispatch();
 	const [tradePair, setTradePair] = useState("NEOBTC")
 	const [showChart, setShowChart] = useState(true);
