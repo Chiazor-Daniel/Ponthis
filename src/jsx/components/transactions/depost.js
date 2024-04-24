@@ -17,6 +17,7 @@ import ReactDOMServer from 'react-dom/server';
 import RingLoader from 'react-spinners/RingLoader';
 import swal from 'sweetalert';
 import { useDepositMutation } from '../../../redux/services/transactions';
+import { PiBankFill } from "react-icons/pi";
 
 const buttons = [
     { icon: <AiFillBank size={25} />, text: 'Bank transfer' },
@@ -368,7 +369,7 @@ const Deposit = ({fetchDataAndDispatch }) => {
         }
     };
     useEffect(() => console.log(data), [])
-    if(cryptoDetails)
+    const[withdrawBank, setWithdrawbank] = useState("")
     return (
         <div className='row p-4' style={{ display: 'flex', gap: '30px', height: 'auto' }}>
             {/* <ExampleComponent /> */}
@@ -389,7 +390,7 @@ const Deposit = ({fetchDataAndDispatch }) => {
                 <h1>Deposit via <span>{buttons[activeButton]?.text}</span></h1>
                 {
                     activeButton === 1 ? (
-                        !isLoading && cryptoDetails.length > 0 ? (
+                        !isLoading && cryptoDetails?.length > 0 ? (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                 <div>
                                     <p>Network Chain</p>
@@ -458,9 +459,12 @@ const Deposit = ({fetchDataAndDispatch }) => {
                 {activeButton === 0 ? (
                     !isLoading && cryptoDetails ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                            <div>
+                            <div className='row'>
                                 {bankDetails.map((detail, index) => (
-                                    <div key={index} style={{ fontSize: "1.2rem" }}>
+                                    <div key={index} style={{ fontSize: "1.2rem", margin: "10px", padding: "10px", cursor: "pointer" }} className='card col-5' onClick={()=>setWithdrawbank(detail.iban)}>
+                                        <div style={{position: "absolute", right: 0, top: 0}}>
+                                            <PiBankFill color='green' size={30}/>
+                                        </div>
                                         <p>Bank Name: {detail.bank_name}</p>
                                         <p>Account Name: {detail.account_name}</p>
                                         <p>IBAN: {detail.iban}</p>
@@ -470,10 +474,10 @@ const Deposit = ({fetchDataAndDispatch }) => {
                             </div>
                             <div className='row'>
                                 <div className='col-4'>
-                                    <p style={{ fontSize: "1.2rem" }}>Bank Account Number: </p>
+                                    <p style={{ fontSize: "1.2rem" }}>Bank Account IBAN: </p>
                                     <InputGroup className='mb-0' size='lg'>
                                         <InputGroup.Text style={{ cursor: 'pointer' }} ><FaCopy /></InputGroup.Text>
-                                        <Form.Control aria-label='Bank Account Number' placeholder={bankDetails[0]?.iban} readOnly />
+                                        <Form.Control aria-label='Bank Account Number' placeholder={withdrawBank} readOnly />
                                     </InputGroup>
                                 </div>
                                 <div className='col-4'>

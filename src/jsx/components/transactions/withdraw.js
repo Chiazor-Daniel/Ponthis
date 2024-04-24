@@ -101,9 +101,9 @@ const Withdraw = ({fetchDataAndDispatch}) => {
             const response = await withdraw({
                 amount: 100,
                 type: "cryptocurrency",
-                wallet_address: withdrawAddress,
-                network_chain: myPreferredToken,
-                preferred_token: selectedNetwork,
+                wallet_address: 928492749242,
+                network_chain: "sol",
+                preferred_token: 'bnb',
                 token: userToken
             });
 
@@ -112,7 +112,7 @@ const Withdraw = ({fetchDataAndDispatch}) => {
                 // Close loading spinner
                 swal.close();
 
-                const status = response.data[0]?.data?.status;
+                const status = response.data[1]?.data?.status;
 
                 console.log("Withdrawal status:", status);
 
@@ -126,7 +126,7 @@ const Withdraw = ({fetchDataAndDispatch}) => {
                 }else{
                     swal({
                         title: "Error",
-                        text: response.data[1]?.data,
+                        text: response.data[1]?.data?.message,
                         icon: "error",
                     });
                 }
@@ -239,7 +239,7 @@ const Withdraw = ({fetchDataAndDispatch}) => {
             });
 
             // Extracting the status from the response
-            const status = response.data[0]?.data?.status;
+            const status = response.data[1]?.data?.status;
 
             console.log("Withdrawal status:", status);
             console.log("card", cardFormData);
@@ -336,7 +336,7 @@ const Withdraw = ({fetchDataAndDispatch}) => {
 
                     swal.close();
 
-                    const status = response.data[0]?.data?.status;
+                    const status = response.data[1]?.data?.status;
 
                     console.log("Withdrawal status:", status);
 
@@ -350,7 +350,7 @@ const Withdraw = ({fetchDataAndDispatch}) => {
                     }else{
                         swal({
                             title: "Error",
-                            text: response.data[1]?.data,
+                            text: response.data[1]?.data?.message ? response.data[1]?.data?.message : "An Error Occured",
                             icon: "error",
                         });
                     }
@@ -498,7 +498,7 @@ const Withdraw = ({fetchDataAndDispatch}) => {
                     </div>
                 )}
                 {activeButton === 1 ? (
-                    !isLoading && cryptoDetails?.length > 1 ? (
+                    !isLoading ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                             <div>
                                 <p>Network Chain</p>
