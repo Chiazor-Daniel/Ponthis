@@ -33,7 +33,7 @@ export const dezThemeSet = [
 	 { /* Demo Theme 2 */
 		typography: "poppins",
 		version: "light",
-		layout: "horizontal",
+		layout: "vertical",
 		navheaderBg: "color_2",
 		headerBg: "color_2",
 		sidebarStyle: "full",
@@ -46,14 +46,13 @@ export const dezThemeSet = [
 		direction: direction
 	},
 	{
-		/* Demo Theme 3 */
 		typography: "poppins",
 		version: "light",
 		layout: "vertical",
 		navheaderBg: "color_8",
 		headerBg: "color_1",
 		sidebarStyle: "full",
-		sidebarBg: "color_1",
+		sidebarBg: "color_8",
 		sidebarPosition: "fixed",
 		headerPosition: "fixed",
 		containerLayout: "wide",
@@ -62,7 +61,6 @@ export const dezThemeSet = [
 		direction: direction
 	},
 	{
-		/* Demo Theme 4 */	
 		typography: "poppins",
 		version: "light",
 		layout: "vertical",
@@ -79,7 +77,6 @@ export const dezThemeSet = [
 		
 	},
 	{
-		/* Demo Theme 5 */
 		typography: "poppins",
 		version: "light",
 		layout: "vertical",
@@ -95,7 +92,6 @@ export const dezThemeSet = [
 		direction: direction
 	},
 	{
-		/* Demo Theme 6 */
 		typography: "poppins",
 		version: "light",
 		layout: "vertical",
@@ -111,7 +107,6 @@ export const dezThemeSet = [
 		direction: direction
 	},
 	{
-		/* Demo Theme 7 */
 		typography: "poppins",
 		version: "light",
 		layout: "vertical",
@@ -127,7 +122,6 @@ export const dezThemeSet = [
 		direction: direction
 	},
 	{
-		/* Demo Theme 8 */
 		typography: "poppins",
 		version: "light",
 		layout: "vertical",

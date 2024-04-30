@@ -1,15 +1,16 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { BASE_URL } from '../../api';
 
 export const transactionsApi = createApi({
   reducerPath: 'transactionsApi',
-  baseQuery: fetchBaseQuery({ baseUrl: 'https://trader-app.onrender.com/user' }),
+  baseQuery: fetchBaseQuery({ baseUrl:  BASE_URL }),
   endpoints: (builder) => ({
     deposit: builder.mutation({
       query: ({ amount, type, cardData, token }) => {
         const depositBody = generateDepositBody(amount, type, cardData);
         console.log(depositBody)
         return {
-          url: '/transaction/deposit-transaction',
+          url: '/user/transaction/deposit-transaction',
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -24,7 +25,7 @@ export const transactionsApi = createApi({
         const withdrawBody = generateWithdrawBody(type, amount, card_number, expiry_date, cvv, wallet_address, network_chain, preferred_token, bank_name, account_name, iban, bic, referrence);
         
         return {
-          url: '/transaction/withdraw-transaction',
+          url: '/user/transaction/withdraw-transaction',
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -37,7 +38,7 @@ export const transactionsApi = createApi({
     
     getTransactions: builder.query({
       query: (token) => ({
-        url: '/transaction/get-transactions/',
+        url: '/user/transaction/get-transactions/',
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

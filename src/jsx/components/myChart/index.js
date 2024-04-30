@@ -1,10 +1,9 @@
-/* eslint-disable */
 import React, { useEffect, useRef, useState } from 'react';
 
 export const MyChart = (props) => {
-  const container = useRef();
   const [pair, setPair] = useState(props.tradePair);
   const [themeMode, setThemeMode] = useState(true);
+  const [container, setContainer] = useState(null);
 
   const theme = themeMode ? "dark" : "light";
 
@@ -16,7 +15,7 @@ export const MyChart = (props) => {
       existingScript.parentNode.removeChild(existingScript);
     }
 
-    if (container.current) {
+    if (container) {
       try {
         const script = document.createElement("script");
         script.id = scriptId;
@@ -38,7 +37,7 @@ export const MyChart = (props) => {
             "calendar": false,
             "support_host": "https://www.tradingview.com"
           }`;
-        container.current.appendChild(script);
+        container.appendChild(script);
       } catch (error) {
         console.error("An error occurred while loading the TradingView script:", error);
       }
@@ -49,17 +48,15 @@ export const MyChart = (props) => {
         existingScript.parentNode.removeChild(existingScript);
       }
     };
-  }, [props.tradePair, themeMode]);
+  }, [pair, themeMode, container]);
 
-
-  // useEffect(() => {
-  //   if (props.newTheme !== null) {
-  //     setThemeMode(props.newTheme);
-  //   }
-  // }, [props.newTheme]);
+  useEffect(() => {
+    // Update the ref when the trade pair prop changes
+    setPair(props.tradePair);
+  }, [props.tradePair]);
 
   return (
-    <div className="tradingview-widget-container" ref={container} style={{ height: "100%", width: "100%" }}>
+    <div className="tradingview-widget-container" ref={setContainer} style={{ height: "100%", width: "100%" }}>
       <div className="tradingview-widget-container__widget" style={{ height: "calc(100% - 32px)", width: "100%" }}></div>
     </div>
   );

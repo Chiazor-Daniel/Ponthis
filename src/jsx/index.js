@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { useContext, useEffect, useState } from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
 import "./index.css";
@@ -10,15 +9,16 @@ import { IoIosWarning } from "react-icons/io";
 import { ThemeContext } from "../context/ThemeContext";
 import { useNavigate } from "react-router-dom";
 import swal from 'sweetalert';
-import ReactDOMServer from 'react-dom/server'; // Import ReactDOMServer
+import ReactDOMServer from 'react-dom/server';
 import { RingLoader } from "react-spinners";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { useGetUserAccountQuery } from "../redux/services/account";
 import { setUserAccount } from "../redux/features/account/accountSlice";
 import { useDispatch } from 'react-redux';
+import Swal from "sweetalert2";
 
-export function MainLayout({ children }) {
+export function MainLayout({ children, userType }) {
   const navigate = useNavigate();
   const { userToken, userInfo } = useSelector(state => state.auth);
   const { menuToggle } = useContext(ThemeContext);
@@ -49,36 +49,31 @@ export function MainLayout({ children }) {
   
     const processingString = ReactDOMServer.renderToString(processingElement);
   
-    swal({
+    Swal.fire({
       title: "Processing",
-      content: {
-        element: 'div',
-        attributes: {
-          innerHTML: processingString,
-        },
-      },
-      buttons: false,
-      closeOnClickOutside: false,
-      closeOnEsc: false,
+      html: processingString,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
     });
   };
 
   const showVerificationEmailSent = () => {
-    swal({
+    Swal.fire({
       title: `Verification Email Sent to ${userInfo.email}`,
-      text: "",
       icon: "info",
     });
   };
   
   const showVerifyConfirmation = () => {
-    swal({
+    Swal.fire({
       title: "Verify Account",
       text: "Do you want to verify your account?",
       icon: "info",
-      buttons: ["No", "Yes"],
-    }).then((value) => {
-      if (value) {
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+      cancelButtonText: "No",
+    }).then((result) => {
+      if (result.isConfirmed) {
         showProcessingLoader();
         axios.post('https://trader-app.onrender.com/user/verify-and-reset/send-verification-email/', null, {
           headers: {
@@ -92,12 +87,12 @@ export function MainLayout({ children }) {
             setYes(true);
           } else {
             // Request failed, show error swal
-            swal("Error", "Failed to send verification email. Please try again later.", "error");
+            Swal.fire("Error", "Failed to send verification email. Please try again later.", "error");
           }
         })
         .catch(error => {
           // Request failed, show error swal
-          swal("Error", "Failed to send verification email. Please try again later.", "error");
+          Swal.fire("Error", "Failed to send verification email. Please try again later.", "error");
         });
       }
     });
@@ -105,18 +100,18 @@ export function MainLayout({ children }) {
   
   const childrenWithProps = React.Children.map(children, child => {
     if (React.isValidElement(child)) {
-      return React.cloneElement(child, { fetchDataAndDispatch: fetchDataAndDispatch });
+      return React.cloneElement(child, { fetchDataAndDispatch: fetchDataAndDispatch, userType: userType });
     }
     return child;
   });
 
   return (
     <div id="main-wrapper" className={`show ${menuToggle ? "menu-toggle" : ""}`}>
-      <Nav onDarkModeChange={(newTheme) => setTheme(newTheme)} />
+      <Nav onDarkModeChange={(newTheme) => setTheme(newTheme)} userType={userType}/>
       <div className="content-body" style={{ minHeight: window.screen.height - 45 }}>
         <div className="container-fluid">
           {
-            !userInfo.verified && (
+            (!userInfo?.verified && userType == "user") && (
             <div style={{ display: "flex", alignItems: "center" }}>
               <p style={{ color: 'red' }}>
                 <IoIosWarning style={{ verticalAlign: 'middle' }} />
@@ -139,9 +134,7 @@ export function MainLayout({ children }) {
 
             )
           }
-
           {childrenWithProps}
-
         </div>
       </div>
       <Footer />

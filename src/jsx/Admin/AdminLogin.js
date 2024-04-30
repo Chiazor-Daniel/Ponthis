@@ -8,22 +8,22 @@ import Spinner from 'react-bootstrap/Spinner';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import logo from '../../images/logo/logo-full.png'
-import { BASE_URL } from '../../api';
-function Login(props) {
+
+function AdminLogin(props) {
 	const [load, setLoad] = useState(false)
 	const navigate = useNavigate();
-	const [email, setEmail] = useState('john@exaple.com');
+	const [email, setEmail] = useState('admin@admin.com');
 	let errorsObj = { email: '', password: '' };
 	const [errors, setErrors] = useState(errorsObj);
-	const [password, setPassword] = useState('default123');
+	const [password, setPassword] = useState('string');
 	const dispatch = useDispatch();
 
 	const loginUser = (email, password) => {
 		setLoad(true);
 		console.log("Login Start...");
 
-		const token = sessionStorage.getItem("token"); // Using sessionStorage
-		const userInfo = JSON.parse(sessionStorage.getItem("userInfo")); // Using sessionStorage
+		const token = sessionStorage.getItem("token");
+		const userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
 
 		if (token && userInfo) {
 			dispatch(loginSuccess({ userInfo, userToken: token }));
@@ -37,7 +37,7 @@ function Login(props) {
 		} else {
 			dispatch(loginStart());
 
-			axios.post(`${BASE_URL}/user/auth/login/`, {
+			axios.post("https://trader-app.onrender.com/user/auth/login/", {
 				email,
 				password
 			}, {
@@ -59,7 +59,7 @@ function Login(props) {
 						const expirationTime = new Date().getTime() + 24 * 60 * 60 * 1000;
 						sessionStorage.setItem("tokenExpiration", expirationTime);
 
-						axios.get(`${BASE_URL}/user/profile/users/`, {
+						axios.get("https://trader-app.onrender.com/user/profile/users/", {
 							headers: {
 								"x-token": accessToken
 							}
@@ -145,8 +145,8 @@ function Login(props) {
 													{props.successMessage}
 												</div>
 											)}
-											<form className=" dz-form pb-3" onSubmit={onLogin}>
-												<h3 className="form-title m-t0">Personal Information</h3>
+											<form className=" dz-form pb-3" onSubmit={()=>navigate("/admin/admin-dashboard")}>
+												<h3 className="form-title m-t0">ADMIN LOGIN</h3>
 												<div className="dz-separator-outer m-b5">
 													<div className="dz-separator bg-primary style-liner"></div>
 												</div>
@@ -183,15 +183,12 @@ function Login(props) {
 														<Link to="/forgot-password">
 															Forgot password ?
 														</Link>
-														<Link to="/admin/admin-login">
-															Admin ?
-														</Link>
 													</div>
 												</div>
 											</form>
 											<div className="text-center">
 												<NavLink to="/register" className="btn btn-primary button-md btn-block" >
-													Create an account
+													Register as an Admin
 												</NavLink>
 											</div>
 										</div>
@@ -207,4 +204,4 @@ function Login(props) {
 	)
 }
 
-export default Login;
+export default AdminLogin;

@@ -1,11 +1,12 @@
 /* eslint-disable */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Tab, Nav } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { Form } from 'react-bootstrap';
 import OrderForm from '../Dashboard/Dashboard/OrderForm';
 import { MyChart } from '../myChart';
 import ToggleTrade from '../toggleTrade';
+import Swal from 'sweetalert2';
 import { useSelector } from 'react-redux';
 import { useGetAllAssetsQuery } from '../../../redux/services/trades';
 import { RiTokenSwapFill } from "react-icons/ri";
@@ -16,10 +17,12 @@ import swal from 'sweetalert';
 const IntradayTrading = ({ fetchDataAndDispatch }) => {
     const { userToken } = useSelector(state => state.auth);
     const { data: allAssets = [], error, isLoading } = useGetAllAssetsQuery(userToken);
+    const [getAssets, setGetAssets] = useState(allAssets)
     const [tradePair, setTradePair] = useState("NEOBTC"); // Initialize tradePair state
     const [orderType, setOrderType] = useState("market");
     const [activeTab, setActiveTab] = useState("buy");
     const [openTradeMutation] = useOpenTradeMutation();
+    const [searchTerm, setSearchTerm] = useState("")
 
     // Function to generate random color
     const getRandomColor = () => {
@@ -34,7 +37,12 @@ const IntradayTrading = ({ fetchDataAndDispatch }) => {
     // Function to handle click event and set tradePair
     const handleClick = (pair) => {
         setTradePair(pair);
-    };
+        Swal.fire({
+            title: 'Asset Selected',
+            text: `You have selected ${pair}`,
+            icon: 'success'
+        });
+    }
     const handleTabClick = (tab) => {
         setActiveTab(tab);
     };
@@ -66,74 +74,83 @@ const IntradayTrading = ({ fetchDataAndDispatch }) => {
             </div>
         );
 
-        return swal({
+        return Swal.fire({
             title: '',
-            content: {
-                element: 'div',
-                attributes: {
-                    innerHTML: loadingElement,
-                },
-            },
-            buttons: false,
-            closeOnClickOutside: false,
-            closeOnEsc: false,
+            html: loadingElement,
+            showConfirmButton: false,
             allowOutsideClick: false,
             allowEscapeKey: false,
+        
         });
     };
 
+
     const handleTradeOrder = (e) => {
         e.preventDefault();
-        // Display loading spinner
-        const loadingToast = transactionProcessing();
-
-        const tradeData = {
-            asset_pair_type: tradePair,
-            amount: parseInt(price),
-            trade_type: orderType,
-            created_by: "self",
-            trade_transaction_type: activeTab === 'buy' ? 'buy' : 'sell'
-        };
-
-        openTradeMutation({ token: userToken, data: tradeData })
-            .unwrap()
-            .then((response) => {
-                console.log("Trade response:", response);
-                // Hide loading spinner on success
-                swal.close();
-                // Check if the response status is success
-                if (response && response[0] && response[0].status === "success") {
-                    // Show success modal
-                    fetchDataAndDispatch()
-                    swal({
-                        title: "Trade Opened!",
-                        text: "Trade opened successfully.",
-                        icon: "success",
+        Swal.fire({
+            title: `Confirm ${activeTab === 'buy' ? 'Buy' : 'Sell'} Order`,
+            text: `Are you sure you want to ${activeTab === 'buy' ? 'buy' : 'sell'} $${price} worth ${tradePair}?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Confirm',
+            cancelButtonText: 'Cancel',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // User confirmed the order
+                const loadingToast = transactionProcessing();
+                const tradeData = {
+                    asset_pair_type: tradePair,
+                    amount: parseInt(price),
+                    trade_type: orderType,
+                    created_by: "self",
+                    trade_transaction_type: activeTab === 'buy' ? 'buy' : 'sell'
+                };
+                openTradeMutation({ token: userToken, data: tradeData })
+                    .unwrap()
+                    .then((response) => {
+                        console.log("Trade response:", response);
+                        Swal.close(); // Close the loading spinner
+                        if (response && response[0] && response[0].status === "success") {
+                            fetchDataAndDispatch()
+                            Swal.fire({
+                                title: "Trade Opened!",
+                                text: "Trade opened successfully.",
+                                icon: "success",
+                            });
+                            // Add any success handling code here
+                        } else {
+                            // Show error modal if status is not success
+                            Swal.fire({
+                                title: "Error!",
+                                text: "Something went wrong. Please try again later.",
+                                icon: "error",
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Error opening trade:", error);
+                        // Hide loading spinner on error
+                        Swal.close(); // Close the loading spinner
+                        // Show error swal for insufficient balance
+                        Swal.fire({
+                            title: "Error!",
+                            text: "Insufficient Balance. Please deposit funds to your account.",
+                            icon: "error",
+                        });
+                        // Add any error handling code here
                     });
-                    // Add any success handling code here
-                } else {
-                    // Show error modal if status is not success
-                    swal({
-                        title: "Error!",
-                        text: "Something went wrong. Please try again later.",
-                        icon: "error",
-                    });
-                }
-            })
-            .catch((error) => {
-                console.error("Error opening trade:", error);
-                // Hide loading spinner on error
-                swal.close();
-                // Show error swal for insufficient balance
-                swal({
-                    title: "Error!",
-                    text: "Insufficient Balance. Please deposit funds to your account.",
-                    icon: "error",
-                });
-                // Add any error handling code here
-            });
+            }
+        });
     };
-
+    
+    useEffect(() => {
+        if (searchTerm !== "") {
+            setGetAssets(allAssets.filter(asset => asset.asset_pair.toLowerCase().includes(searchTerm.toLowerCase())));
+        } else {
+            setGetAssets(allAssets);
+        }
+    }, [allAssets, searchTerm]);
+    
 
     return (
         <>
@@ -146,14 +163,14 @@ const IntradayTrading = ({ fetchDataAndDispatch }) => {
                         <div className="card-header" style={{ display: "flex", flexDirection: "column", height: "100%" }}>
                             <div className="me-auto" style={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
                                 <h4 className="fs-20 text-black">Trading Chart</h4>
-                                <Link to="#" className="btn btn-primary light btn-rounded me-3 mb-3">
+                                {/* <Link to="#" className="btn btn-primary light btn-rounded me-3 mb-3">
                                     <i className="las la-download scale5 me-2"></i>Get Report
-                                </Link>
+                                </Link> */}
                             </div>
-                            <MyChart tradePair="NEOBTC" />
+                            <MyChart tradePair={tradePair} />
                         </div>
                     </div>
-                    <div className="col-xl-12 col-sm-12" style={{ height: "auto" }}>
+                    <div className="col-xl-12 col-sm-12" style={{ height: "500px" }}>
                         <div className="card h-auto">
                             <div className="px-0">
                                 <Tab.Container defaultActiveKey="Navbuy">
@@ -225,16 +242,19 @@ const IntradayTrading = ({ fetchDataAndDispatch }) => {
                         <div className="card-header">
                             <h4 className="fs-20 text-black">Asset List</h4>
                         </div>
-                            <div>
-                                <Form.Control type="email" placeholder="Search pair" className="form-control-sm col-6" />
-                                <Form.Select style={{ marginTop: "10px" }}>
-                                    <option>Crypto</option>
-                                    <option>Forex</option>
-                                </Form.Select>
-                            </div>
+                        <div>
+                        <div style={{padding: "10px"}}>
+
+                            <Form.Control type="text" placeholder="Search pair" className="form-control-sm col-6" value={searchTerm} onChange={(e)=> {setSearchTerm(e.target.value)}}/>
+                            <Form.Select style={{ marginTop: "10px" }}>
+                                <option>Crypto</option>
+                                <option>Forex</option>
+                            </Form.Select>
+                        </div>
+                        </div>
                         <div className="card-body" style={{ padding: "10px", maxHeight: "calc(100% - 50px)", overflow: "auto" }}>
                             <div className="row" style={{ flex: 1 }}>
-                                {allAssets.map((asset, index) => (
+                                {getAssets?.map((asset, index) => (
                                     <div className="previews-info-list" key={index} style={{ position: "relative", cursor: "pointer", marginBottom: "10px" }} onClick={() => handleClick(asset.asset_pair)}> {/* Add onClick handler */}
                                         <div className="pre-icon">
                                             <div className="ms-2" style={{ display: "flex", gap: "10px", alignItems: "center" }}>

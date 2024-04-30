@@ -16,6 +16,7 @@ import { MdRunningWithErrors } from "react-icons/md";
 import ReactDOMServer from 'react-dom/server';
 import RingLoader from 'react-spinners/RingLoader';
 import swal from 'sweetalert';
+import Swal from 'sweetalert2';
 import { useDepositMutation } from '../../../redux/services/transactions';
 import { PiBankFill } from "react-icons/pi";
 
@@ -124,83 +125,84 @@ const Deposit = ({fetchDataAndDispatch }) => {
     const [deposit, { isDespoitError, depositErro }] = useDepositMutation()
     const handleCryptoDeposit = async () => {
         try {
-            // Render loading element
-            const loadingElement = ReactDOMServer.renderToString(
-                <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
-                    <RingLoader color="#36d7b7" size={100} />
-                    <p>Processing Deposit...</p>
-                </div>
-            );
-
-            // Show loading dialog
-            const loadingToast = swal({
-                title: '',
-                content: {
-                    element: 'div',
-                    attributes: {
-                        innerHTML: loadingElement,
-                    },
-                },
-                buttons: false,
-                closeOnClickOutside: false,
-                closeOnEsc: false,
-                allowOutsideClick: false,
-                allowEscapeKey: false,
+            const result = await Swal.fire({
+                title: 'Confirm Deposit',
+                text: `Are you sure you want to deposit $${amount} via Crypto?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Confirm',
+                cancelButtonText: 'Cancel',
             });
 
-            // Simulate deposit processing
-            setTimeout(async () => {
-                try {
-                    // Call deposit API with appropriate data
-                    console.log(cryptoForm)
-                    const response = await deposit({
-                        amount: cryptoForm.amount, // Adjust as needed
-                        type: cryptoForm.type, // Adjust as needed
-                        token: userToken
-                        // wallet_address: formData.walletAddress,
-                        // preferred_token: preferredToken,
-                        // token: userToken
-                    });
+            if (result.isConfirmed) {
+                // Proceed with deposit
+                // Render loading element
+                const loadingElement = ReactDOMServer.renderToString(
+                    <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
+                        <RingLoader color="#36d7b7" size={100} />
+                        <p>Processing Deposit...</p>
+                    </div>
+                );
 
-                    // Close loading dialog
-                    swal.close();
+                // Show loading dialog
+                const loadingToast = Swal.fire({
+                    title: '',
+                    html: loadingElement,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                });
 
-                    // Handle deposit response
-                    const status = response.data[0]?.status;
-                    console.log("Deposit status:", status);
-
-                    if (status === "success") {
-                        // Show success message
-                        fetchDataAndDispatch()
-                        swal({
-                            title: "Deposit Pending",
-                            text: "Await deposit approval!",
-                            icon: "info",
+                // Simulate deposit processing
+                setTimeout(async () => {
+                    try {
+                        // Call deposit API with appropriate data
+                        const response = await deposit({
+                            amount: cryptoForm.amount, // Adjust as needed
+                            type: cryptoForm.type, // Adjust as needed
+                            token: userToken
                         });
-                    } else{
-                        swal({
+
+                        // Close loading dialog
+                        Swal.close();
+
+                        // Handle deposit response
+                        const status = response.data[0]?.status;
+                        console.log("Deposit status:", status);
+
+                        if (status === "success") {
+                            // Show success message
+                            fetchDataAndDispatch()
+                            Swal.fire({
+                                title: "Deposit Pending",
+                                text: "Await deposit approval!",
+                                icon: "info",
+                            });
+                        } else{
+                            Swal.fire({
+                                title: "Error",
+                                text: response.data[1]?.data,
+                                icon: "error",
+                            });
+                        }
+                    } catch (error) {
+                        // Close loading dialog
+                        Swal.close();
+
+                        // Handle deposit error
+                        console.error("Error occurred during deposit:", error);
+                        Swal.fire({
                             title: "Error",
-                            text: response.data[1]?.data,
+                            text: "An error occurred during deposit. Please try again later.",
                             icon: "error",
                         });
                     }
-                } catch (error) {
-                    // Close loading dialog
-                    swal.close();
-
-                    // Handle deposit error
-                    console.error("Error occurred during deposit:", error);
-                    swal({
-                        title: "Error",
-                        text: "An error occurred during deposit. Please try again later.",
-                        icon: "error",
-                    });
-                }
-            }, 3000); // Simulated deposit processing time
+                }, 3000); // Simulated deposit processing time
+            }
         } catch (error) {
             // Handle any unexpected errors
             console.error("Error occurred during deposit:", error);
-            swal({
+            Swal.fire({
                 title: "Error",
                 text: "An unexpected error occurred during deposit. Please try again later.",
                 icon: "error",
@@ -209,77 +211,82 @@ const Deposit = ({fetchDataAndDispatch }) => {
     };
     const handleBankPayment = async () => {
         try {
-            const loadingElement = ReactDOMServer.renderToString(
-                <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
-                    <RingLoader color="#36d7b7" size={100} />
-                    <p>Processing Deposit...</p>
-                </div>
-            );
-
-            const loadingToast = swal({
-                title: '',
-                content: {
-                    element: 'div',
-                    attributes: {
-                        innerHTML: loadingElement,
-                    },
-                },
-                buttons: false,
-                closeOnClickOutside: false,
-                closeOnEsc: false,
-                allowOutsideClick: false,
-                allowEscapeKey: false,
+            const result = await Swal.fire({
+                title: 'Confirm Deposit',
+                text: `Are you sure you want to deposit $${amount} via Bank Transfer?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Confirm',
+                cancelButtonText: 'Cancel',
             });
 
-            // Simulate deposit processing
-            setTimeout(async () => {
-                try {
-                    // Call deposit API with appropriate data
-                    const response = await deposit({
-                        amount: amount, // Adjust as needed
-                        type: "bank-transfer", // Adjust as needed
-                        token: userToken
-                    });
+            if (result.isConfirmed) {
+                // Proceed with deposit
+                const loadingElement = ReactDOMServer.renderToString(
+                    <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
+                        <RingLoader color="#36d7b7" size={100} />
+                        <p>Processing Deposit...</p>
+                    </div>
+                );
 
-                    // Close loading dialog
-                    swal.close();
+                const loadingToast = Swal.fire({
+                    title: '',
+                    html: loadingElement,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                });
 
-                    // Handle deposit response
-                    const status = response.data[0]?.status;
-                    console.log("Deposit status:", status);
-
-                    if (status === "success") {
-                        fetchDataAndDispatch()
-                        // Show success message
-                        swal({
-                            title: "Deposit Pending",
-                            text: "Await deposit approval!",
-                            icon: "info",
+                // Simulate deposit processing
+                setTimeout(async () => {
+                    try {
+                        // Call deposit API with appropriate data
+                        const response = await deposit({
+                            amount: amount, // Adjust as needed
+                            type: "bank-transfer", // Adjust as needed
+                            token: userToken
                         });
-                    }else{
-                        swal({
+
+                        // Close loading dialog
+                        Swal.close();
+
+                        // Handle deposit response
+                        const status = response.data[0]?.status;
+                        console.log("Deposit status:", status);
+
+                        if (status === "success") {
+                            fetchDataAndDispatch()
+                            // Show success message
+                            Swal.fire({
+                                title: "Deposit Pending",
+                                text: "Await deposit approval!",
+                                icon: "info",
+                            });
+                        }else{
+                            Swal.fire({
+                                title: "Error",
+                                text: response.data[1]?.data,
+                                icon: "error",
+                            });
+                        }
+                    } catch (error) {
+                        // Close loading dialog
+                        Swal.close();
+
+                        // Handle deposit error
+                        console.error("Error occurred during deposit:", error);
+                        Swal.fire({
                             title: "Error",
-                            text: response.data[1]?.data,
+                            text: "An error occurred during deposit. Please try again later.",
                             icon: "error",
                         });
                     }
-                } catch (error) {
-                    // Close loading dialog
-                    swal.close();
-
-                    // Handle deposit error
-                    console.error("Error occurred during deposit:", error);
-                    swal({
-                        title: "Error",
-                        text: "An error occurred during deposit. Please try again later.",
-                        icon: "error",
-                    });
-                }
-            }, 3000); // Simulated deposit processing time
+                }, 3000); // Simulated deposit processing time
+            }
         } catch (error) {
             // Handle any unexpected errors
             console.error("Error occurred during deposit:", error);
-            swal({
+            Swal.fire({
                 title: "Error",
                 text: "An unexpected error occurred during deposit. Please try again later.",
                 icon: "error",
@@ -288,80 +295,84 @@ const Deposit = ({fetchDataAndDispatch }) => {
     };
     const handleCardPay = async () => {
         try {
-            const loadingElement = ReactDOMServer.renderToString(
-                <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
-                    <RingLoader color="#36d7b7" size={100} />
-                    <p>Processing Deposit...</p>
-                </div>
-            );
-
-            const loadingToast = swal({
-                title: '',
-                content: {
-                    element: 'div',
-                    attributes: {
-                        innerHTML: loadingElement,
-                    },
-                },
-                buttons: false,
-                closeOnClickOutside: false,
-                closeOnEsc: false,
-                allowOutsideClick: false,
-                allowEscapeKey: false,
+            const result = await Swal.fire({
+                title: 'Confirm Deposit',
+                text: `Are you sure you want to deposit $${amount} via Card Payment?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Confirm',
+                cancelButtonText: 'Cancel',
             });
 
-            // Simulate deposit processing
-            setTimeout(async () => {
-                try {
-                    // Call deposit API with appropriate data
-                    const response = await deposit({
-                        amount: amount, // Adjust as needed
-                        type: "card-payment", // Adjust as needed
-                        token: userToken,
-                        cardData: formData
+            if (result.isConfirmed) {
+                // Proceed with deposit
+                const loadingElement = ReactDOMServer.renderToString(
+                    <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
+                        <RingLoader color="#36d7b7" size={100} />
+                        <p>Processing Deposit...</p>
+                    </div>
+                );
 
-                    });
+                const loadingToast = Swal.fire({
+                    title: '',
+                    html: loadingElement,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                });
 
-                    // Close loading dialog
-                    swal.close();
-
-                    // Handle deposit response
-                    const status = response.data[0]?.status;
-                    console.log("Deposit status:", status);
-
-                    if (status === "success") {
-                        fetchDataAndDispatch()
-
-                        // Show success message
-                        swal({
-                            title: "Deposit Pending",
-                            text: "Await deposit approval!",
-                            icon: "info",
+                // Simulate deposit processing
+                setTimeout(async () => {
+                    try {
+                        // Call deposit API with appropriate data
+                        const response = await deposit({
+                            amount: amount, // Adjust as needed
+                            type: "card-payment", // Adjust as needed
+                            token: userToken,
+                            cardData: formData
                         });
-                    }else{
-                        swal({
+
+                        // Close loading dialog
+                        Swal.close();
+
+                        // Handle deposit response
+                        const status = response.data[0]?.status;
+                        console.log("Deposit status:", status);
+
+                        if (status === "success") {
+                            fetchDataAndDispatch()
+
+                            // Show success message
+                            Swal.fire({
+                                title: "Deposit Pending",
+                                text: "Await deposit approval!",
+                                icon: "info",
+                            });
+                        }else{
+                            Swal.fire({
+                                title: "Error",
+                                text: response.data[1]?.data,
+                                icon: "error",
+                            });
+                        }
+                    } catch (error) {
+                        // Close loading dialog
+                        Swal.close();
+
+                        // Handle deposit error
+                        console.error("Error occurred during deposit:", error);
+                        Swal.fire({
                             title: "Error",
-                            text: response.data[1]?.data,
+                            text: "An error occurred during deposit. Please try again later.",
                             icon: "error",
                         });
                     }
-                } catch (error) {
-                    // Close loading dialog
-                    swal.close();
-
-                    // Handle deposit error
-                    console.error("Error occurred during deposit:", error);
-                    swal({
-                        title: "Error",
-                        text: "An error occurred during deposit. Please try again later.",
-                        icon: "error",
-                    });
-                }
-            }, 3000); // Simulated deposit processing time
+                }, 3000); // Simulated deposit processing time
+            }
         } catch (error) {
             // Handle any unexpected errors
             console.error("Error occurred during deposit:", error);
-            swal({
+            Swal.fire({
                 title: "Error",
                 text: "An unexpected error occurred during deposit. Please try again later.",
                 icon: "error",

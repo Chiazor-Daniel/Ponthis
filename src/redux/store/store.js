@@ -1,11 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '../features/auth/authSlice';
+import adminAuthReducer from '../features/auth/authSlice';
 import profileReducer from '../features/profile/profileSlice';
 import userAccountReducer from '../features/account/accountSlice';
 import paymentDetailsReducer from '../features/payment-details/paymentSlice';
 import { paymentDetailsApi } from '../services/paymentDetails';
 import { profileApi } from '../services/profile';
+import  countryReducer  from '../features/utils/countriesSlice';
 import { userAccountApi } from '../services/account';
+import { countryApi } from '../features/utils/countriesSlice';
 import { transactionsApi } from '../services/transactions';
 import { tradeDetailsApi } from '../services/trades';
 import { setupListeners } from '@reduxjs/toolkit/query/react';
@@ -13,10 +16,13 @@ import { setupListeners } from '@reduxjs/toolkit/query/react';
 const store = configureStore({
   reducer: {
     auth: authReducer,
+    adminAuth: adminAuthReducer,
     profile: profileReducer,
     paymentDetails: paymentDetailsReducer,
     userAccount: userAccountReducer,
+    country: countryReducer,
     [paymentDetailsApi.reducerPath]: paymentDetailsApi.reducer,
+    [countryApi.reducerPath]: countryApi.reducer,
     [profileApi.reducerPath]: profileApi.reducer,
     [userAccountApi.reducerPath]: userAccountApi.reducer,
     [transactionsApi.reducerPath]: transactionsApi.reducer,

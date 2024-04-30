@@ -21,6 +21,7 @@ import { useGetPaymentDetailsQuery } from '../../../redux/services/paymentDetail
 import { useWithdrawMutation } from '../../../redux/services/transactions';
 import { RingLoader } from "react-spinners";
 import ReactDOMServer from 'react-dom/server';
+import Swal from 'sweetalert2';
 
 const buttons = [
     { icon: <AiFillBank size={25} />, text: 'Bank transfer' },
@@ -75,72 +76,77 @@ const Withdraw = ({fetchDataAndDispatch}) => {
         // alert(newPaymentType);
     };
     const onCryptoWithdraw = async () => {
-        try {
-            const loadingElement = ReactDOMServer.renderToString(
-                <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
-                    <RingLoader color="#36d7b7" size={100} />
-                    <p>Processing Withdrawal...</p>
-                </div>
-            );
-
-            let loadingToast = swal({
-                title: '',
-                content: {
-                    element: 'div',
-                    attributes: {
-                        innerHTML: loadingElement,
-                    },
-                },
-                buttons: false,
-                closeOnClickOutside: false,
-                closeOnEsc: false,
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-            })
-
-            const response = await withdraw({
-                amount: 100,
-                type: "cryptocurrency",
-                wallet_address: 928492749242,
-                network_chain: "sol",
-                preferred_token: 'bnb',
-                token: userToken
-            });
-
-            // Delay closing the loading spinner for 3 seconds
-            setTimeout(() => {
-                // Close loading spinner
-                swal.close();
-
-                const status = response.data[1]?.data?.status;
-
-                console.log("Withdrawal status:", status);
-
-                if (status === "success") {
-                    fetchDataAndDispatch()
-                    swal({
-                        title: "Withdrawal Successful",
-                        text: `Your withdrawal has been successfully submitted!`,
-                        icon: "success",
-                    });
-                }else{
-                    swal({
-                        title: "Error",
-                        text: response.data[1]?.data?.message,
-                        icon: "error",
-                    });
-                }
-            }, 3000); // 3000 milliseconds (3 seconds)
-
-        } catch (error) {
-            console.error("Error occurred during withdrawal:", error);
-            swal({
-                title: "Error",
-                text: "An error occurred during withdrawal. Please try again later.",
-                icon: "error",
-            });
+        // Display confirmation prompt before processing withdrawal
+        const result = await Swal.fire({
+            title: 'Confirm Withdrawal',
+            text: 'Are you sure you want to make this withdrawal?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, make withdrawal'
+        });
+    
+        // If user confirms the withdrawal
+        if (result.isConfirmed) {
+            try {
+                const loadingElement = ReactDOMServer.renderToString(
+                    <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
+                        <RingLoader color="#36d7b7" size={100} />
+                        <p>Processing Withdrawal...</p>
+                    </div>
+                );
+    
+                Swal.fire({
+                    title: '',
+                    html: loadingElement,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showCloseButton: false,
+                });
+    
+                const response = await withdraw({
+                    amount: 100,
+                    type: "cryptocurrency",
+                    wallet_address: 928492749242,
+                    network_chain: "sol",
+                    preferred_token: 'bnb',
+                    token: userToken
+                });
+    
+                // Delay closing the loading spinner for 3 seconds
+                setTimeout(() => {
+                    Swal.close();
+    
+                    const status = response.data[1]?.data?.status;
+    
+                    if (status === "success") {
+                        fetchDataAndDispatch();
+                        Swal.fire({
+                            title: "Withdrawal Successful",
+                            text: `Your withdrawal has been successfully submitted!`,
+                            icon: "success",
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Error",
+                            text: response.data[1]?.data?.message,
+                            icon: "error",
+                        });
+                    }
+                }, 3000); // 3000 milliseconds (3 seconds)
+            } catch (error) {
+                console.error("Error occurred during withdrawal:", error);
+                Swal.fire({
+                    title: "Error",
+                    text: "An error occurred during withdrawal. Please try again later.",
+                    icon: "error",
+                });
+            }
         }
     };
+    
 
 
     const handleInputChange = (e) => {
@@ -206,79 +212,93 @@ const Withdraw = ({fetchDataAndDispatch}) => {
 
 
     const handleCardPayment = async () => {
-        const loadingElement = ReactDOMServer.renderToString(
-            <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
-                <RingLoader color="#36d7b7" size={100} />
-                <p>Processing Withdrawal...</p>
-            </div>
-        );
-
-        let loadingToast = swal({
-            title: '',
-            content: {
-                element: 'div',
-                attributes: {
-                    innerHTML: loadingElement,
-                },
-            },
-            buttons: false,
-            closeOnClickOutside: false,
-            closeOnEsc: false,
-            allowOutsideClick: false,
-            allowEscapeKey: false,
+        // Display confirmation prompt before processing withdrawal
+        const confirmation = await Swal.fire({
+            title: 'Confirm Card Payment',
+            text: 'Are you sure you want to submit this card payment withdrawal request?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, submit it!',
+            cancelButtonText: 'Cancel'
         });
-
-        try {
-            const response = await withdraw({
-                amount: amount,
-                type: "card-payment",
-                card_number: cardFormData.card.cardNumber,
-                expiry_date: expMonth + '/' + expYear,
-                cvv: cardFormData.card.cvv,
-                token: userToken
+    
+        // If user confirms the withdrawal
+        if (confirmation.isConfirmed) {
+            // Display loading spinner while processing withdrawal
+            const loadingElement = ReactDOMServer.renderToString(
+                <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
+                    <RingLoader color="#36d7b7" size={100} />
+                    <p>Processing Withdrawal...</p>
+                </div>
+            );
+        
+            const loadingToast = Swal.fire({
+                title: '',
+                html: loadingElement,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showCloseButton: false,
             });
-
-            // Extracting the status from the response
-            const status = response.data[1]?.data?.status;
-
-            console.log("Withdrawal status:", status);
-            console.log("card", cardFormData);
-
-            if (status === "success") {
-                fetchDataAndDispatch()
-                // Delay closing the loading spinner for 3 seconds
-                setTimeout(() => {
+        
+            try {
+                const response = await withdraw({
+                    amount: amount,
+                    type: "card-payment",
+                    card_number: cardFormData.card.cardNumber,
+                    expiry_date: expMonth + '/' + expYear,
+                    cvv: cardFormData.card.cvv,
+                    token: userToken
+                });
+        
+                // Extracting the status from the response
+                const status = response.data[1]?.data?.status;
+        
+                console.log("Withdrawal status:", status);
+                console.log("card", cardFormData);
+        
+                if (status === "success") {
+                    fetchDataAndDispatch();
+                    // Delay closing the loading spinner for 3 seconds
+                    setTimeout(() => {
+                        // Close loading spinner
+                        loadingToast.close();
+        
+                        // Custom Swal.fire for success
+                        Swal.fire({
+                            title: "Withdrawal Submitted",
+                            text: "Your withdrawal has been successfully processed!",
+                            icon: "success",
+                        });
+                    }, 3000); // 3000 milliseconds (3 seconds)
+                } else {
                     // Close loading spinner
-                    swal.close();
-
-                    // Custom SweetAlert for success
-                    swal({
-                        title: "Withdrawal Submitted",
-                        text: "Your withdrawal has been successfully processed!",
-                        icon: "success",
+                    loadingToast.close();
+        
+                    Swal.fire({
+                        title: "Error",
+                        text: response.data[1]?.data,
+                        icon: "error",
                     });
-                }, 3000); // 3000 milliseconds (3 seconds)
-            }else{
-                swal({
+                }
+            } catch (error) {
+                // Close loading spinner
+                loadingToast.close();
+        
+                console.error("Error occurred during withdrawal:", error);
+                // Handle error, such as displaying an error message to the user
+                Swal.fire({
                     title: "Error",
-                    text: response.data[1]?.data,
+                    text: "An error occurred during withdrawal. Please try again later.",
                     icon: "error",
                 });
             }
-
-        } catch (error) {
-            // Close loading spinner
-            swal.close();
-
-            console.error("Error occurred during withdrawal:", error);
-            // Handle error, such as displaying an error message to the user
-            swal({
-                title: "Error",
-                text: "An error occurred during withdrawal. Please try again later.",
-                icon: "error",
-            });
         }
     };
+    
+    
     const [bankFormData, setBankFormData] = useState({
         bankName: '',
         accountType: '',
@@ -299,83 +319,96 @@ const Withdraw = ({fetchDataAndDispatch}) => {
     };
 
     const handleBankSubmit = async () => {
-        try {
-            const loadingElement = ReactDOMServer.renderToString(
-                <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
-                    <RingLoader color="#36d7b7" size={100} />
-                    <p>Processing Withdrawal...</p>
-                </div>
-            );
-
-            let loadingToast = swal({
-                title: '',
-                content: {
-                    element: 'div',
-                    attributes: {
-                        innerHTML: loadingElement,
-                    },
-                },
-                buttons: false,
-                closeOnClickOutside: false,
-                closeOnEsc: false,
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-            });
-
-            setTimeout(async () => {
-                try {
-                    const response = await withdraw({
-                        amount: bankFormData.amount,
-                        type: "bank-transfer",
-                        bank_name: bankFormData.bankName,
-                        account_name: bankFormData.accountName,
-                        iban: bankFormData.iban,
-                        bic: bankFormData.bic,
-                        token: userToken
-                    });
-
-                    swal.close();
-
-                    const status = response.data[1]?.data?.status;
-
-                    console.log("Withdrawal status:", status);
-
-                    if (status === "success") {
-                        fetchDataAndDispatch()
-                        swal({
-                            title: "Withdrawal Submitted",
-                            text: "Your withdrawal has been successfully submitted!",
-                            icon: "success",
+        // Display confirmation prompt before processing withdrawal
+        const confirmation = await Swal.fire({
+            title: 'Confirm Withdrawal',
+            text: 'Are you sure you want to submit this withdrawal request?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, submit it!',
+            cancelButtonText: 'Cancel'
+        });
+    
+        // If user confirms the withdrawal
+        if (confirmation.isConfirmed) {
+            try {
+                // Display loading spinner while processing withdrawal
+                const loadingElement = ReactDOMServer.renderToString(
+                    <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
+                        <RingLoader color="#36d7b7" size={100} />
+                        <p>Processing Withdrawal...</p>
+                    </div>
+                );
+    
+                const loadingToast = Swal.fire({
+                    title: '',
+                    html: loadingElement,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showCloseButton: false,
+                });
+    
+                setTimeout(async () => {
+                    try {
+                        const response = await withdraw({
+                            amount: bankFormData.amount,
+                            type: "bank-transfer",
+                            bank_name: bankFormData.bankName,
+                            account_name: bankFormData.accountName,
+                            iban: bankFormData.iban,
+                            bic: bankFormData.bic,
+                            token: userToken
                         });
-                    }else{
-                        swal({
+    
+                        // Close loading spinner
+                        loadingToast.close();
+    
+                        const status = response.data[1]?.data?.status;
+    
+                        console.log("Withdrawal status:", status);
+    
+                        if (status === "success") {
+                            fetchDataAndDispatch();
+                            // Display success message
+                            Swal.fire({
+                                title: "Withdrawal Submitted",
+                                text: "Your withdrawal has been successfully submitted!",
+                                icon: "success",
+                            });
+                        } else {
+                            // Display error message
+                            Swal.fire({
+                                title: "Error",
+                                text: response.data[1]?.data?.message ? response.data[1]?.data?.message : "An Error Occurred",
+                                icon: "error",
+                            });
+                        }
+                    } catch (error) {
+                        console.error("Error occurred during withdrawal:", error);
+                        // Display error message
+                        Swal.fire({
                             title: "Error",
-                            text: response.data[1]?.data?.message ? response.data[1]?.data?.message : "An Error Occured",
+                            text: "An error occurred during withdrawal. Please try again later.",
                             icon: "error",
                         });
                     }
-                } catch (error) {
-                    swal.close();
-
-                    console.error("Error occurred during withdrawal:", error);
-                    swal({
-                        title: "Error",
-                        text: "An error occurred during withdrawal. Please try again later.",
-                        icon: "error",
-                    });
-                }
-            }, 3000);
-        } catch (error) {
-            swal.close();
-
-            console.error("Error occurred during withdrawal:", error);
-            swal({
-                title: "Error",
-                text: "An error occurred during withdrawal. Please try again later.",
-                icon: "error",
-            });
+                }, 3000);
+            } catch (error) {
+                console.error("Error occurred during withdrawal:", error);
+                // Display error message
+                Swal.fire({
+                    title: "Error",
+                    text: "An error occurred during withdrawal. Please try again later.",
+                    icon: "error",
+                });
+            }
         }
     };
+    
+    
     return (
         <div className='row p-4' style={{ display: 'flex', gap: '30px', height: 'auto' }}>
             <div className='card col-lg-2 p-4' style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', height: '500px' }}>

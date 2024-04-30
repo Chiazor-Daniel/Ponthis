@@ -62,3 +62,36 @@ export const MenuList = [
         ]
     } 
 ];
+
+export const AdminMenuList = [
+    {
+        title: 'User Management',	
+        classsChange: 'mm-collapse',
+        to: "/admin/admin-dashboard",		
+        iconStyle:  <i class="material-icons">supervised_user_circle</i>,
+    }, 
+        {
+            title: 'Admin',	
+            classsChange: 'mm-collapse',
+            to: "/admin/admin-dashboard",		
+            iconStyle:  <i class="material-icons">admin_panel_settings</i>,
+        },
+    {
+        title: 'Profile',
+        classsChange: 'mm-collapse',
+        to: "", 
+        iconStyle: <i className="material-icons">person</i>, 
+        content: [
+            {
+                title: 'View Profile',
+                to: '/admin/admin-dashboard',
+                p: "view"
+            },
+            {
+                title: 'Edit Profile',
+                to: '/admin/admin-dashboard',
+                p: "edit"
+            },
+        ]
+    } 
+]

@@ -15,11 +15,11 @@ function LogoutPage(props) {
     navigate("/")
   };
 
-  useEffect(() => {
-    if (!userToken) {
-      navigate("/");
-    }
-  }, [userToken, navigate]);
+  // useEffect(() => {
+  //   if (!userToken) {
+  //     navigate("/");
+  //   }
+  // }, [userToken, navigate]);
 
   return (
     <>

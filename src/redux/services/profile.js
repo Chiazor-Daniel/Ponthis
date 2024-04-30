@@ -1,11 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-
+import { BASE_URL } from '../../api';
 export const profileApi = createApi({
   reducerPath: 'profileApi',
-  baseQuery: fetchBaseQuery({ baseUrl: 'https://trader-app.onrender.com/user' }),
+  baseQuery: fetchBaseQuery({ baseUrl:  BASE_URL }),
   endpoints: (builder) => ({
     getProfile: builder.query({
-      query: () => '/profile', 
+      query: () => '/user/profile', 
     }),
     updateProfile: builder.mutation({
       query: (userData) => ({
@@ -20,7 +20,7 @@ export const profileApi = createApi({
     }),
     changePassword: builder.mutation({
       query: ({ token, newPassword, oldPassword }) => ({
-        url: '/profile/users/change-password', 
+        url: 'user/profile/users/change-password', 
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

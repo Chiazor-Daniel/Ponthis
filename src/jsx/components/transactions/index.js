@@ -1,6 +1,7 @@
 /* eslint-disable */
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { Spinner } from 'react-bootstrap'; // Import Spinner component
 import FilteringTable from '../table/FilteringTable/FilteringTable';
 import { useGetTransactionsQuery } from '../../../redux/services/transactions';
 
@@ -38,11 +39,15 @@ const ViewTransactions = () => {
 
   return (
     <div>
-      {
-        !isLoading && (
-          <FilteringTable data={transactionsData} isLoading={isLoading}/>
-        ) 
-      }
+      {isLoading ? (
+        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '200px' }}>
+          <Spinner animation="border" role="status">
+            <span className="sr-only">Loading...</span>
+          </Spinner>
+        </div>
+      ) : (
+        <FilteringTable data={transactionsData} isLoading={isLoading}/>
+      )}
     </div>
   );
 };

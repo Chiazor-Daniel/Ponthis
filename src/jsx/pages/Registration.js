@@ -9,7 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { loginSuccess } from "../../redux/features/auth/authSlice";
-
+import { BASE_URL } from "../../api";
 
 function Register(props) {
     const navigate = useNavigate()
@@ -29,7 +29,7 @@ function Register(props) {
     const onSignUp = (e) => {
         e.preventDefault();
         setLoad(true);
-        axios.post("https://trader-app.onrender.com/user/auth/register/", null, {
+        axios.post(`${BASE_URL}/user/auth/register/`, null, {
             params: {
                 email,
                 first_name: firstName,
@@ -48,7 +48,7 @@ function Register(props) {
                 if (response.status === 200) {
                     if (response.data.message) {
                         toast.success("Registration Successful!", { autoClose: 2000 }); // Toast success message
-                        axios.get("https://trader-app.onrender.com/user/profile/users/", {
+                        axios.get(`${BASE_URL}/user/profile/users/`, {
                             headers: {
                                 "x-token": response.data.message
                             }

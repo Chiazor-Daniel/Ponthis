@@ -1,9 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-
+import { BASE_URL } from '../../api';
 export const tradeDetailsApi = createApi({
   reducerPath: 'tradeDetailsApi',
   baseQuery: fetchBaseQuery({ 
-    baseUrl: 'https://trader-app.onrender.com',
+    baseUrl: BASE_URL,
   }),
   endpoints: (builder) => ({
     getAllTrades: builder.query({

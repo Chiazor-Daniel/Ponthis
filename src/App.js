@@ -17,7 +17,10 @@ import ViewTrade from './jsx/components/Trading/ViewTrade';
 import ForgotPassword from './jsx/pages/ForgotPassword';
 import ResetPassword from './jsx/pages/ResetPassword';
 import VerifyAccount from './jsx/pages/verify-account';
-
+import AdminDashboard from './jsx/Admin/AdminDashboard';
+import UserDetails from './jsx/Admin/userDetails';
+import AdminLogin from './jsx/Admin/AdminLogin';
+import { useState } from 'react';
 const pages = [
   { path: '/', component: Login },
   { path: '/register', component: Register },
@@ -34,8 +37,15 @@ const pages = [
   { path: "/dashboard/withdraw", component: Withdraw },
 ];
 
+const adminPages = [
+  { path: "/admin/admin-dashboard", component: AdminDashboard },
+  {path: "/admin/admin-dashboard/user/:id", component: UserDetails}
+];
+
 function App() {
   const { userInfo, userToken } = useSelector(state => state.auth);
+  const [userType, setUserType] = useState("user")
+  const { adminInfo, adminToken } = useSelector(state => state.adminAuth);
 
   return (
     <Routes>
@@ -43,15 +53,25 @@ function App() {
         <Route
           key={path}
           path={path}
-          element={path === '/' || path === '/register' ? <Component /> : (userToken && userInfo) ? <MainLayout><Component /></MainLayout> : <Error400 />}
+          element={path === '/' || path === '/register' ? <Component /> : (userToken && userInfo) ? <MainLayout userType={userType} setUser={()=>setUserType("admin")}><Component /></MainLayout> : <Error400 />}
         />
       ))}
+
+      {adminPages.map(({ path, component: Component }) => (
+        <Route
+          key={path}
+          path={path}
+          element={<MainLayout  userType={userType}><Component /></MainLayout>}
+          // element={userToken && userInfo ? <MainLayout><Component /></MainLayout> : <Error400 />}
+        />
+      ))}
+
       <Route path='/error' element={<Error400 />} />
       <Route path='/forgot-password' element={<ForgotPassword />} />
       <Route path='/reset-password/*' element={<ResetPassword />} />
-
       <Route path='/verify-email/:token' element={<VerifyAccount />} />
       <Route path='/dashboard/verify-email/*' element={<VerifyAccount />} />
+      <Route path='/admin/admin-login' element={<AdminLogin />} />
     </Routes>
   );
 };
