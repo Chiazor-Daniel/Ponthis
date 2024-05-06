@@ -32,6 +32,7 @@ function Login(props) {
 				position: toast.POSITION.TOP_CENTER,
 				onClose: () => {
 					navigate("/dashboard");
+					props.setUserType("user")
 				}
 			});
 		} else {
@@ -75,6 +76,7 @@ function Login(props) {
 										position: toast.POSITION.TOP_CENTER,
 										onClose: () => {
 											navigate("/dashboard");
+											props.setUserType("user")
 										}
 									});
 								}

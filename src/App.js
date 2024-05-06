@@ -20,7 +20,10 @@ import VerifyAccount from './jsx/pages/verify-account';
 import AdminDashboard from './jsx/Admin/AdminDashboard';
 import UserDetails from './jsx/Admin/userDetails';
 import AdminLogin from './jsx/Admin/AdminLogin';
-import { useState } from 'react';
+import AdminDetails from './jsx/Admin/adminDetails';
+import { useEffect, useState } from 'react';
+import CRM from './jsx/Admin/CRM';
+import ViewLead from './jsx/Admin/leadDetails';
 const pages = [
   { path: '/', component: Login },
   { path: '/register', component: Register },
@@ -38,14 +41,20 @@ const pages = [
 ];
 
 const adminPages = [
-  { path: "/admin/admin-dashboard", component: AdminDashboard },
-  {path: "/admin/admin-dashboard/user/:id", component: UserDetails}
+  { path: "/admin/admin-dashboard/", component: AdminDashboard },
+  { path: "/admin/admin-dashboard/crm", component: CRM },
+  {path: "/admin/admin-dashboard/admin/:id", component: AdminDetails},
+  {path: "/admin/admin-dashboard/user/:id", component: UserDetails},
+  {path: "/admin/admin-dashboard/lead/:id", component: ViewLead}
 ];
 
 function App() {
   const { userInfo, userToken } = useSelector(state => state.auth);
-  const [userType, setUserType] = useState("user")
+  const [userType, setUserType] = useState("admin")
+  const[superAdmin, setSuperAdmin] = useState(false)
   const { adminInfo, adminToken } = useSelector(state => state.adminAuth);
+
+  useEffect(()=> console.log("from dash", adminToken), [])
 
   return (
     <Routes>
@@ -53,7 +62,7 @@ function App() {
         <Route
           key={path}
           path={path}
-          element={path === '/' || path === '/register' ? <Component /> : (userToken && userInfo) ? <MainLayout userType={userType} setUser={()=>setUserType("admin")}><Component /></MainLayout> : <Error400 />}
+          element={path === '/' || path === '/register' ? <Component userType={userType} setUserType={(user)=>setUserType(user)}/> : ((userToken && userInfo)) ? <MainLayout userType={userType} setUserType={(user)=>setUserType(user)}><Component  userType={userType} setUserType={(user)=>setUserType(user)}/></MainLayout> : <Error400 />}
         />
       ))}
 
@@ -61,7 +70,7 @@ function App() {
         <Route
           key={path}
           path={path}
-          element={<MainLayout  userType={userType}><Component /></MainLayout>}
+          element={<MainLayout superAdmin={superAdmin} setSuperAdmin={setSuperAdmin}  userType={userType} setUserType={(user)=>setUserType(user)}><Component  userType={userType} setUserType={(user)=>setUserType(user)} superAdmin={superAdmin} setSuperAdmin={setSuperAdmin}/></MainLayout>}
           // element={userToken && userInfo ? <MainLayout><Component /></MainLayout> : <Error400 />}
         />
       ))}
@@ -71,9 +80,9 @@ function App() {
       <Route path='/reset-password/*' element={<ResetPassword />} />
       <Route path='/verify-email/:token' element={<VerifyAccount />} />
       <Route path='/dashboard/verify-email/*' element={<VerifyAccount />} />
-      <Route path='/admin/admin-login' element={<AdminLogin />} />
+      <Route path='/admin/admin-login' element={<AdminLogin setUserType={(user)=>setUserType(user)} superAdmin={superAdmin} setSuperAdmin={setSuperAdmin}/>} />
     </Routes>
-  );
+  ); 
 };
 
 export default App;

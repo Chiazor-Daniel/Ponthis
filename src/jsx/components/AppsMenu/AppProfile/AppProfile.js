@@ -31,6 +31,7 @@ const AppProfile = () => {
     const [changePassword, { isLoading: isChangingPassword, isError: isChangePasswordError, error: changePasswordError }] = useChangePasswordMutation();
     const [data, setData] = useState(false);
     const location = useLocation();
+    const {account_type} = useSelector(state=>state.userAccount)
 
     useEffect(() => {
         const { pathname } = location;
@@ -99,7 +100,11 @@ const AppProfile = () => {
                                 </div>
                                 <h4 className="text-primary mb-0" style={{ fontSize: "2rem" }}>{userInfo.first_name + " " + userInfo.last_name}</h4>
                                 <p className="" style={{ fontSize: "1.1rem" }}>{userInfo.email}</p>
-                                <p className="" style={{ fontSize: "1.1rem", color: "gray" }}>Account Type : <FaMedal color="#DC6B19" /> Premium</p>
+                                <p className="" style={{ fontSize: "1.1rem", color: "gray" }}>Account Type : <FaMedal color="#DC6B19" /> <span style={{fontWeight: "bold"}}>
+                                    
+                                {account_type.toUpperCase()}
+                                </span>
+                                </p>
                             </div>
                         </div>
                     )

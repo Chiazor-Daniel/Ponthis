@@ -6,7 +6,8 @@ import NavHader from "./NavHader";
 import Header from "./Header";
 import { ThemeContext } from "../../../context/ThemeContext";
 
-const JobieNav = ({ title, onClick: ClickToAddEvent, onClick2, onClick3, onDarkModeChange, userType }) => {
+const JobieNav = ({ title, onClick: ClickToAddEvent, onClick2, onClick3, onDarkModeChange, userType, superAdmin }) => {
+  console.log("joe", superAdmin)
   const [toggle, setToggle] = useState("");
   const [dark, setDark] = useState("");
   const { setDemoTheme } = useContext(ThemeContext);
@@ -23,7 +24,7 @@ const JobieNav = ({ title, onClick: ClickToAddEvent, onClick2, onClick3, onDarkM
 
   return (
     <Fragment>
-      <NavHader userType={userType}/>
+      <NavHader userType={userType} superAdmin={superAdmin}/>
       <Header
           onNote={() => onClick("chatbox")}
           onNotification={() => onClick("notification")}
@@ -31,11 +32,12 @@ const JobieNav = ({ title, onClick: ClickToAddEvent, onClick2, onClick3, onDarkM
           toggle={toggle}
           title={title}
           userType={userType}
+          superAdmin={superAdmin}
           onBox={() => onClick("box")}
           onClick={() => ClickToAddEvent()}
           onThemeChange={(theme)=>handleDarkModeChange(theme)} // Pass the function to handle dark mode change
         /> 
-      <SideBar userType={userType} />
+      <SideBar userType={userType}  superAdmin={superAdmin} />
     </Fragment>
   );
 };

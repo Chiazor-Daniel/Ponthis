@@ -401,7 +401,7 @@ const Deposit = ({fetchDataAndDispatch }) => {
                 <h1>Deposit via <span>{buttons[activeButton]?.text}</span></h1>
                 {
                     activeButton === 1 ? (
-                        !isLoading && cryptoDetails?.length > 0 ? (
+                        !isLoading && cryptoDetails?.length > 1 ? (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                 <div>
                                     <p>Network Chain</p>
@@ -468,7 +468,7 @@ const Deposit = ({fetchDataAndDispatch }) => {
                     ) : null
                 }
                 {activeButton === 0 ? (
-                    !isLoading && cryptoDetails ? (
+                    bankDetails?.length > 1? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                             <div className='row'>
                                 {bankDetails.map((detail, index) => (

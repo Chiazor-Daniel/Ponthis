@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../../redux/features/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
+import { adminLogout } from '../../../redux/features/auth/admin-authSlice';
 
 function LogoutPage(props) {
   const { userToken } = useSelector(state => state.auth);
@@ -9,10 +10,18 @@ function LogoutPage(props) {
   const dispatch = useDispatch();
 
   const handleLogout = () => {
-    dispatch(logout());
-    localStorage.removeItem('userInfo');
-    localStorage.removeItem('token');
-    navigate("/")
+    if(props.userType == "user"){
+      dispatch(logout());
+      sessionStorage.removeItem('userInfo');
+      sessionStorage.removeItem('token');
+      navigate("/")
+    }
+    if(props.userType == "admin"){
+      dispatch(adminLogout());
+      sessionStorage.removeItem('adminInfo');
+      sessionStorage.removeItem('adminToken');
+      navigate("/")
+    }
   };
 
   // useEffect(() => {

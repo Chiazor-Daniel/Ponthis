@@ -130,7 +130,7 @@ const Home = ({ theme, fetchDataAndDispatch }) => {
                     .then((response) => {
                         console.log("Trade response:", response);
                         Swal.close(); // Close the loading spinner
-                        if (response && response[0] && response[0].status === "success") {
+                        if (response && response[0] && response[1].data.status === "success") {
                             fetchDataAndDispatch()
                             Swal.fire({
                                 title: "Trade Opened!",
@@ -142,7 +142,7 @@ const Home = ({ theme, fetchDataAndDispatch }) => {
                             // Show error modal if status is not success
                             Swal.fire({
                                 title: "Error!",
-                                text: "Something went wrong. Please try again later.",
+                                text: response[1].data.message,
                                 icon: "error",
                             });
                         }

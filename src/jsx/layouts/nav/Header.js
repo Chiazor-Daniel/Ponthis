@@ -13,7 +13,7 @@ import Avatar from "react-avatar";
 import { BsMagic } from "react-icons/bs";
 import MyTheme from "../../components/myTheme";
 
-const Header = ({ onNote, onThemeChange, userType }) => {
+const Header = ({ onNote, onThemeChange, userType, superAdmin }) => {
 	console.log(userType)
 	const [rightSelect, setRightSelect] = useState('Eng');
 	const { loading, userInfo, userToken, error, success } = useSelector(state => state.auth);
@@ -77,7 +77,7 @@ const Header = ({ onNote, onThemeChange, userType }) => {
 									<span className="ms-2">Profile</span>
 								</Link>
 
-								<LogoutPage />
+								<LogoutPage userType={userType}/>
 							</Dropdown.Menu>
 						</Dropdown>
 					</div>
@@ -93,7 +93,9 @@ const Header = ({ onNote, onThemeChange, userType }) => {
 										className="dashboard_bar"
 										style={{ textTransform: "capitalize", display: "flex", alignItems: "center", gap: "10px", gap: "20px" }}
 									>
-										Admin
+										{
+											superAdmin ? "Super Admin" : "Admin"
+										}
 									</div>
 								</div>
 							</div>
@@ -118,7 +120,7 @@ const Header = ({ onNote, onThemeChange, userType }) => {
 									</svg>
 									<span className="ms-2">Profile</span>
 								</Link>
-								<LogoutPage />
+								<LogoutPage userType={userType}/>
 							</Dropdown.Menu>
 						</Dropdown>
 					</div>

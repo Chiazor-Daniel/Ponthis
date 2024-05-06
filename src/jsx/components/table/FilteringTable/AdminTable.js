@@ -1,110 +1,22 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTable, useGlobalFilter, useFilters, usePagination } from 'react-table';
 import { GlobalFilter } from './GlobalFilter';
-import { Nav } from 'react-bootstrap';
+import { Nav, Modal, Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import './filtering.css';
 
-export const dummyData = [
-  {
-    id: 1,
-    firstName: 'Hans',
-    lastName: 'Schmidt',
-    email: 'hans.schmidt@example.com',
-    phoneNumber: '555-555-5555',
-    canAutoTrade: true,
-    isActive: true
-  },
-  {
-    id: 2,
-    firstName: 'Anna',
-    lastName: 'Müller',
-    email: 'anna.muller@example.com',
-    phoneNumber: '555-555-5556',
-    canAutoTrade: false,
-    isActive: false
-  },
-  {
-    id: 3,
-    firstName: 'Johann',
-    lastName: 'Schneider',
-    email: 'johann.schneider@example.com',
-    phoneNumber: '555-555-5557',
-    canAutoTrade: true,
-    isActive: true
-  },
-  {
-    id: 4,
-    firstName: 'Maria',
-    lastName: 'Fischer',
-    email: 'maria.fischer@example.com',
-    phoneNumber: '555-555-5558',
-    canAutoTrade: false,
-    isActive: true
-  },
-  {
-    id: 5,
-    firstName: 'Julia',
-    lastName: 'Weber',
-    email: 'julia.weber@example.com',
-    phoneNumber: '555-555-5559',
-    canAutoTrade: true,
-    isActive: false
-  },
-  {
-    id: 6,
-    firstName: 'Michael',
-    lastName: 'Wagner',
-    email: 'michael.wagner@example.com',
-    phoneNumber: '555-555-5560',
-    canAutoTrade: false,
-    isActive: true
-  }
-];
+const AdminTable = ({ data, columns, title, leads, superAdmin }) => {
+  const navigate = useNavigate();
 
+  const [showModal, setShowModal] = useState(false);
 
-export const AdminTable = () => {
-  const columns = useMemo(() => [
-    {
-      Header: 'First Name',
-      accessor: 'firstName'
-    },
-    {
-      Header: 'Last Name',
-      accessor: 'lastName'
-    },
-    {
-      Header: 'Email',
-      accessor: 'email'
-    },
-    {
-      Header: 'Phone Number',
-      accessor: 'phoneNumber'
-    },
-    {
-      Header: 'Can Auto Trade',
-      accessor: 'canAutoTrade',
-      Cell: ({ value }) => (value ? 'Yes' : 'No')
-    },
-    {
-      Header: 'Is Active',
-      accessor: 'isActive',
-      Cell: ({ value }) => (value ? 'Yes' : 'No')
-    },
-    {
-      accessor: 'id',
-      Cell: ({ row }) => (
-        <button className='btn btn-primary' onClick={() => navigate(`/admin/admin-dashboard/user/${row.original.id}`)}>View User</button>
-      )
-    }
-  ], []);
-
-  const navigate = useNavigate()
+  const handleCloseModal = () => setShowModal(false);
+  const handleShowModal = () => setShowModal(true);
 
   const tableInstance = useTable(
     {
       columns,
-      data: dummyData,
+      data,
       initialState: { pageIndex: 0 }
     },
     useFilters,
@@ -129,99 +41,173 @@ export const AdminTable = () => {
     state: { pageIndex, globalFilter }
   } = tableInstance;
 
+  const [formData, setFormData] = useState({
+    firstName: 'John',
+    lastName: 'Doe',
+    email: 'john.doe@example.com',
+    phoneNumber: '123-456-7890',
+    status: 'Active',
+    country: 'United States',
+    address: '123 Main Street',
+    dateOfBirth: '1990-01-01',
+    activated: true,
+    createdAt: '2024-05-06'
+  });
+  
+
+  // Handle form input change
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  // Handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Submit form data, e.g., via API call
+    console.log(formData);
+    // Close modal
+    handleCloseModal();
+  };
+
   return (
     <>
       <div className="card">
-        <div className="card-header">
-          <h4 className="card-title">View Users</h4>
+        <div className="card-header" style={{display: "flex", justifyContent: "space-between"}}>
+          <h4 className="card-title">{title}</h4>
+          {
+            leads && (
+              <button className='btn btn-primary' onClick={handleShowModal}>Create new lead</button>
+            )
+          }
         </div>
-        <div className="card-body"><div className="table-responsive">
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} w={true}/>
-            <div>
-
-              <Nav as="ul" className="order nav-tabs" id="pills-tab" role="tablist">
-                <Nav.Item as="li" className=" my-1" role="presentation">
-                  <Nav.Link as="button" eventKey="All" type="button" >All</Nav.Link>
-                </Nav.Item>
-                <Nav.Item as="li" className=" my-1" role="presentation">
-                  <Nav.Link as="button" eventKey="Spot" type="button">Activated</Nav.Link>
-                </Nav.Item>
-                <Nav.Item as="li" className=" my-1" role="presentation">
-                  <Nav.Link as="button" className="me-0" eventKey="Listing" type="button">Deactivated</Nav.Link>
-                </Nav.Item>
-              </Nav>
-            </div>
-
-          </div>
-          <table {...getTableProps()} className="table dataTable display">
-            <thead>
-              {headerGroups.map(headerGroup => (
-                <tr {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map(column => (
-                    <th {...column.getHeaderProps()}>
-                      {column.render('Header')}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody {...getTableBodyProps()}>
-              {page.map((row) => {
-                prepareRow(row)
-                return (
-                  <tr {...row.getRowProps()}>
-                    {row.cells.map((cell, index) => {
-                      // Check if the current cell corresponds to the "Transaction Amount" column
-                      if (index === 4) { // Assuming "Transaction Amount" is the fifth column (index 4)
-                        return <td {...cell.getCellProps()}>{cell.render('Cell')} </td>; // Prepend '$' to the cell value
-                      } else {
-                        return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>; // Render other columns normally
-                      }
-                    })}
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-          <div className="d-flex justify-content-between">
-            <span>
-              Page{' '}
-              <strong>
-                {pageIndex + 1} of {pageOptions.length}
-              </strong>{''}
-            </span>
-            <span className="table-index">
-              Go to page : {' '}
-              <input type="number"
-                className="ml-2"
-                defaultValue={pageIndex + 1}
-                onChange={e => {
-                  const pageNumber = e.target.value ? Number(e.target.value) - 1 : 0
-                  gotoPage(pageNumber)
-                }}
-              />
-            </span>
-          </div>
-          {/* <div className="text-center mb-3">
-              <div className="filter-pagination  mt-3">
-                <button className=" previous-button" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>{'<<'}</button>
-                <button className="previous-button" onClick={() => previousPage()} disabled={!canPreviousPage}>Previous</button>
-                <button className="next-button" onClick={() => nextPage()} disabled={!canNextPage}>Next</button>
-                <button className=" next-button" onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>{'>>'}</button>
+        <div className="card-body">
+          <div className="table-responsive">
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} w={true} />
+              <div>
+                <Nav as="ul" className="order nav-tabs" id="pills-tab" role="tablist">
+                  <Nav.Item as="li" className=" my-1" role="presentation">
+                    <Nav.Link as="button" eventKey="All" type="button" >All</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item as="li" className=" my-1" role="presentation">
+                    <Nav.Link as="button" eventKey="Spot" type="button">Activated</Nav.Link>
+                  </Nav.Item>
+                  <Nav.Item as="li" className=" my-1" role="presentation">
+                    <Nav.Link as="button" className="me-0" eventKey="Listing" type="button">Deactivated</Nav.Link>
+                  </Nav.Item>
+                </Nav>
               </div>
-            </div> */}
-        </div>
+            </div>
+            <table {...getTableProps()} className="table dataTable display">
+              <thead>
+                {headerGroups.map(headerGroup => (
+                  <tr {...headerGroup.getHeaderGroupProps()}>
+                    {headerGroup.headers.map(column => (
+                      <th {...column.getHeaderProps()}>
+                        {column.render('Header')}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody {...getTableBodyProps()}>
+                {page.map((row) => {
+                  prepareRow(row)
+                  return (
+                    <tr {...row.getRowProps()}>
+                      {row.cells.map((cell, index) => {
+                        return (
+                          <td {...cell.getCellProps()}>
+                            {cell.render('Cell')}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+            <div className="d-flex justify-content-between">
+              <span>
+                Page{' '}
+                <strong>
+                  {pageIndex + 1} of {pageOptions.length}
+                </strong>{''}
+              </span>
+              <span className="table-index">
+                Go to page : {' '}
+                <input type="number"
+                  className="ml-2"
+                  defaultValue={pageIndex + 1}
+                  onChange={e => {
+                    const pageNumber = e.target.value ? Number(e.target.value) - 1 : 0
+                    gotoPage(pageNumber)
+                  }}
+                />
+              </span>
+            </div>
+          </div>
         </div>
       </div>
-    </>
-  )
 
-  function viewUser(user) {
-    // Implement the view user functionality here.
-    // You can access the user data using the `user` argument.
-    console.log('View user:', user);
-  }
-}
+      <Modal show={showModal} onHide={handleCloseModal} size="lg">
+  <Modal.Header closeButton>
+    <Modal.Title>Create New Lead</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <Form onSubmit={handleSubmit}>
+      <Form.Group controlId="formFirstName">
+        <Form.Label>First Name</Form.Label>
+        <Form.Control type="text" name="firstName" value={formData.firstName} onChange={handleChange} />
+      </Form.Group>
+      <Form.Group controlId="formLastName">
+        <Form.Label>Last Name</Form.Label>
+        <Form.Control type="text" name="lastName" value={formData.lastName} onChange={handleChange} />
+      </Form.Group>
+      <Form.Group controlId="formEmail">
+        <Form.Label>Email</Form.Label>
+        <Form.Control type="email" name="email" value={formData.email} onChange={handleChange} />
+      </Form.Group>
+      <Form.Group controlId="formPhoneNumber">
+        <Form.Label>Phone Number</Form.Label>
+        <Form.Control type="text" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} />
+      </Form.Group>
+      <Form.Group controlId="formStatus">
+        <Form.Label>Status</Form.Label>
+        <Form.Control type="text" name="status" value={formData.status} onChange={handleChange} />
+      </Form.Group>
+      <Form.Group controlId="formCountry">
+        <Form.Label>Country</Form.Label>
+        <Form.Control type="text" name="country" value={formData.country} onChange={handleChange} />
+      </Form.Group>
+      <Form.Group controlId="formAddress">
+        <Form.Label>Address</Form.Label>
+        <Form.Control type="text" name="address" value={formData.address} onChange={handleChange} />
+      </Form.Group>
+      <Form.Group controlId="formDateOfBirth">
+        <Form.Label>Date of Birth</Form.Label>
+        <Form.Control type="text" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} />
+      </Form.Group>
+      <Form.Group controlId="formActivated">
+        <Form.Check type="checkbox" label="Activated" name="activated" checked={formData.activated} onChange={handleChange} />
+      </Form.Group>
+      <Form.Group controlId="formCreatedAt">
+        <Form.Label>Created At</Form.Label>
+        <Form.Control type="text" name="createdAt" value={formData.createdAt} onChange={handleChange} />
+      </Form.Group>
+      <Button variant="primary" type="submit">
+        Submit
+      </Button>
+    </Form>
+  </Modal.Body>
+</Modal>
+
+    </>
+  );
+};
 
 export default AdminTable;

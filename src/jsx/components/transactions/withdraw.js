@@ -276,10 +276,10 @@ const Withdraw = ({fetchDataAndDispatch}) => {
                 } else {
                     // Close loading spinner
                     loadingToast.close();
-        
+                    console.log(response.data[1].data.message)
                     Swal.fire({
                         title: "Error",
-                        text: response.data[1]?.data,
+                        text: response.data[1].data.message,
                         icon: "error",
                     });
                 }
@@ -531,7 +531,7 @@ const Withdraw = ({fetchDataAndDispatch}) => {
                     </div>
                 )}
                 {activeButton === 1 ? (
-                    !isLoading ? (
+                    cryptoDetails?.length > 1 ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                             <div>
                                 <p>Network Chain</p>
