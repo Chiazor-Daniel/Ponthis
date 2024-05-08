@@ -287,9 +287,9 @@ export const adminApi = createApi({
       }), 
       addComments: builder.mutation({
         query: ({token, admin_id, lead_id, comment})=>{
-          const queryString = new URLSearchParams({ admin_id, comment }).toString()
+          const queryString = new URLSearchParams({ admin_id, comment })
           return{
-            url: `/admin/crm/add-comment/${lead_id}/?${queryString}`, 
+            url: `/admin/crm/add-comment/${lead_id}?admin_id=${admin_id}&comment=${comment}`, 
             method: "POST",
             headers: {
               'Content-Type': 'application/json',

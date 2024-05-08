@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import AdminTable from '../components/table/FilteringTable/AdminTable';
 import { useGetAllAdminsQuery } from '../../redux/services/admin';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +7,8 @@ import Finance from './finance';
 import { useGetAllUsersQuery } from '../../redux/services/admin';
 import { useGetPaymentDetailsQuery } from '../../redux/services/paymentDetails';
 import { useGetSingleAdminQuery } from '../../redux/services/admin';
+import CreateAdminModal from './createAdmin';
+import { Button } from 'react-bootstrap';
 
 const AdminDashboard = ({setUserType, superAdmin}) => {
   const navigate = useNavigate();
@@ -14,9 +16,13 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
   const { data: allUsers, isLoading: isUsersLoading, error: isUsersError } = useGetAllUsersQuery(adminToken);
   const { data: paymentDetails, isLoading: isPaymentLoading, error: isPaymentError, refetch: refetchPaymentDetails } = useGetPaymentDetailsQuery(adminToken);
   const { data, error, isLoading } = useGetAllAdminsQuery(adminToken);
+  const [showCreateAdminModal, setShowCreateAdminModal] = useState(false);
   const { data: admin, isLoading: isAdminLoading, error: isAdminError, refetch } = useGetSingleAdminQuery({ id: adminInfo.id, adminToken: adminToken });
 
-
+  const handleCreateAdmin = (formData) => {
+   
+    setShowCreateAdminModal(false);
+  };
   const user_columns = React.useMemo(
     () => [
       {
@@ -167,7 +173,11 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
 
   return (
     <>
+       <CreateAdminModal show={showCreateAdminModal} onHide={() => setShowCreateAdminModal(false)} onCreateAdmin={handleCreateAdmin} />
+    <div style={{display: "flex", justifyContent:"space-between", alignItems: "center", padding: "10px"}}>
     <h1>Admin Management</h1>
+    <Button onClick={() => setShowCreateAdminModal(true)}>Create an Admin</Button>
+    </div>
     {isLoading && <div>Loading...</div>}
     {!isLoading && data && superAdmin && <AdminTable columns={columns} data={data} />}
     {!isLoading && allUsers && superAdmin && <AdminTable columns={user_columns} data={allUsers} title={'Users'} superAdmin={superAdmin} />}

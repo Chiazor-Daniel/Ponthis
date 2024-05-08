@@ -25,7 +25,7 @@ const ViewLead = () => {
     const [loadingActivate, setLoadingActivate] = useState(false);
     const [activateLead] = useActivateLeadMutation();
     const [deleteLead] = useDeleteLeadMutation()
-    const { data: comments, isLoading: commentsLoading, error: commentsError } = useViewCommentsQuery({ admin_id: adminInfo.id, lead_id: id, token: adminToken })
+    const { data: comments, isLoading: commentsLoading, error: commentsError, refetch: refetchComments } = useViewCommentsQuery({ admin_id: adminInfo.id, lead_id: id, token: adminToken })
     const crmCommentsColumns = React.useMemo(
         () => [
             {
@@ -237,7 +237,7 @@ const ViewLead = () => {
                         <div className='col-6' style={{ margin: "auto", height: "auto" }}>
                             <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
                                 <Form.Label><FaComment /> Add a comment</Form.Label>
-                                <Form.Control as="textarea" rows={6} style={{ height: "100%",  }} onChange={(e)=>setComment(e.target.value)} value={comment}/>
+                                <Form.Control as="textarea" rows={6} style={{ height: "100%",  }} onChange={(e)=>setComment(e.target.value)} value={comment} required/>
                             </Form.Group>
                             <div style={{display: "flex", justifyContent: "flex-end"}}>
                                 <Button onClick={()=>{
@@ -252,10 +252,25 @@ const ViewLead = () => {
                                     }).then(async (result)=>{
                                         if(result.isConfirmed){
                                             try{
-                                                const res = await addComments({token: adminToken, lead_id: id, admin_id: adminInfo.id, comment: comment.toString()})
+                                                const res = await addComments({token: adminToken, lead_id: parseInt(id), admin_id: parseInt(adminInfo.id), comment: comment})
+                                                console.log({token: adminToken, lead_id: id, admin_id: parseInt(adminInfo.id), comment: comment})
                                                 console.log(res)
+                                                if(res.data.comment){
+                                                    refetchComments()
+                                                    Swal.fire({
+                                                        icon: "success", 
+                                                        confirmButtonColor: '#3085d6',
+                                                        title: "comment added"
+                                                    })
+                                                }
                                             }catch(err){
                                                 console.log(err)
+                                                Swal.fire({
+                                                    icon: "error", 
+                                                    title: "An error occured. Try again", 
+                                                    confirmButtonColor: '#3085d6',
+                                                    
+                                                })
                                             }
                                         }
                                     })
