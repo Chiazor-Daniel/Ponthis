@@ -8,7 +8,7 @@ export const tradeDetailsApi = createApi({
   endpoints: (builder) => ({
     getAllTrades: builder.query({
       query: (token) => ({
-        url: '/user/trader/get-all-trade',
+        url: '/user/trader/get-all-trade/',
         headers: {
           'Content-Type': 'application/json',
           "x-token": token

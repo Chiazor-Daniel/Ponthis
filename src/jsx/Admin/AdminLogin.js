@@ -57,7 +57,7 @@ function AdminLogin(props) {
                   navigate("/admin/admin-dashboard");
                   props.setUserType("admin");
                   if(user.data.user_type === "super_admin"){
-                    props.setSuperAdmin( true)
+                    props.setSuperAdmin(true)
                   }else{
                     props.setSuperAdmin(false)
                   }

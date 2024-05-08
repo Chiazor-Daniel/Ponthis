@@ -130,7 +130,7 @@ const Home = ({ theme, fetchDataAndDispatch }) => {
                     .then((response) => {
                         console.log("Trade response:", response);
                         Swal.close(); // Close the loading spinner
-                        if (response && response[0] && response[1].data.status === "success") {
+                        if (response && response[0] && response[0].status === "success") {
                             fetchDataAndDispatch()
                             Swal.fire({
                                 title: "Trade Opened!",

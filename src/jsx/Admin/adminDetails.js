@@ -271,7 +271,7 @@ const AdminDetails = () => {
             </Dropdown.Toggle>
             <Dropdown.Menu>
               <Dropdown.Item href='#/action-1'>
-                <button className='btn' style={{ backgroundColor: 'red', color: 'white' }}>Deactivate Admin</button>
+                <button className='btn' style={{ backgroundColor: 'red', color: 'white' }}>Delete Admin</button>
               </Dropdown.Item>
               <Dropdown.Item href='#/action-2'></Dropdown.Item>
             </Dropdown.Menu>

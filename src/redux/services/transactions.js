@@ -10,7 +10,7 @@ export const transactionsApi = createApi({
         const depositBody = generateDepositBody(amount, type, cardData);
         console.log(depositBody)
         return {
-          url: '/user/transaction/deposit-transaction',
+          url: '/user/transaction/deposit-transaction/',
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

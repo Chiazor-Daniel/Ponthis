@@ -6,7 +6,7 @@ import NavHader from "./NavHader";
 import Header from "./Header";
 import { ThemeContext } from "../../../context/ThemeContext";
 
-const JobieNav = ({ title, onClick: ClickToAddEvent, onClick2, onClick3, onDarkModeChange, userType, superAdmin }) => {
+const JobieNav = ({ title, onClick: ClickToAddEvent, onClick2, onClick3, onDarkModeChange, userType, superAdmin, asAdmin, setAsAdmin, setUserType }) => {
   console.log("joe", superAdmin)
   const [toggle, setToggle] = useState("");
   const [dark, setDark] = useState("");
@@ -24,13 +24,16 @@ const JobieNav = ({ title, onClick: ClickToAddEvent, onClick2, onClick3, onDarkM
 
   return (
     <Fragment>
-      <NavHader userType={userType} superAdmin={superAdmin}/>
+      <NavHader userType={userType} superAdmin={superAdmin} setAsAdmin={setAsAdmin} asAdmin={asAdmin}/>
       <Header
           onNote={() => onClick("chatbox")}
           onNotification={() => onClick("notification")}
           onProfile={() => onClick("profile")}
           toggle={toggle}
           title={title}
+          setAsAdmin={setAsAdmin}
+          asAdmin={asAdmin}
+          setUserType={setUserType}
           userType={userType}
           superAdmin={superAdmin}
           onBox={() => onClick("box")}

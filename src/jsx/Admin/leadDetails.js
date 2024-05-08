@@ -1,18 +1,63 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { useEditLeadMutation, useGetSingleLeadQuery } from '../../redux/services/admin';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useEditLeadMutation, useGetSingleLeadQuery, useViewCommentsQuery } from '../../redux/services/admin';
 import { useSelector } from 'react-redux';
 import { Button, Form } from 'react-bootstrap';
 import Swal from 'sweetalert2';
 import Avatar from 'react-avatar';
 import { Dropdown } from 'react-bootstrap';
 import { BiSolidBoltCircle } from 'react-icons/bi';
+import ToggleSwitch from '../components/toggleSwitch';
+import { useActivateLeadMutation } from '../../redux/services/admin';
+import { FaComment } from "react-icons/fa";
+import AdminTable from '../components/table/FilteringTable/AdminTable';
+import { useDeleteLeadMutation } from '../../redux/services/admin';
+import { useAddCommentsMutation } from '../../redux/services/admin';
 
 const ViewLead = () => {
+    const navigate = useNavigate()
     const { id } = useParams();
-    const { adminToken } = useSelector(state => state.adminAuth);
-    const { data, isLoading, error, refetch } = useGetSingleLeadQuery({ token: adminToken, lead_id: id });
+    const { adminInfo, adminToken } = useSelector(state => state.adminAuth);
+    const { data, isLoading, error, refetch } = useGetSingleLeadQuery({ token: adminToken, lead_id: id, admin_id: adminInfo.id });
     const [editLead, { isLoading: editing, error: editError }] = useEditLeadMutation()
+    const [addComments] = useAddCommentsMutation()
+    const [comment, setComment] = useState('');
+    const [loadingActivate, setLoadingActivate] = useState(false);
+    const [activateLead] = useActivateLeadMutation();
+    const [deleteLead] = useDeleteLeadMutation()
+    const { data: comments, isLoading: commentsLoading, error: commentsError } = useViewCommentsQuery({ admin_id: adminInfo.id, lead_id: id, token: adminToken })
+    const crmCommentsColumns = React.useMemo(
+        () => [
+            {
+                Header: 'ID',
+                accessor: 'id',
+            },
+            {
+                Header: 'Created At',
+                accessor: 'created_at',
+            },
+            {
+                Header: 'User ID',
+                accessor: 'user_id',
+            },
+            {
+                Header: 'Comment',
+                accessor: 'comment',
+            },
+            {
+                Header: 'Actions',
+                accessor: '',
+                Cell: ({ value }) => (
+                    <div style={{ display: "flex", gap: "20px" }}>
+                        {/* Add your action buttons here */}
+                        <button className='btn btn-primary'> View comment</button>
+                        {/* Add more buttons if needed */}
+                    </div>
+                ),
+            },
+        ],
+        [] // Empty dependency array, assuming you don't need any dynamic changes
+    );
 
     const [formData, setFormData] = useState({
         firstName: '',
@@ -59,6 +104,7 @@ const ViewLead = () => {
                     const res = await editLead({
                         token: adminToken,
                         lead_id: id,
+                        admin_id: adminInfo.id,
                         ...formData
                     })
                     if (res.data.status === "success") {
@@ -89,6 +135,39 @@ const ViewLead = () => {
         })
     }
 
+    const handleToggleActivation = async () => {
+        setLoadingActivate(true); // Set loading state to true
+        try {
+            const res = await activateLead({ lead_id: id, token: adminToken, admin_id: adminInfo.id });
+            console.log(res)
+            if (res.data.status === "success") {
+                refetch();
+                Swal.fire({
+                    title: "Lead activated successfully",
+                    icon: "success",
+                    confirmButtonColor: '#3085d6',
+                });
+            } else {
+                Swal.fire({
+                    title: "Error",
+                    text: "An error occurred while activating the lead. Please try again later.",
+                    icon: "error",
+                    confirmButtonColor: '#3085d6',
+                });
+            }
+        } catch (error) {
+            console.error("Error activating lead:", error);
+            Swal.fire({
+                title: "Error",
+                text: "An error occurred while activating the lead. Please try again later.",
+                icon: "error",
+                confirmButtonColor: '#3085d6',
+            });
+        } finally {
+            setLoadingActivate(false); // Set loading state back to false
+        }
+    };
+
     // Destructure state variables
     const { firstName, lastName, email, phoneNumber, status, country, address, dateOfBirth, activated, createdAt } = formData;
 
@@ -99,28 +178,129 @@ const ViewLead = () => {
             [name]: type === 'checkbox' ? checked : value
         }));
     };
-    if (!isLoading)
+    const handleDelete = async () => {
+        Swal.fire({
+            title: 'Confirm delete lead',
+            text: 'Are you sure you want to create this lead?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!',
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                console.log({
+                    token: adminToken,
+                    lead_id: id,
+                    admin_id: adminInfo.id
+                })
+                try {
+                    const res = await deleteLead({
+                        token: adminToken,
+                        lead_id: id,
+                        admin_id: adminInfo.id
+                    });
+                    console.log("this res", res)
+                    if (res.data.status === "success") {
+                        refetch()
+                        Swal.fire({
+                            title: 'Lead deleted successfully',
+                            icon: 'success',
+                            confirmButtonColor: '#3085d6',
+                            onClose: () => {
+                                navigate("/admin/admin-dashboard/crm")
+                            }
+                        });
+                    } else {
+                        refetch()
+                        throw new Error('An error occurred while deleting the lead.');
+                    }
+                } catch (error) {
+                    refetch()
+                    Swal.fire({
+                        title: 'Error',
+                        text: `An error occurred while deleting the lead`,
+                        icon: 'error',
+                        confirmButtonColor: '#3085d6'
+                    });
+                }
+            }
+        });
+    };
+    console.log("lead", comments)
+    if (!isLoading && data?.message)
         return (
             <div>
                 <h1>Lead Detail</h1>
+                <div className='row'>
+                    <div className=' col-12' style={{ padding: "20px", height: "auto" }}>
+                        <div className='col-6' style={{ margin: "auto", height: "auto" }}>
+                            <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+                                <Form.Label><FaComment /> Add a comment</Form.Label>
+                                <Form.Control as="textarea" rows={6} style={{ height: "100%",  }} onChange={(e)=>setComment(e.target.value)} value={comment}/>
+                            </Form.Group>
+                            <div style={{display: "flex", justifyContent: "flex-end"}}>
+                                <Button onClick={()=>{
+                                    Swal.fire({
+                                        icon: "info", 
+                                        title: "Add Comment", 
+                                        text: "Click ok to add commment", 
+                                        showCancelButton: true,
+                                        confirmButtonColor: '#3085d6',
+                                        cancelButtonColor: '#d33',
+                                        confirmButtonText: 'Yes, add it!',
+                                    }).then(async (result)=>{
+                                        if(result.isConfirmed){
+                                            try{
+                                                const res = await addComments({token: adminToken, lead_id: id, admin_id: adminInfo.id, comment: comment.toString()})
+                                                console.log(res)
+                                            }catch(err){
+                                                console.log(err)
+                                            }
+                                        }
+                                    })
+                                }}>Add comment</Button>
+                            </div>
+                        </div>
+                    </div>
+                    {
+                        comments ? (
+                            <AdminTable columns={crmCommentsColumns} data={comments} title={"Comments"} />
+                        ) : (
+                            <div className='d-flex' style={{ alignItems: "center", gap: "20px", justifyContent: "space-between ", padding: "10px" }}>
+                                <p>No comments found ...</p>
+                            </div>
+                        )
+                    }
+                </div>
                 <div className='row' style={{ gap: "50px", display: "flex", justifyContent: "center" }}>
                     <div className='card col-5' style={{ fontSize: "1.3rem", display: "flex", flexDirection: "column", alignItems: "center", padding: "20px" }}>
+                        <div className='col-12' style={{ display: "flex", justifyContent: "flex-start" }}>
+                            <ToggleSwitch
+                                checked={activated}
+                                onLabel={"Activated"}
+                                offLabel={"Deactivated"}
+                                onChange={handleToggleActivation} // Call the function to toggle activation
+                                disabled={loadingActivate} // Disable the toggle switch while loading
+                            />
+                        </div>
                         <div className="d-flex align-items-center mb-3" style={{ position: "relative" }}>
                             <Avatar name={`${data.message.first_name} ${data.message.last_name}`} size="150" round />
                             <div style={{ position: "absolute", top: "20px", right: "0px", width: "20px", height: "20px", borderRadius: "50%", backgroundColor: activated ? "green" : "gray" }}></div>
                         </div>
+
                         <Dropdown style={{ position: "absolute", right: 20 }}>
                             <Dropdown.Toggle style={{ backgroundColor: "transparent", border: "none", fontSize: "1.5rem", color: "#6c757d", padding: "0" }}>
                                 <BiSolidBoltCircle />
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                                 <Dropdown.Item href="#/action-1">
-                                    <button className='btn' style={{ backgroundColor: "red", color: "white" }}>Deactivate User</button>
+                                    <button className='btn' style={{ backgroundColor: "red", color: "white" }} onClick={handleDelete}>Delete Lead</button>
                                 </Dropdown.Item>
                                 {/* Add more dropdown items if needed */}
                             </Dropdown.Menu>
                         </Dropdown>
-                        <p>Full Name: {data.message.first_name} {data.message.last_name}</p>
+                        <p>Full Name: {data?.message.first_name} {data.message.last_name}</p>
                         <p>Email: {data.message.email}</p>
                         <p>Phone Number: {data.message.phone_number}</p>
                         <p>Status: {data.message.status}</p>
@@ -174,7 +354,7 @@ const ViewLead = () => {
                                     value={formData.dateOfBirth}
                                     onChange={handleChange}
                                 /> */}
-                                   <Form.Control type="text" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} />
+                                <Form.Control type="text" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} />
 
                             </Form.Group>
                             <Form.Group controlId="formActivated">

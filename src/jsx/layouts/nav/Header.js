@@ -1,20 +1,22 @@
 /* eslint-disable */
 import React, { useState, useEffect } from "react";
-import { Dropdown } from "react-bootstrap";
+import { Button, Dropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import LogoutPage from './Logout';
 import { ThemeContext } from "../../../context/ThemeContext";
 import { useContext } from "react";
 import avatar from "../../../images/avatar/1.jpg";
 import ToggleTheme from "../../components/toggleTheme/index.";
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { FaCircle } from "react-icons/fa6";
 import Avatar from "react-avatar";
 import { BsMagic } from "react-icons/bs";
 import MyTheme from "../../components/myTheme";
 
-const Header = ({ onNote, onThemeChange, userType, superAdmin }) => {
+const Header = ({ onNote, onThemeChange, userType, superAdmin, asAdmin, setAsAdmin, setUserType }) => {
 	console.log(userType)
+	const navigate= useNavigate()
 	const [rightSelect, setRightSelect] = useState('Eng');
 	const { loading, userInfo, userToken, error, success } = useSelector(state => state.auth);
 	const [isDark, setDark] = useState(true);
@@ -51,6 +53,13 @@ const Header = ({ onNote, onThemeChange, userType, superAdmin }) => {
 								</div>
 							</div>
 						</nav>
+						{
+							asAdmin && (
+								<Button style={{width: "auto", marginRight: "20px"}} onClick={()=>{setAsAdmin(false); navigate("/admin/admin-dashboard"); setUserType("admin")}}>Admin Dashboard</Button>
+
+							)
+						}
+
 						<MyTheme />
 
 						<ToggleTheme
@@ -100,6 +109,8 @@ const Header = ({ onNote, onThemeChange, userType, superAdmin }) => {
 								</div>
 							</div>
 						</nav>
+						
+					
 						<MyTheme />
 						<ToggleTheme
 							isDark={isDark}

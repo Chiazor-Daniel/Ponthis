@@ -4,9 +4,14 @@ import { GlobalFilter } from './GlobalFilter';
 import { Nav, Modal, Button, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import './filtering.css';
+import Swal from 'sweetalert2';
+import { useCreateLeadMutation } from '../../../../redux/services/admin';
+import { useSelector } from 'react-redux';
 
-const AdminTable = ({ data, columns, title, leads, superAdmin }) => {
+const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, refetch, showFilter }) => {
   const navigate = useNavigate();
+  const { adminToken } = useSelector(state => state.adminAuth);
+  const [createLead] = useCreateLeadMutation()
 
   const [showModal, setShowModal] = useState(false);
 
@@ -45,8 +50,8 @@ const AdminTable = ({ data, columns, title, leads, superAdmin }) => {
     firstName: 'John',
     lastName: 'Doe',
     email: 'john.doe@example.com',
-    phoneNumber: '123-456-7890',
-    status: 'Active',
+    phoneNumber: parseInt(1234567890),
+    status: 'Not Called',
     country: 'United States',
     address: '123 Main Street',
     dateOfBirth: '1990-01-01',
@@ -55,23 +60,60 @@ const AdminTable = ({ data, columns, title, leads, superAdmin }) => {
   });
   
 
-  // Handle form input change
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prevState => ({
       ...prevState,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : value,
+      phoneNumber: name === 'phoneNumber' ? parseInt(value) || '' : prevState.phoneNumber,
+      dateOfBirth: name === 'dateOfBirth' ? value || '' : prevState.dateOfBirth
     }));
   };
-
-  // Handle form submission
-  const handleSubmit = (e) => {
+  
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Submit form data, e.g., via API call
-    console.log(formData);
-    // Close modal
-    handleCloseModal();
+    Swal.fire({
+      title: 'Confirm lead creation',
+      text: 'Are you sure you want to create this lead?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, create it!',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          console.log("formData", formData)
+          const res = await createLead({
+            token: adminToken,
+            formData: formData
+          });
+          console.log(res)
+          if (res.data.status === "success") {
+            refetch()
+            Swal.fire({
+              title: 'Lead created successfully',
+              icon: 'success',
+              confirmButtonColor: '#3085d6'
+            });
+            handleCloseModal();
+          } else {
+            refetch()
+            throw new Error('An error occurred while creating the lead.');
+          }
+        } catch (error) {
+          refetch()
+          Swal.fire({
+            title: 'Error',
+            text: `An error occurred while creating the lead`,
+            icon: 'error',
+            confirmButtonColor: '#3085d6'
+          });
+        }
+      }
+    });
   };
+
 
   return (
     <>
@@ -89,17 +131,21 @@ const AdminTable = ({ data, columns, title, leads, superAdmin }) => {
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} w={true} />
               <div>
-                <Nav as="ul" className="order nav-tabs" id="pills-tab" role="tablist">
-                  <Nav.Item as="li" className=" my-1" role="presentation">
-                    <Nav.Link as="button" eventKey="All" type="button" >All</Nav.Link>
-                  </Nav.Item>
-                  <Nav.Item as="li" className=" my-1" role="presentation">
-                    <Nav.Link as="button" eventKey="Spot" type="button">Activated</Nav.Link>
-                  </Nav.Item>
-                  <Nav.Item as="li" className=" my-1" role="presentation">
-                    <Nav.Link as="button" className="me-0" eventKey="Listing" type="button">Deactivated</Nav.Link>
-                  </Nav.Item>
-                </Nav>
+                {
+                  showFilter && (
+                  <Nav as="ul" className="order nav-tabs" id="pills-tab" role="tablist">
+                    <Nav.Item as="li" className=" my-1" role="presentation">
+                      <Nav.Link as="button" eventKey="All" type="button" >All</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item as="li" className=" my-1" role="presentation">
+                      <Nav.Link as="button" eventKey="Spot" type="button">Activated</Nav.Link>
+                    </Nav.Item>
+                    <Nav.Item as="li" className=" my-1" role="presentation">
+                      <Nav.Link as="button" className="me-0" eventKey="Listing" type="button">Deactivated</Nav.Link>
+                    </Nav.Item>
+                  </Nav>
+                  )
+                }
               </div>
             </div>
             <table {...getTableProps()} className="table dataTable display">
@@ -178,7 +224,12 @@ const AdminTable = ({ data, columns, title, leads, superAdmin }) => {
       </Form.Group>
       <Form.Group controlId="formStatus">
         <Form.Label>Status</Form.Label>
-        <Form.Control type="text" name="status" value={formData.status} onChange={handleChange} />
+        <Form.Select name="status" value={formData.status} onChange={handleChange}>
+                  <option value="Call back">Call back</option>
+                  <option value="Unavailable">Unavailable</option>
+                  <option value="Not Interested">Not Interested</option>
+                  <option value="Not Called">Not Called</option>
+                </Form.Select>
       </Form.Group>
       <Form.Group controlId="formCountry">
         <Form.Label>Country</Form.Label>

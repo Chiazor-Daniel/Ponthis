@@ -12,7 +12,7 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
   const navigate = useNavigate();
   const { adminInfo, adminToken } = useSelector(state => state.adminAuth);
   const { data: allUsers, isLoading: isUsersLoading, error: isUsersError } = useGetAllUsersQuery(adminToken);
-  const { data: paymentDetails, isLoading: isPaymentLoaing, error: ispaymenterror, refetch: refetchPaymentdetails} = useGetPaymentDetailsQuery(adminToken)
+  const { data: paymentDetails, isLoading: isPaymentLoading, error: isPaymentError, refetch: refetchPaymentDetails } = useGetPaymentDetailsQuery(adminToken);
   const { data, error, isLoading } = useGetAllAdminsQuery(adminToken);
   const { data: admin, isLoading: isAdminLoading, error: isAdminError, refetch } = useGetSingleAdminQuery({ id: adminInfo.id, adminToken: adminToken });
 
@@ -168,19 +168,14 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
   return (
     <>
     <h1>Admin Management</h1>
-    {(data && superAdmin) && <AdminTable columns={columns} data={data} />}
-    {(allUsers && superAdmin) && (
-      <AdminTable columns={user_columns} data={allUsers} title={'Users'} superAdmin={superAdmin} />
-    )}
-  
-    {!superAdmin && admin && (
-      <AdminTable columns={user_columns2} data={admin.users_assigned} title={"Assigned users"} />
-    )}
-    {!superAdmin && !admin && <p>No assigned users</p>}
-  
-    {(paymentDetails && superAdmin) && (
-      <Finance paymentDetails={paymentDetails?.data} token={adminToken} refetch={refetchPaymentdetails}/>
-    )}
+    {isLoading && <div>Loading...</div>}
+    {!isLoading && data && superAdmin && <AdminTable columns={columns} data={data} />}
+    {!isLoading && allUsers && superAdmin && <AdminTable columns={user_columns} data={allUsers} title={'Users'} superAdmin={superAdmin} />}
+    {!isLoading && !superAdmin && admin && <AdminTable columns={user_columns} data={admin.users_assigned} title={"Assigned users"} />}
+    {!isLoading && !superAdmin && !admin && <p>No assigned users</p>}
+    {!isLoading && paymentDetails && superAdmin && data && <Finance paymentDetails={paymentDetails?.data} token={adminToken} refetch={refetchPaymentDetails} />}
+    {isUsersLoading && <div>Loading users...</div>}
+    {isPaymentLoading && <div>Loading payment details...</div>}
   </>
   
   );

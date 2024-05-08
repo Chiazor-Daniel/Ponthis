@@ -18,7 +18,7 @@ import { setUserAccount } from "../redux/features/account/accountSlice";
 import { useDispatch } from 'react-redux';
 import Swal from "sweetalert2";
 
-export function MainLayout({ children, userType, superAdmin }) {
+export function MainLayout({ children, userType, superAdmin, asAdmin, setAsAdmin, setUserType }) {
   const navigate = useNavigate();
   const { userToken, userInfo } = useSelector(state => state.auth);
   const { menuToggle } = useContext(ThemeContext);
@@ -100,14 +100,14 @@ export function MainLayout({ children, userType, superAdmin }) {
   
   const childrenWithProps = React.Children.map(children, child => {
     if (React.isValidElement(child)) {
-      return React.cloneElement(child, { fetchDataAndDispatch: fetchDataAndDispatch, userType: userType, superAdmin: superAdmin });
+      return React.cloneElement(child, { fetchDataAndDispatch: fetchDataAndDispatch, userType: userType, superAdmin: superAdmin, asAdmin: asAdmin, setAsAdmin: setAsAdmin });
     }
     return child;
   });
 
   return (
     <div id="main-wrapper" className={`show ${menuToggle ? "menu-toggle" : ""}`}>
-      <Nav onDarkModeChange={(newTheme) => setTheme(newTheme)} userType={userType} superAdmin={superAdmin}/>
+      <Nav onDarkModeChange={(newTheme) => setTheme(newTheme)} userType={userType} superAdmin={superAdmin} setAsAdmin={setAsAdmin} asAdmin={asAdmin} setUserType={setUserType}/>
       <div className="content-body" style={{ minHeight: window.screen.height - 45 }}>
         <div className="container-fluid">
           {

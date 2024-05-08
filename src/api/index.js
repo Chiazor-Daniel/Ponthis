@@ -1,1 +1,1 @@
-export const BASE_URL = "http://93.127.203.25"
+export const BASE_URL = "https://api.finnetexh.tech"

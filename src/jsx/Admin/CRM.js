@@ -1,16 +1,17 @@
   import React, { useState } from 'react';
   import AdminTable from '../components/table/FilteringTable/AdminTable';
-  import { useGetAllLeadsQuery } from '../../redux/services/admin';
+  import { useDeleteLeadMutation, useGetAllLeadsQuery } from '../../redux/services/admin';
   import { useSelector } from 'react-redux';
   import { useNavigate } from 'react-router-dom';
   import { Button, Spinner, Form, Modal } from 'react-bootstrap';
   import { useCreateLeadMutation } from '../../redux/services/admin';
   import Swal from 'sweetalert2';
-  const CRM = () => {
+  const CRM = ({superAdmin}) => {
     const navigate = useNavigate();
-    const { adminToken } = useSelector(state => state.adminAuth);
+    const { adminInfo, adminToken } = useSelector(state => state.adminAuth);
     const [createLead] = useCreateLeadMutation()
-    const { data: allLeads, isLoading, error , refetch} = useGetAllLeadsQuery(adminToken);
+    const [deleteLead] = useDeleteLeadMutation()
+    const { data: allLeads, isLoading, error , refetch} = useGetAllLeadsQuery({admin_id: adminInfo.id, token: adminToken});
     const [showModal, setShowModal] = useState(false);
     const handleCloseModal = () => setShowModal(false);
     const handleShowModal = () => setShowModal(true);
@@ -32,6 +33,7 @@
         [name]: type === 'checkbox' ? checked : value
       }));
     };
+    
     const handleSubmit = async (e) => {
       e.preventDefault();
       Swal.fire({
@@ -45,7 +47,7 @@
       }).then(async (result) => {
         if (result.isConfirmed) {
           try {
-            console.log(formData)
+            console.log("formData", formData)
             const res = await createLead({
               token: adminToken,
               formData: {
@@ -86,6 +88,53 @@
         }
       });
     };
+    const handleDelete = async (id) => {
+      Swal.fire({
+        title: 'Confirm delete lead',
+        text: 'Are you sure you want to create this lead?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!',
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          console.log({
+            token: adminToken,
+            lead_id: id, 
+            admin_id: adminInfo.id
+          })
+          try {
+            const res = await deleteLead({
+              token: adminToken,
+              lead_id: id, 
+              admin_id: adminInfo.id
+            });
+            console.log("this res", res)
+            if (res.data.status === "success") {
+              refetch()
+              Swal.fire({
+                title: 'Lead deleted successfully',
+                icon: 'success',
+                confirmButtonColor: '#3085d6'
+              });
+              handleCloseModal();
+            } else {
+              refetch()
+              throw new Error('An error occurred while deleting the lead.');
+            }
+          } catch (error) {
+            refetch()
+            Swal.fire({
+              title: 'Error',
+              text: `An error occurred while deleting the lead`,
+              icon: 'error',
+              confirmButtonColor: '#3085d6'
+            });
+          }
+        }
+      });
+    };
 
     const crmLeads = React.useMemo(
       () => [
@@ -109,10 +158,15 @@
           Header: 'Status',
           accessor: 'status',
         },
-        {
+        !superAdmin ? {
           Header: 'Assigned To',
           accessor: 'assigned_to',
           Cell: ({ value }) => (value ? value : 'Not Assigned'),
+        } : {
+          // Dummy column when superAdmin is false
+          Header: '',
+          accessor: 'dummy_assigned_to',
+          show: false, // Hide this column
         },
         {
           Header: 'Country',
@@ -137,20 +191,22 @@
           Cell: ({ value }) => (
             <div style={{ display: "flex", gap: "20px" }}>
               <button className='btn btn-primary' onClick={() => navigate(`/admin/admin-dashboard/lead/${value}`)}>View lead</button>
-              <Button variant="danger">Delete lead</Button>
+              <Button variant="danger" onClick={()=>handleDelete(value)}>Delete lead</Button>
+
             </div>
           ),
         },
       ],
       []
-    );
-    // if(error){
-    //   console.log(error)
-    // }
-    if (isLoading) {
-      return <Spinner animation="border" />;
-    } else if (allLeads?.message) {
-      return <AdminTable columns={crmLeads} data={allLeads?.message} title={"All Leads"} leads={true} />;
+      );
+      // if(error){
+        //   console.log(error)
+        // }
+        console.log(allLeads)
+        if (isLoading) {
+          return <Spinner animation="border" />;
+    } else if (Array.isArray(allLeads?.message)) {
+      return <AdminTable columns={crmLeads} data={allLeads?.message} title={"All Leads"} leads={true} createNewLead={handleSubmit} refetch={refetch}/>;
     } else {
       return <div>No data available <Button onClick={handleShowModal}>Create Lead</Button>
         <Modal show={showModal} onHide={handleCloseModal} size="lg">

@@ -12,12 +12,12 @@ import { useEditUseretailsMutation } from '../../redux/services/admin';
 import FilteringTable from '../components/table/FilteringTable/FilteringTable';
 import Swal from 'sweetalert2';
 import { useLoginUserMutation } from '../../redux/services/admin';
-import { loginSuccess } from '../../redux/features/auth/authSlice';
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import { BASE_URL } from '../../api';
-const UserDetails = ({setUserType}) => {
+import { loginSuccess } from '../../redux/features/auth/authSlice';
+const UserDetails = ({setUserType, setAsAdmin}) => {
     const { id } = useParams();
     const dispatch = useDispatch()
     const navigate = useNavigate();
@@ -146,29 +146,33 @@ const UserDetails = ({setUserType}) => {
             if (loginRes.data.status === 'success') {
                 // Perform actions after successful login outside of Swal
                 const userToken = loginRes?.data["access-token"];
-                axios.get(`${BASE_URL}/user/profile/users/`, {
+                const userInfo = await axios.get(`${BASE_URL}/user/profile/users/`, {
                     headers: {
                         "x-token": userToken
                     }
-                }).then((user) => {
-                    console.log(user);
-                    sessionStorage.setItem("userInfo", JSON.stringify(user.data));
-                    dispatch(loginSuccess({ userInfo: user.data, userToken: userToken }));
-                    if (user) {
-                        Swal.fire({
-                            icon: "success", 
-                            title: "Login user success", 
-                            text: "logged into user account successfully",
-                            showConfirmButton: false,
-                        })
-                        toast.success("Login successful!", {
-                            autoClose: 1000,
-                            position: toast.POSITION.TOP_CENTER,
-                            onClose: () => {
-                                navigate("/dashboard");
-                                setUserType("user");
-                            }
-                        });
+                });
+    
+                sessionStorage.setItem("userToken", userToken); // Save user token in sessionStorage
+                sessionStorage.setItem("userInfo", JSON.stringify(userInfo.data)); // Save user info in sessionStorage
+                dispatch(loginSuccess({userInfo: userInfo.data, userToken: userToken}))
+                localStorage.setItem("user", "user")
+
+    
+                Swal.fire({
+                    icon: "success",
+                    title: "Login user success",
+                    text: "logged into user account successfully",
+                    showConfirmButton: false,
+                });
+    
+                toast.success("Login successful!", {
+                    autoClose: 1000,
+                    position: toast.POSITION.TOP_CENTER,
+                    onClose: () => {
+                        navigate("/dashboard");
+                        console.log("hey", userInfo.data)
+                        setUserType("user");
+                        setAsAdmin(true)
                     }
                 });
             } else {
@@ -188,6 +192,8 @@ const UserDetails = ({setUserType}) => {
             });
         }
     };
+    
+    
         
     
 
@@ -241,7 +247,7 @@ const UserDetails = ({setUserType}) => {
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
                                 <Dropdown.Item href="#/action-1">
-                                    <button className='btn' style={{ backgroundColor: "red", color: "white" }}>Deactivate User</button>
+                                    <button className='btn' style={{ backgroundColor: "red", color: "white" }}>Delete User</button>
                                 </Dropdown.Item>
                                 {/* Add more dropdown items if needed */}
                             </Dropdown.Menu>
