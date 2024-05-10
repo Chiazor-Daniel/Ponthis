@@ -18,6 +18,7 @@ const AdminDetails = ({superAdmin}) => {
   const { data: allUsers, isLoading: isUsersLoading, error: isUsersError } = useGetAllUsersQuery(adminToken);
   const { data: admin, isLoading, error, refetch } = useGetSingleAdminQuery({ id, adminToken });
   const { data: allLeads} = useGetAllLeadsQuery({admin_id: id, token: adminToken});
+  console.log(allLeads)
   const crmLeads = React.useMemo(
     () => [
       {
@@ -412,12 +413,16 @@ const AdminDetails = ({superAdmin}) => {
         </div>
       </div>
       <div className='row' style={{ padding: '30px' }}>
-        <AdminTable columns={user_columns2} data={admin?.users_assigned} title={"Assigned users"} />
+        {
+          admin && (
+            <AdminTable columns={user_columns2} data={admin?.users_assigned} title={"Assigned users"} />
+          )
+        }
       </div>
       {
-        allLeads && (
+        allLeads.status !== "error" ?  (
           <AdminTable columns={crmLeads} data={allLeads?.message} title={"Admin Leads"} />
-        )
+        ) : <p>No leads to fetch...</p>
       }
       <div className='row' style={{ padding: '20px' }}>
         {
