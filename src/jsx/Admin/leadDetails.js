@@ -16,7 +16,7 @@ import { useGetAllAdminsQuery } from '../../redux/services/admin';
 import { useAssignLeadToAdminMutation } from '../../redux/services/admin';
 import { useAddCommentsMutation } from '../../redux/services/admin';
 
-const ViewLead = () => {
+const ViewLead = ({superAdmin}) => {
     const navigate = useNavigate()
     const { id } = useParams();
     const { adminInfo, adminToken } = useSelector(state => state.adminAuth);
@@ -320,7 +320,12 @@ const ViewLead = () => {
         return (
             <div>
                 <h1>Lead Detail</h1>
-                <AdminTable columns={columns_admin} data={allAdmins} />
+                {
+                    superAdmin && (
+
+                        <AdminTable columns={columns_admin} data={allAdmins} />
+                    )
+                }
                 <div className='row'>
                     <div className=' col-12' style={{ padding: "20px", height: "auto" }}>
                         <div className='col-6' style={{ margin: "auto", height: "auto" }}>

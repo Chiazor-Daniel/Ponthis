@@ -341,9 +341,9 @@ const AdminDetails = ({superAdmin}) => {
           <p>Is Active: {form.isActive ? 'Yes' : 'No'}</p>
           {/* Add any additional details here */}
           <div className='row' style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-            <button className='btn btn-primary'>
+            {/* <button className='btn btn-primary'>
               Login User Account
-            </button>
+            </button> */}
           </div>
         </div>
         <div className='card col-5' style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px', fontSize: '1.3rem', margin: 'auto' }}>
