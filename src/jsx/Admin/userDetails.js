@@ -70,7 +70,7 @@ const UserDetails = ({setUserType, setAsAdmin}) => {
             }
         });
     };
-    const userResetPassword = async (id) => {
+    const userResetPassword = async () => {
         Swal.fire({
             icon: 'info',
             title: 'Reset user password',
@@ -92,7 +92,7 @@ const UserDetails = ({setUserType, setAsAdmin}) => {
                 try {
                     const resetRes = await resetUserPassword({ user_id: id, token: adminToken });
                     console.log(resetRes)
-                    if(resetRes.status === "success"){
+                    if(resetRes.data.status === "success"){
                         refetch()
                         Swal.fire({
                             icon: 'success',

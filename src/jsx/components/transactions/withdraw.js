@@ -530,78 +530,71 @@ const Withdraw = ({fetchDataAndDispatch}) => {
                         </div>
                     </div>
                 )}
-                {activeButton === 1 ? (
-                    cryptoDetails?.length > 1 ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                            <div>
-                                <p>Network Chain</p>
-                                <Form.Select size='lg' onChange={handleNetworkChange}>
-                                    <option value="" disabled selected>Select Network</option>
-                                    {cryptoDetails && data?.data?.crypto_details.map(detail => (
-                                        <option key={detail.id} value={detail.network_chain}>{detail.network_chain}</option>
-                                    ))}
-                                </Form.Select>
-                            </div>
-                            <div>
-                                <p>Preferred Token:</p>
-                                <Form.Control
-                                    aria-label='Wallet Address'
-                                    placeholder='Preferred Token'
-                                    value={preferredToken}
-                                    readOnly
-                                />
-                            </div>
+                {activeButton === 1 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div>
+                      <p>Network Chain</p>
+                      <Form.Select size='lg' onChange={handleNetworkChange}>
+                          <option value="" disabled selected>Select Network</option>
+                          {cryptoDetails && data?.data?.crypto_details.map(detail => (
+                              <option key={detail.id} value={detail.network_chain}>{detail.network_chain}</option>
+                          ))}
+                      </Form.Select>
+                  </div>
+                  <div>
+                      <p>Preferred Token:</p>
+                      <Form.Control
+                          aria-label='Wallet Address'
+                          placeholder='Preferred Token'
+                          value={preferredToken}
+                          readOnly
+                      />
+                  </div>
 
-                            {cryptoDetails && (
-                                <div>
-                                    <p>Wallet Address:</p>
-                                    <InputGroup className='mb-3' size='lg'>
-                                        <Form.Control
-                                            aria-label='Wallet Address'
-                                            placeholder='Wallet Address'
-                                            value={withdrawAddress}
-                                            onChange={(e) => setWithDrawAddress(e.target.value)}
-                                        />
-                                        <OverlayTrigger
-                                            trigger="hover"
-                                            placement="top"
-                                            overlay={
-                                                <Tooltip id={`tooltip-top`}>
-                                                    Paste Address
-                                                </Tooltip>
-                                            }
-                                        >
-                                            <InputGroup.Text style={{ cursor: 'pointer' }} onClick={() => alert("pasted")}>
-                                                <FaPaste />
-                                            </InputGroup.Text>
-                                        </OverlayTrigger>
-                                    </InputGroup>
-                                </div>
-                            )}
-                            <div className='col-4'>
-                                <p>Amount: </p>
-                                <InputGroup className='mb-0' size='lg'>
-                                    <InputGroup.Text style={{ cursor: 'pointer' }} >$</InputGroup.Text>
-                                    <Form.Control
-                                        aria-label='Amount (to the nearest dollar)'
-                                        placeholder='Enter Amount'
-                                        name='amount'
-                                        value={bankFormData.amount}
-                                        onChange={handleBankChange}
-                                    />
-                                </InputGroup>
-                            </div>
-                            <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }} className='p-4' onClick={() => onCryptoWithdraw()}>
-                                <button className='btn btn-primary'>Make Withdrawal</button>
-                            </div>
-                        </div>
-                    ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', height: "400px", justifyContent: "center", alignItems: "center" }}>
-                            <MdRunningWithErrors color='gray' size={50} style={{ fontSize: "1rem", opacity: 0.5 }} />
-                            <p style={{ fontSize: "2rem", opacity: 0.5 }}>Method Unavialable in your Region</p>
-                        </div>
-                    )
-                ) : null
+                  {cryptoDetails && (
+                      <div>
+                          <p>Wallet Address:</p>
+                          <InputGroup className='mb-3' size='lg'>
+                              <Form.Control
+                                  aria-label='Wallet Address'
+                                  placeholder='Wallet Address'
+                                  value={withdrawAddress}
+                                  onChange={(e) => setWithDrawAddress(e.target.value)}
+                              />
+                              <OverlayTrigger
+                                  trigger="hover"
+                                  placement="top"
+                                  overlay={
+                                      <Tooltip id={`tooltip-top`}>
+                                          Paste Address
+                                      </Tooltip>
+                                  }
+                              >
+                                  <InputGroup.Text style={{ cursor: 'pointer' }} onClick={() => alert("pasted")}>
+                                      <FaPaste />
+                                  </InputGroup.Text>
+                              </OverlayTrigger>
+                          </InputGroup>
+                      </div>
+                  )}
+                  <div className='col-4'>
+                      <p>Amount: </p>
+                      <InputGroup className='mb-0' size='lg'>
+                          <InputGroup.Text style={{ cursor: 'pointer' }} >$</InputGroup.Text>
+                          <Form.Control
+                              aria-label='Amount (to the nearest dollar)'
+                              placeholder='Enter Amount'
+                              name='amount'
+                              value={bankFormData.amount}
+                              onChange={handleBankChange}
+                          />
+                      </InputGroup>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }} className='p-4' onClick={() => onCryptoWithdraw()}>
+                      <button className='btn btn-primary'>Make Withdrawal</button>
+                  </div>
+              </div> 
+                ) 
                 }
                 {activeButton === 2 && (
                     <>
