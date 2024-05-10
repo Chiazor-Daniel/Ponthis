@@ -154,7 +154,7 @@ const IntradayTrading = ({ fetchDataAndDispatch }) => {
 
     return (
         <>
-            <div className='' style={{ display: "flex", justifyContent: "flex-end", marginBottom: "20px" }}>
+            <div className='row' style={{ display: "flex", justifyContent: "flex-end", marginBottom: "20px" }}>
                 <ToggleTrade />
             </div>
             <div className="row">
@@ -171,7 +171,7 @@ const IntradayTrading = ({ fetchDataAndDispatch }) => {
                         </div>
                     </div>
                     <div className="col-xl-12 col-sm-12" style={{ height: "500px" }}>
-                        <div className="card h-auto">
+                        <div className="card h-100">
                             <div className="px-0">
                                 <Tab.Container defaultActiveKey="Navbuy">
                                     <div className="">
@@ -237,7 +237,7 @@ const IntradayTrading = ({ fetchDataAndDispatch }) => {
                         </div>
                     </div>
                 </div>
-                <div className="col-xl-4" style={{ height: "1200px", overflow: "hidden" }}>
+                <div className="col-xl-4" style={{ height: "1120px", overflow: "hidden" }}>
                     <div className="card h-100">
                         <div className="card-header">
                             <h4 className="fs-20 text-black">Asset List</h4>

@@ -84,12 +84,12 @@ export const AdminMenuList = [
         content: [
             {
                 title: 'View Profile',
-                to: '/admin/admin-dashboard',
+                to: '/admin/admin-dashboard/profile',
                 p: "view"
             },
             {
                 title: 'Edit Profile',
-                to: '/admin/admin-dashboard',
+                to: '/admin/admin-dashboard/profile',
                 p: "edit"
             },
         ]
@@ -117,12 +117,12 @@ export const AdminMenuList2 = [
         content: [
             {
                 title: 'View Profile',
-                to: '/admin/admin-dashboard',
+                to: '/admin/admin-dashboard/profile',
                 p: "view"
             },
             {
                 title: 'Edit Profile',
-                to: '/admin/admin-dashboard',
+                to: '/admin/admin-dashboard/profile',
                 p: "edit"
             },
         ]

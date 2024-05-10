@@ -297,7 +297,40 @@ export const adminApi = createApi({
             }
           }
         }
+      }), 
+      assignLeadToAdmin: builder.mutation({
+        query: ({ token, lead_id, admin_id, assign_task }) => {
+          const queryString = new URLSearchParams({
+            token: token,
+            lead_id: lead_id,
+            admin_id: admin_id,
+            assign_task: assign_task,
+          })
+          return {
+            url: `/admin/super-admin/assign-lead-to-admin/?${queryString}`,
+            method: "PUT",
+            headers: {
+              'Content-Type': 'application/json',
+              'x-token': token,
+            }
+          };
+        },
+      }), 
+      createAdmin: builder.mutation({
+        query: ({token, details})=>{
+          console.log(details)
+          return {
+            url: `/admin/super-admin/create-admin/`, 
+            method: "POST", 
+            headers: {
+              "Content-type": "application/json", 
+              "x-token": token
+            }, 
+            body: details
+          }
+        }
       })
+      
   }),
 });
 
@@ -306,8 +339,8 @@ export const {
   useGetSingleAdminQuery,
   useGetAllUsersQuery,
   useGetSingleUserQuery,
-  useUpdateUserTransactionMutation,
+  useUpdateUserTransactionMutation,useCreateAdminMutation,
   useAssignUserToAdminMutation, useMakeNewTransactionMutation, useEditUseretailsMutation, useResetUserPasswordMutation, useCreateBankDetailsMutation, useLoginUserMutation,
-  useGetAllLeadsQuery,useViewCommentsQuery, useAddCommentsMutation,
+  useGetAllLeadsQuery,useViewCommentsQuery, useAddCommentsMutation,useAssignLeadToAdminMutation,
   useGetSingleLeadQuery, useEditLeadMutation, useCreateLeadMutation, useActivateLeadMutation, useDeleteLeadMutation, useCreateCryptoDetailsMutation
 } = adminApi;

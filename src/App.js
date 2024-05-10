@@ -46,6 +46,7 @@ const adminPages = [
   { path: "/admin/admin-dashboard/", component: AdminDashboard },
   { path: "/admin/admin-dashboard/crm", component: CRM },
   { path: "/admin/admin-dashboard/admin/:id", component: AdminDetails },
+  { path: '/admin/admin-dashboard/profile', component: AppProfile },
   { path: "/admin/admin-dashboard/user/:id", component: UserDetails },
   { path: "/admin/admin-dashboard/lead/:id", component: ViewLead }
 ];

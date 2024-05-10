@@ -206,9 +206,9 @@
         if (isLoading) {
           return <Spinner animation="border" />;
     } else if (Array.isArray(allLeads?.message)) {
-      return <AdminTable columns={crmLeads} data={allLeads?.message} title={"All Leads"} leads={true} createNewLead={handleSubmit} refetch={refetch}/>;
+      return <AdminTable columns={crmLeads} data={allLeads?.message} title={"All Leads"} leads={true} createNewLead={handleSubmit} refetch={refetch} superAdmin={superAdmin}/>;
     } else {
-      return <div>No data available <Button onClick={handleShowModal}>Create Lead</Button>
+      return <div>No data available {superAdmin && <Button onClick={handleShowModal}>Create Lead</Button>}
         <Modal show={showModal} onHide={handleCloseModal} size="lg">
           <Modal.Header closeButton>
             <Modal.Title>Create New Lead</Modal.Title>

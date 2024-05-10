@@ -5,22 +5,30 @@ export const profileApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl:  BASE_URL }),
   endpoints: (builder) => ({
     getProfile: builder.query({
-      query: () => '/user/profile', 
+      query: () => '/user/profile/users/', 
     }),
     updateProfile: builder.mutation({
       query: (userData) => ({
-        url: '/profile/users', 
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          "x-token": userData.token
-        },
-        params: userData,
+          url: `/user/profile/users/`,
+          method: 'PUT',
+          headers: {
+              'Content-Type': 'application/json',
+              "x-token": userData.token
+          },
+          params: {
+              email: userData.email,
+              first_name: userData.first_name,
+              last_name: userData.last_name,
+              phone_number: userData.phone_number,
+              date_of_birth: userData.date_of_birth,
+              country: userData.country,
+              address: userData.address,
+          },
       }),
-    }),
+  }),
     changePassword: builder.mutation({
       query: ({ token, newPassword, oldPassword }) => ({
-        url: 'user/profile/users/change-password', 
+        url: '/user/profile/users/change-password/', 
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

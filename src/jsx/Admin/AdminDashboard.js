@@ -8,7 +8,9 @@ import { useGetAllUsersQuery } from '../../redux/services/admin';
 import { useGetPaymentDetailsQuery } from '../../redux/services/paymentDetails';
 import { useGetSingleAdminQuery } from '../../redux/services/admin';
 import CreateAdminModal from './createAdmin';
+import Swal from 'sweetalert2';
 import { Button } from 'react-bootstrap';
+import { useCreateAdminMutation } from '../../redux/services/admin';
 
 const AdminDashboard = ({setUserType, superAdmin}) => {
   const navigate = useNavigate();
@@ -16,13 +18,57 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
   const { data: allUsers, isLoading: isUsersLoading, error: isUsersError } = useGetAllUsersQuery(adminToken);
   const { data: paymentDetails, isLoading: isPaymentLoading, error: isPaymentError, refetch: refetchPaymentDetails } = useGetPaymentDetailsQuery(adminToken);
   const { data, error, isLoading } = useGetAllAdminsQuery(adminToken);
+  const [createAdmin, { isLoading: isCreatingAdmin }] = useCreateAdminMutation();
   const [showCreateAdminModal, setShowCreateAdminModal] = useState(false);
   const { data: admin, isLoading: isAdminLoading, error: isAdminError, refetch } = useGetSingleAdminQuery({ id: adminInfo.id, adminToken: adminToken });
 
   const handleCreateAdmin = (formData) => {
-   
-    setShowCreateAdminModal(false);
+    const { email, first_name, last_name, address, country, phone_number, date_of_birth, password } = formData;
+    const adminDetails = {
+      email,
+      first_name,
+      last_name,
+      address,
+      country,
+      phone_number,
+      date_of_birth,
+      password
+    };
+  
+    Swal.fire({
+      title: 'Create Admin',
+      text: 'Are you sure you want to create this admin?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes',
+      cancelButtonText: 'No',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        console.log({ token: adminToken, details: adminDetails })
+        createAdmin({ token: adminToken, details: adminDetails })
+          .unwrap()
+          .then((response) => {
+            console.log(response)
+            console.log('Admin created successfully:', response);
+            Swal.fire({
+              icon: 'success',
+              title: 'Success',
+              text: 'Admin created successfully!',
+            });
+            setShowCreateAdminModal(false);
+          })
+          .catch((error) => {
+            console.error('Error creating admin:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Failed to create admin. Please try again later.',
+            });
+          });
+      }
+    });
   };
+  
   const user_columns = React.useMemo(
     () => [
       {
@@ -175,14 +221,20 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
     <>
        <CreateAdminModal show={showCreateAdminModal} onHide={() => setShowCreateAdminModal(false)} onCreateAdmin={handleCreateAdmin} />
     <div style={{display: "flex", justifyContent:"space-between", alignItems: "center", padding: "10px"}}>
-    <h1>Admin Management</h1>
-    <Button onClick={() => setShowCreateAdminModal(true)}>Create an Admin</Button>
+      {
+        superAdmin ?(
+          <>
+          <h1>Admin Management</h1>
+          <Button onClick={() => setShowCreateAdminModal(true)}>Create an Admin</Button>
+          </>
+        ): <h1>User Management</h1>
+      }
     </div>
     {isLoading && <div>Loading...</div>}
     {!isLoading && data && superAdmin && <AdminTable columns={columns} data={data} />}
+    {!isLoading && allUsers && !superAdmin &&  <AdminTable columns={user_columns} data={allUsers} title={'Users'} />}
     {!isLoading && allUsers && superAdmin && <AdminTable columns={user_columns} data={allUsers} title={'Users'} superAdmin={superAdmin} />}
     {!isLoading && !superAdmin && admin && <AdminTable columns={user_columns} data={admin.users_assigned} title={"Assigned users"} />}
-    {!isLoading && !superAdmin && !admin && <p>No assigned users</p>}
     {!isLoading && paymentDetails && superAdmin && data && <Finance paymentDetails={paymentDetails?.data} token={adminToken} refetch={refetchPaymentDetails} />}
     {isUsersLoading && <div>Loading users...</div>}
     {isPaymentLoading && <div>Loading payment details...</div>}

@@ -16,7 +16,7 @@ import { Button } from 'react-bootstrap';
 import { setUserAccount } from '../../../redux/features/account/accountSlice';
 import { useGetUserAccountQuery } from '../../../redux/services/account';
 import { IoDiamondSharp } from "react-icons/io5";
-
+import { useResponsive } from '../../../context/responsive';
 import { RiTokenSwapFill } from "react-icons/ri";
 const marketBlog = [
     { icon: LtcIcon, classBg: 'bg-success', Name: 'LTC', },
@@ -27,6 +27,7 @@ const marketBlog = [
 ];
 
 const Home = ({ theme, fetchDataAndDispatch }) => {
+    const { isMobile, isTablet, isDesktop } = useResponsive();
     const dispatch = useDispatch();
     const [tradePair, setTradePair] = useState("ETHBTC")
     const [showChart, setShowChart] = useState(true);
@@ -174,57 +175,60 @@ const Home = ({ theme, fetchDataAndDispatch }) => {
     if (!isLoadingError)
         return (
             <>
-                <div className="row" style={{ height: "auto" }}>
-                    <div className="col-9">
+                <div className="row" style={{ height: "auto", overflow: "auto" }}>
+                    <div className="col-12 col-xl-9">
                         <div className="row">
-                            <div className="col-xl-12">
+                            <div className="col-12">
                                 <BalanceCardSlider accountData={data} />
                             </div>
-                            <div className="col-xl-12 row rm" style={{ height: "560px" }}>
-                                <div className="col-xl-3 assets-al col-lg-12" style={{ height: "100%" }}>
-                                    <div className="card" >
-                                        <div className="card-header border-0 pb-0">
-                                            <h2 className="heading">Assets lists</h2>
-                                        </div>
-                                        <div style={{ padding: "10px" }}>
-                                            <Form.Control type="text" placeholder="Search pair" className="form-control-sm col-6" value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value) }} />
+                        
+                                <div className="col-12 row">  
+                                    <div className="col-lg-3 col-12 assets-al" style={{ height: "580px" }}>
+                                        <div className="card" >
+                                            <div className="card-header border-0 pb-0">
+                                                <h2 className="heading">Assets lists</h2>
+                                            </div>
+                                            <div style={{ padding: "10px" }}>
+                                                <Form.Control type="text" placeholder="Search pair" className="form-control-sm col-6" value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value) }} />
 
-                                        </div>
+                                            </div>
 
-                                        <div className="card-body text-center pt-0 pb-2 rm" style={{ overflow: "auto" }}>
-                                            <div className="text-start" style={{ display: "flex", flexDirection: "column", justifyContent: "", gap: "10px" }}>
-                                                {getAssets.map((asset, index) => (
-                                                    <div className="previews-info-list" onClick={() => {
-                                                        Swal.fire({
-                                                            title: 'Asset Selected',
-                                                            text: `You have selected ${asset.asset_pair}`,
-                                                            icon: 'success'
-                                                        }); setTradePair(asset.asset_pair); console.log(tradePair)
-                                                    }} key={index} style={{ position: "relative", cursor: "pointer" }}> {/* Add onClick handler */}
-                                                        <div className="pre-icon">
-                                                            <div className="ms-2" style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                                                                <RiTokenSwapFill size={30} color={getRandomColor()} />
-                                                                <h6>{asset.asset_pair}</h6>
+                                            <div className="card-body text-center pt-0 pb-2 rm" style={{ overflow: "auto" }}>
+                                                <div className="text-start" style={{ display: "flex", flexDirection: "column", justifyContent: "", gap: "10px" }}>
+                                                    {getAssets.map((asset, index) => (
+                                                        <div className="previews-info-list" onClick={() => {
+                                                            Swal.fire({
+                                                                title: 'Asset Selected',
+                                                                text: `You have selected ${asset.asset_pair}`,
+                                                                icon: 'success'
+                                                            }); setTradePair(asset.asset_pair); 
+                                                        }} key={index} style={{ position: "relative", cursor: "pointer" }}> {/* Add onClick handler */}
+                                                            <div className="pre-icon">
+                                                                <div className="ms-2" style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                                                                    <RiTokenSwapFill size={30} color={getRandomColor()} />
+                                                                    <h6>{asset.asset_pair}</h6>
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                ))}
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div className="card col-xl-9" style={{}}>
-                                    <div className="card-header border-0 align-items-start flex-wrap pb-0">
-                                        <h2 className="heading">Market Chart</h2>
+                                    <div className="card col-lg-9 col-12" style={{position: "relative", zIndex: 1, paddingBottom: "10px", height: "560px"}}>
+                                        <div className="card-header border-0 align-items-start flex-wrap pb-0">
+                                            <h2 className="heading">Market Chart</h2>
 
+                                        </div>
+                                        <MyChart tradePair={tradePair} newTheme={theme} />
                                     </div>
-                                    <MyChart tradePair={tradePair} newTheme={theme} />
                                 </div>
-                            </div>
+                               
+                        
                         </div>
                     </div>
-                    <div className="col-3" style={{ flex: 1 }}>
-                        <div className="col-xl-12 col-sm-6">
+                    <div className="col-xl-3 col-12" style={{ flex: 1 }}>
+                        <div className="col-12">
                             <div className="card" style={{ height: "250px", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "10px" }}>
                                 <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "10px" }}>
                                     <IoDiamondSharp color='#FF6500' size={50} style={{ filter: 'drop-shadow(0 0 10px #FF6500)' }} />
@@ -250,7 +254,7 @@ const Home = ({ theme, fetchDataAndDispatch }) => {
 
 
                         </div>
-                        <div className="col-xl-12 col-sm-6 card" style={{ height: "530px" }}>
+                        <div className="col-12 card" style={{ height: "530px" }}>
                             <Tab.Container defaultActiveKey="Navbuy">
                                 <div className="">
                                     <div className="buy-sell">

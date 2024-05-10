@@ -8,15 +8,68 @@ import { BiSolidBoltCircle } from 'react-icons/bi';
 import AdminTable from '../components/table/FilteringTable/AdminTable';
 import Swal from 'sweetalert2';
 import { useUpdateUserTransactionMutation } from '../../redux/services/admin';
+import { useGetAllLeadsQuery } from '../../redux/services/admin';
 import { useAssignUserToAdminMutation } from '../../redux/services/admin';
 
-const AdminDetails = () => {
+const AdminDetails = ({superAdmin}) => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { adminToken } = useSelector(state => state.adminAuth);
+  const { adminInfo, adminToken } = useSelector(state => state.adminAuth);
   const { data: allUsers, isLoading: isUsersLoading, error: isUsersError } = useGetAllUsersQuery(adminToken);
   const { data: admin, isLoading, error, refetch } = useGetSingleAdminQuery({ id, adminToken });
-  console.log("The admin Data", admin)
+  const { data: allLeads} = useGetAllLeadsQuery({admin_id: id, token: adminToken});
+  const crmLeads = React.useMemo(
+    () => [
+      {
+        Header: 'First Name',
+        accessor: 'first_name',
+      },
+      {
+        Header: 'Last Name',
+        accessor: 'last_name',
+      },
+      {
+        Header: 'Email',
+        accessor: 'email',
+      },
+      {
+        Header: 'Phone Number',
+        accessor: 'phone_number',
+      },
+      {
+        Header: 'Status',
+        accessor: 'status',
+      },
+      !superAdmin ? {
+        Header: 'Assigned To',
+        accessor: 'assigned_to',
+        Cell: ({ value }) => (value ? value : 'Not Assigned'),
+      } : {
+        // Dummy column when superAdmin is false
+        Header: '',
+        accessor: 'dummy_assigned_to',
+        show: false, // Hide this column
+      },
+      {
+        Header: 'Country',
+        accessor: 'country',
+      },
+      {
+        Header: 'Date of Birth',
+        accessor: 'date_of_birth',
+      },
+      {
+        Header: 'Activated',
+        accessor: 'activated',
+        Cell: ({ value }) => (value ? 'Yes' : 'No'),
+      },
+      {
+        Header: 'Created At',
+        accessor: 'created_at',
+      },
+    ],
+    []
+    );
   const [assignUserToAdminMutation] = useAssignUserToAdminMutation();
   const user_columns = React.useMemo(
     () => [
@@ -361,6 +414,11 @@ const AdminDetails = () => {
       <div className='row' style={{ padding: '30px' }}>
         <AdminTable columns={user_columns2} data={admin?.users_assigned} title={"Assigned users"} />
       </div>
+      {
+        allLeads && (
+          <AdminTable columns={crmLeads} data={allLeads?.message} title={"Admin Leads"} />
+        )
+      }
       <div className='row' style={{ padding: '20px' }}>
         {
           allUsers && (

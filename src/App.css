@@ -1,7 +1,6 @@
 
 .rm{
-  -ms-overflow-style: none;  /* Hides the scrollbar in Internet Explorer/Edge */
-  scrollbar-width: none;  /* Hides the scrollbar in Firefox */
+  
 }
 
 .singleAsset {
@@ -100,3 +99,8 @@
   100% { transform: rotate(360deg); }
 }
 
+@media only screen and (min-width: 768px) and (max-width: 992px) {
+  .rm {
+    height: 560px; /* Set height to 560px for medium-sized screens */
+  }
+}

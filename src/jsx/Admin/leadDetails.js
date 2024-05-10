@@ -12,14 +12,18 @@ import { useActivateLeadMutation } from '../../redux/services/admin';
 import { FaComment } from "react-icons/fa";
 import AdminTable from '../components/table/FilteringTable/AdminTable';
 import { useDeleteLeadMutation } from '../../redux/services/admin';
+import { useGetAllAdminsQuery } from '../../redux/services/admin';
+import { useAssignLeadToAdminMutation } from '../../redux/services/admin';
 import { useAddCommentsMutation } from '../../redux/services/admin';
 
 const ViewLead = () => {
     const navigate = useNavigate()
     const { id } = useParams();
     const { adminInfo, adminToken } = useSelector(state => state.adminAuth);
+    const { data: allAdmins, isLoading: allAdminLoadin } = useGetAllAdminsQuery(adminToken);
     const { data, isLoading, error, refetch } = useGetSingleLeadQuery({ token: adminToken, lead_id: id, admin_id: adminInfo.id });
     const [editLead, { isLoading: editing, error: editError }] = useEditLeadMutation()
+    const [assignLeadToAdmin] = useAssignLeadToAdminMutation()
     const [addComments] = useAddCommentsMutation()
     const [comment, setComment] = useState('');
     const [loadingActivate, setLoadingActivate] = useState(false);
@@ -227,11 +231,96 @@ const ViewLead = () => {
             }
         });
     };
-    console.log("lead", comments)
+    const columns_admin = React.useMemo(
+        () => [
+          {
+            Header: 'First Name',
+            accessor: 'first_name',
+          },
+          {
+            Header: 'Last Name',
+            accessor: 'last_name',
+          },
+          {
+            Header: 'Email',
+            accessor: 'email',
+          },
+          {
+            Header: 'Phone Number',
+            accessor: 'phone_number',
+          },
+          {
+            Header: 'Can Auto Trade',
+            accessor: 'can_auto_trade',
+            Cell: ({ value }) => (value ? 'Yes' : 'No'),
+          },
+          {
+            Header: 'Is Active',
+            accessor: 'is_active',
+            Cell: ({ value }) => (value ? 'Yes' : 'No'),
+          },
+          {
+            Header: "", 
+            accessor: 'id',
+            Cell: ({ row }) => (
+                <button
+                className='btn btn-primary'
+                onClick={() => {
+                    Swal.fire({
+                        icon: "info",
+                        title: "Assign lead to admin",
+                        text: `Assign lead to ${row.values.first_name + " " + row.values.last_name} `,
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yup, assign it!',
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            try {
+                                const res = await assignLeadToAdmin({
+                                    token: adminToken,
+                                    lead_id: id,
+                                    admin_id: parseInt(row.values.id),
+                                    assign_task: "assign"
+                                });
+                                console.log(res);
+                                if(res.data.status === "success"){
+                                    Swal.fire({
+                                        icon: "success", 
+                                        title: `Assigned to ${row.values.first_name} success`
+                                    })
+                                }else{
+                                    Swal.fire({
+                                        icon: "error", 
+                                        title: "An error occured", 
+                                        text: "An error occured. Please try again"
+                                    })
+                                }
+                            } catch (error) {
+                                console.error("Error assigning lead to admin:", error);
+                                Swal.fire({
+                                    icon: "error", 
+                                    title: "An error occured", 
+                                    text: "An error occured. Please try again"
+                                })
+                            }
+                        }
+                    })
+                }}
+            >
+                Assign Lead to Admin
+            </button>
+            
+            ),
+          },
+        ],
+        []
+      );
     if (!isLoading && data?.message)
         return (
             <div>
                 <h1>Lead Detail</h1>
+                <AdminTable columns={columns_admin} data={allAdmins} />
                 <div className='row'>
                     <div className=' col-12' style={{ padding: "20px", height: "auto" }}>
                         <div className='col-6' style={{ margin: "auto", height: "auto" }}>
