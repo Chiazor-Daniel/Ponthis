@@ -129,7 +129,6 @@ const UserDetails = ({setUserType, setAsAdmin}) => {
 
     const handleLoginUser = async () => {
         try {
-            // Display loading state with spinner
             Swal.fire({
                 title: 'Logging In',
                 html: '<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>',
@@ -145,7 +144,6 @@ const UserDetails = ({setUserType, setAsAdmin}) => {
             console.log("user token", loginRes?.data["access-token"]);
     
             if (loginRes.data.status === 'success') {
-                // Perform actions after successful login outside of Swal
                 const userToken = loginRes?.data["access-token"];
                 const userInfo = await axios.get(`${BASE_URL}/user/profile/users/`, {
                     headers: {
@@ -177,7 +175,6 @@ const UserDetails = ({setUserType, setAsAdmin}) => {
                     }
                 });
             } else {
-                // Display error message
                 Swal.fire({
                     icon: 'error',
                     title: 'Login Failed',
@@ -185,7 +182,6 @@ const UserDetails = ({setUserType, setAsAdmin}) => {
                 });
             }
         } catch (error) {
-            // Display error message if request fails
             Swal.fire({
                 icon: 'error',
                 title: 'Error',

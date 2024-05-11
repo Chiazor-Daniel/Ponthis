@@ -60,20 +60,9 @@ const UserForm = ({ user, onSubmit, userResetPassword }) => {
                                 />
                             </div>
                         );
-                    } else if (key === 'auto_trade_count') {
-                        return (
-                            <div key={key} className="mb-3 col-6">
-                                <label htmlFor={key.replace(/_/g, ' ')} className="form-label">{key.replace(/_/g, ' ')}</label>
-                                <input
-                                    type="number"
-                                    className="form-control"
-                                    id={key}
-                                    name={key}
-                                    value={value}
-                                    onChange={handleChange}
-                                />
-                            </div>
-                        );
+                    } else if (key === 'auto_trade_count' || key === 'id' || key === 'user_type' || key === 'assigned_to') {
+                        // Exclude keys like "id", "auto_trade_count", and "assigned_to"
+                        return null;
                     } else {
                         return (
                             <FormRow
@@ -88,8 +77,9 @@ const UserForm = ({ user, onSubmit, userResetPassword }) => {
                 })}
             </div>
             <button onClick={handleSubmit} className="btn btn-primary">Save Changes</button>
-            <button className="btn btn-primary" style={{marginLeft: "20px"}} onClick={(e)=>{e.preventDefault(); userResetPassword()}}>Reset User password</button>
+            <button className="btn btn-primary" style={{ marginLeft: "20px" }} onClick={(e) => { e.preventDefault(); userResetPassword() }}>Reset User password</button>
         </form>
+
     );
 };
 

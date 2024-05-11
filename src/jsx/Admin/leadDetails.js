@@ -141,7 +141,7 @@ const ViewLead = ({superAdmin}) => {
     }
 
     const handleToggleActivation = async () => {
-        setLoadingActivate(true); // Set loading state to true
+        setLoadingActivate(true); 
         try {
             const res = await activateLead({ lead_id: id, token: adminToken, admin_id: adminInfo.id });
             console.log(res)
@@ -387,7 +387,7 @@ const ViewLead = ({superAdmin}) => {
                     <div className='card col-5' style={{ fontSize: "1.3rem", display: "flex", flexDirection: "column", alignItems: "center", padding: "20px" }}>
                         <div className='col-12' style={{ display: "flex", justifyContent: "flex-start" }}>
                             <ToggleSwitch
-                                checked={activated}
+                                checked={data.message.activatedn}
                                 onLabel={"Activated"}
                                 offLabel={"Deactivated"}
                                 onChange={handleToggleActivation} // Call the function to toggle activation
