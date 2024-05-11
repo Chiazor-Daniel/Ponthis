@@ -10,7 +10,7 @@ const MyTheme = () => {
     const handleClick = () => {
         setRotation(rotation + 360);
         const randomThemeIndex = Math.floor(Math.random() * 9);
-        console.log(randomThemeIndex)
+        console.log("theme", randomThemeIndex)
         setTimeout(() => {
             setDemoTheme(randomThemeIndex, 'ltr');
         }, 220); // Delay the function execution by 600ms (0.6 seconds)

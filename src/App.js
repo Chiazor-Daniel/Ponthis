@@ -27,6 +27,8 @@ import CRM from './jsx/Admin/CRM';
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from './redux/features/auth/authSlice';
 import ViewLead from './jsx/Admin/leadDetails';
+import { ThemeContext } from './context/ThemeContext';
+import { useContext } from 'react';
 
 const pages = [
   { path: '/', component: Login },
@@ -53,11 +55,14 @@ const adminPages = [
 ];
 
 function App() {
+  const { setDemoTheme } = useContext(ThemeContext);
   const { userInfo, userToken } = useSelector(state => state.auth);
   const { adminInfo, adminToken } = useSelector(state => state.adminAuth);
   const [userType, setUserType] = useState("admin");
   const [asAdmin, setAsAdmin] = useState(false);
   const [superAdmin, setSuperAdmin] = useState(false);
+
+  useEffect(()=>  setDemoTheme(7, 'ltr'), [])
 
 
   useEffect(() => {

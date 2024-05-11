@@ -10,6 +10,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import logo from '../../images/logo/logo-full.png';
 import { BASE_URL } from '../../api';
+import SetLogo from '../../setLogo';
 
 function AdminLogin(props) {
   const [load, setLoad] = useState(false);
@@ -99,7 +100,7 @@ function AdminLogin(props) {
             <div className="col-12">
               <div className="card-body">
                 <div className="logo-header">
-                  <Link to={"#"} className="logo"><img src={logo} alt="" className="width-230 mCS_img_loaded" /></Link>
+                  <Link to={"#"} className="logo"><SetLogo /></Link>
                 </div>
                 <div className="nav nav-tabs border-bottom-0" >
                   <div className="tab-content w-100" id="nav-tabContent">

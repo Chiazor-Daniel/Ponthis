@@ -1,13 +1,14 @@
 /* eslint-disable */
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 /// React router dom
 import { Link } from "react-router-dom";
 import { ThemeContext } from "../../../context/ThemeContext";
 
 //images
 import logo1 from './../../../images/logo/logo.png';
+import SetLogo from "../../../setLogo";
 
-
+import { useResponsive } from "../../../context/responsive";
 export function NavMenuToggle() {
   setTimeout(() => {
     let mainwrapper = document.querySelector("#main-wrapper");
@@ -21,15 +22,21 @@ export function NavMenuToggle() {
 
 
 const NavHader = () => {
+  const { isMobile, isTablet, isDesktop } = useResponsive();
   const [toggle, setToggle] = useState(false);
   const { navigationHader, openMenuToggle, background } = useContext(
     ThemeContext
   );
   
+  
   return (
     <div className="nav-header">
       <Link to="/dashboard" className="brand-logo">
-        <img src={logo1} className="logo-abbr" alt="" style={{ margin: "auto" }} />
+        {
+          !isMobile && (
+            <SetLogo w={!toggle? 150: 100} h={120}/>
+          )
+        }
         {/* <img src={logotext1} className="brand-title" alt=""/>
 		<img src={logoColor} className="logo-color" alt="" />
 		<img src={logoColorText} className="brand-title color-title" alt="" /> */}

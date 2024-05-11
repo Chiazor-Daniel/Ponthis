@@ -13,7 +13,7 @@ const initialState = {
   headerposition : { value: "fixed", label: "Fixed"},
   sidebarLayout : { value: "vertical", label: "Vertical"},
   direction:{ value: "ltr", label: "LTR" },
-  primaryColor : "color_1",
+  primaryColor : "color_5",
   secondaryColor : "color_1",
   navigationHader: "color_4",
   haderColor: "color_1",
@@ -48,25 +48,11 @@ const {
     windowHeight,
 } = state;
 
-	//const [sideBarStyle, setSideBarStyle] = useState({ value: "full", label: "Full",});
-	//const [sidebarposition, setSidebarposition] = useState({ value: "fixed",	label: "Fixed",});
-  //const [headerposition, setHeaderposition] = useState({ value: "fixed", label: "Fixed", });
-  //const [sidebarLayout, setSidebarLayout] = useState({ value: "vertical", label: "Vertical",});
-	//const [direction, setDirection] = useState({ value: "ltr", label: "LTR" });
-	//const [primaryColor, setPrimaryColor] = useState("color_1");
-	//const [secondaryColor, setSecondaryColor] = useState("color_1");
-	//const [navigationHader, setNavigationHader] = useState("color_3");
-	//const [haderColor, setHaderColor] = useState("color_3");
-	//const [sidebarColor, setSidebarColor] = useState("color_1");
-	//const [iconHover, setIconHover] = useState(false);
-	//const [menuToggle, setMenuToggle] = useState(false);
-	//const [background, setBackground] = useState({ value: "light",	label: "Light",});
-	//const [containerPosition_, setcontainerPosition_] = useState({value: "wide-boxed", label: "Wide Boxed",});
-  const body = document.querySelector("body");
-  //const [windowWidth, setWindowWidth] = useState(0);
-  //const [windowHeight, setWindowHeight] = useState(0);
 
-  // layout
+  const body = document.querySelector("body");
+
+
+
   const layoutOption = [
     { value: "vertical", label: "Vertical" },
     { value: "horizontal", label: "Horizontal" },
@@ -235,9 +221,9 @@ const {
 	var setAttr = {};	
 	
 	
-	var themeSettings = dezThemeSet[theme];	
+	var themeSettings = dezThemeSet[7];	
 		
-	body.setAttribute("data-typography", themeSettings.typography);
+	body.setAttribute("data-typography", "poppins");
  
 	setAttr.value = themeSettings.version;
 	changeBackground(setAttr);
@@ -277,7 +263,7 @@ const {
 	};
 
   useEffect(() => {
-	const body = document.querySelector("body");
+    const body = document.querySelector("body");
     body.setAttribute("data-typography", "poppins");
     body.setAttribute("data-theme-version", "light");
     body.setAttribute("data-layout", "vertical");
@@ -286,26 +272,27 @@ const {
     body.setAttribute("data-headerbg", "color_1");
     body.setAttribute("data-sidebar-style", "overlay");
     body.setAttribute("data-sidebarbg", "color_4");
-	  body.setAttribute("data-secondary", "color_1");
+    body.setAttribute("data-secondary", "color_1");
     body.setAttribute("data-sidebar-position", "fixed");
     body.setAttribute("data-header-position", "fixed");
     body.setAttribute("data-container", "wide");
     body.setAttribute("direction", "ltr");
-		let resizeWindow = () => {
-			//setWindowWidth(window.innerWidth);
-      dispatch({windowWidth : window.innerWidth});
-			//setWindowHeight(window.innerHeight);
-      dispatch({windowHeight : window.innerHeight});
-			window.innerWidth >= 768 && window.innerWidth < 1024
-			? body.setAttribute("data-sidebar-style", "mini")
-			: window.innerWidth <= 768
-			? body.setAttribute("data-sidebar-style", "overlay")
-			: body.setAttribute("data-sidebar-style", "full");
-		};
+    let resizeWindow = () => {
+        dispatch({windowWidth : window.innerWidth});
+        dispatch({windowHeight : window.innerHeight});
+        window.innerWidth >= 768 && window.innerWidth < 1024
+        ? body.setAttribute("data-sidebar-style", "mini")
+        : window.innerWidth <= 768
+        ? body.setAttribute("data-sidebar-style", "overlay")
+        : body.setAttribute("data-sidebar-style", "full");
+    };
     resizeWindow();
     window.addEventListener("resize", resizeWindow);
+    // Set the default theme here
+    setDemoTheme("light", "ltr"); // Set the theme to "light" and direction to "ltr"
     return () => window.removeEventListener("resize", resizeWindow);
-  }, []);
+}, []);
+
 
   return (
     <ThemeContext.Provider

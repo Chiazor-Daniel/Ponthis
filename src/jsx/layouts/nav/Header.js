@@ -59,7 +59,7 @@ const Header = ({ onNote, onThemeChange, userType, superAdmin, asAdmin, setAsAdm
 							)
 						}
 
-						<MyTheme />
+						{/* <MyTheme /> */}
 
 						<ToggleTheme
 							isDark={isDark}
@@ -110,7 +110,7 @@ const Header = ({ onNote, onThemeChange, userType, superAdmin, asAdmin, setAsAdm
 						</nav>
 						
 					
-						<MyTheme />
+						{/* <MyTheme /> */}
 						<ToggleTheme
 							isDark={isDark}
 							invertedIconLogic

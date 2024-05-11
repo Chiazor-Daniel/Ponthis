@@ -7,8 +7,9 @@ import bg6 from '../../images/background/bg6.jpg';
 import Spinner from 'react-bootstrap/Spinner';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import logo from '../../images/logo/logo-full.png'
+import logo from '../../images/atlas.png'
 import { BASE_URL } from '../../api';
+import SetLogo from '../../setLogo';
 function Login(props) {
 	const [load, setLoad] = useState(false)
 	const navigate = useNavigate();
@@ -123,11 +124,11 @@ function Login(props) {
 			<ToastContainer />
 			<div className="browse-job login-style3">
 				<div className="bg-img-fix overflow-hidden" style={{ background: '#fff url(' + bg6 + ')', height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
-					<div className="row col-6 rounded bg-white">
+					<div className="row col-lg-6 col-12 rounded bg-white">
 						<div className="col-12">
 							<div className="card-body">
 								<div className="logo-header">
-									<Link to={"#"} className="logo"><img src={logo} alt="" className="width-230 mCS_img_loaded" /></Link>
+									<Link to={"#"} className="logo"><SetLogo /></Link>
 								</div>
 								<div className="nav nav-tabs border-bottom-0" >
 									<div className="tab-content w-100" id="nav-tabContent">
