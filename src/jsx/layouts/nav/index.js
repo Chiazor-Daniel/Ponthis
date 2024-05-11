@@ -7,7 +7,6 @@ import Header from "./Header";
 import { ThemeContext } from "../../../context/ThemeContext";
 
 const JobieNav = ({ title, onClick: ClickToAddEvent, onClick2, onClick3, onDarkModeChange, userType, superAdmin, asAdmin, setAsAdmin, setUserType }) => {
-  console.log("joe", superAdmin)
   const [toggle, setToggle] = useState("");
   const [dark, setDark] = useState("");
   const { setDemoTheme } = useContext(ThemeContext);

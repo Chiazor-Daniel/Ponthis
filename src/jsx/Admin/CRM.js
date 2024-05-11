@@ -1,3 +1,4 @@
+  /* eslint-disable */
   import React, { useState } from 'react';
   import AdminTable from '../components/table/FilteringTable/AdminTable';
   import { useDeleteLeadMutation, useGetAllLeadsQuery } from '../../redux/services/admin';

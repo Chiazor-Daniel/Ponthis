@@ -12,7 +12,7 @@ import { BASE_URL } from '../../api';
 function Login(props) {
 	const [load, setLoad] = useState(false)
 	const navigate = useNavigate();
-	const [email, setEmail] = useState('john@exaple.com');
+	const [email, setEmail] = useState('jane@exaple.com');
 	let errorsObj = { email: '', password: '' };
 	const [errors, setErrors] = useState(errorsObj);
 	const [password, setPassword] = useState('default123');
@@ -20,7 +20,6 @@ function Login(props) {
 
 	const loginUser = (email, password) => {
 		setLoad(true);
-		console.log("Login Start...");
 
 		const token = sessionStorage.getItem("token"); // Using sessionStorage
 		const userInfo = JSON.parse(sessionStorage.getItem("userInfo")); // Using sessionStorage
@@ -51,7 +50,6 @@ function Login(props) {
 				}
 			})
 				.then(response => {
-					console.log(response.data);
 					if (response.status === 200) {
 						const accessToken = response.data.access_token;
 						sessionStorage.setItem("token", accessToken); // Using sessionStorage
@@ -82,18 +80,15 @@ function Login(props) {
 								}
 							})
 							.catch(error => {
-								console.error("Error fetching user data:", error);
 								dispatch(loginFailure(error.message));
 								setLoad(false);
 							});
 					} else {
-						console.error("Invalid response status:", response.status);
 						dispatch(loginFailure("Invalid response status"));
 						setLoad(false);
 					}
 				})
 				.catch(error => {
-					console.error("Error logging in:", error);
 					dispatch(loginFailure(error.message));
 					setLoad(false);
 					toast.error("Incorrect email or password");

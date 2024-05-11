@@ -32,10 +32,10 @@ const BalanceCardSlider = ({ accountData }) => {
     ];
 
     return (
-        <div className='row overflow-auto'>
+        <div className='row overflow-auto' style={{padding: isMobile ? "20px" : ""}}>
               <Swiper className="mySwiper"						
 				speed= {1500}
-				slidesPerView= {isTablet ? 3 ? isMobile : 0.5 : 1.5}
+				slidesPerView={isTablet ? (isMobile ? 0.5 : 1.5) : 3}
 				spaceBetween= {20}
 				loop={false}
 				//autoplay= {{
@@ -65,7 +65,7 @@ const BalanceCardSlider = ({ accountData }) => {
 					  },
 				}}>
                 {slidesData.map((slide, index) => (
-                    <SwiperSlide>
+                    <SwiperSlide  key={index}>
                         <div key={index} className="">
                             <div className="card card-wiget">
                                 <div className="card-body">

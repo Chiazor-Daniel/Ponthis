@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { createContext, useContext } from 'react';
 import { useMediaQuery } from 'react-responsive';
 

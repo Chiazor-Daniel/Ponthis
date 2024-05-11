@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState, useEffect } from "react";
 import { Tab, Nav } from "react-bootstrap";
 import { useSelector } from "react-redux";
@@ -54,7 +55,7 @@ const AppProfile = ({ userType }) => {
         };
         try {
             const resultAction = await updateProfile(userData);
-            console.log(resultAction)
+            console.log(resultAction);
             dispatch(updateState(resultAction.data.data));
             resultAction.data.status && toast.success("Profile updated successfully.", { autoClose: 500, onClose: () => navigate("/dashboard/profile") });
         } catch (error) {

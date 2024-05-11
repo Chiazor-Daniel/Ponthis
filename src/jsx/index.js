@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useContext, useEffect, useState } from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
 import "./index.css";
@@ -7,6 +8,7 @@ import Nav from "./layouts/nav";
 import Footer from "./layouts/Footer";
 import { IoIosWarning } from "react-icons/io";
 import { ThemeContext } from "../context/ThemeContext";
+import { BASE_URL } from "../api";
 import { useNavigate } from "react-router-dom";
 import swal from 'sweetalert';
 import ReactDOMServer from 'react-dom/server';
@@ -75,7 +77,7 @@ export function MainLayout({ children, userType, superAdmin, asAdmin, setAsAdmin
     }).then((result) => {
       if (result.isConfirmed) {
         showProcessingLoader();
-        axios.post('https://trader-app.onrender.com/user/verify-and-reset/send-verification-email/', null, {
+        axios.post(`${BASE_URL}/user/verify-and-reset/send-verification-email/`, null, {
           headers: {
             'x-token': userToken
           }

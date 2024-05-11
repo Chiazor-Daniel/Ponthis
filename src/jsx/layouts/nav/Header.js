@@ -15,7 +15,6 @@ import { BsMagic } from "react-icons/bs";
 import MyTheme from "../../components/myTheme";
 
 const Header = ({ onNote, onThemeChange, userType, superAdmin, asAdmin, setAsAdmin, setUserType }) => {
-	console.log(userType)
 	const navigate= useNavigate()
 	const [rightSelect, setRightSelect] = useState('Eng');
 	const { loading, userInfo, userToken, error, success } = useSelector(state => state.auth);

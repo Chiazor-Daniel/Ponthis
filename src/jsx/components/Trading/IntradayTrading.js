@@ -200,6 +200,7 @@ const IntradayTrading = ({ fetchDataAndDispatch }) => {
                                                             onPriceChange={handlePriceChange}
                                                             onSubmit={handleTradeOrder}
                                                             amountVal={amount}
+                                                            myOrder={orderType}
                                                             onAmountChange={handleAmountChange}
                                                             onTotalChange={handleTotalChange}
                                                         />
@@ -209,9 +210,9 @@ const IntradayTrading = ({ fetchDataAndDispatch }) => {
                                             <Tab.Pane eventKey="Navsell">
                                                 <Tab.Container defaultActiveKey="Navsellmarket">
                                                     <div className="limit-sell">
-                                                        <Nav className="nav nav-tabs">
-                                                            <Nav.Link as="button" eventKey="Navsellmarket" type="button">market order</Nav.Link>
-                                                            <Nav.Link as="button" eventKey="Navselllimit" type="button" >limit order</Nav.Link>
+                                                    <Nav className="nav nav-tabs" id="nav-tab3" role="tablist">
+                                                            <Nav.Link as="button" eventKey="Navsellmarket" className={`nav-link ${orderType === 'market' ? 'active' : ''}`} onClick={() => handleOrderTypeClick('market')}>Market Order</Nav.Link>
+                                                            <Nav.Link as="button" eventKey="Navselllimit" className={`nav-link ${orderType === 'limit' ? 'active' : ''}`} onClick={() => handleOrderTypeClick('limit')}>Limit Order</Nav.Link>
                                                         </Nav>
                                                     </div>
                                                     <Tab.Content id="nav-tabContent2">
@@ -221,6 +222,7 @@ const IntradayTrading = ({ fetchDataAndDispatch }) => {
                                                     <div className="sell-element">
                                                         <OrderForm
                                                             tradePair={tradePair}
+                                                            myOrder={orderType}
                                                             orderType={activeTab}
                                                             onPriceChange={handlePriceChange}
                                                             onAmountChange={handleAmountChange}

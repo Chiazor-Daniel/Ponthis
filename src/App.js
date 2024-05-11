@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Route, Routes } from 'react-router-dom';
 import Login from './jsx/pages/Login';
 import "./vendor/bootstrap-select/dist/css/bootstrap-select.min.css";

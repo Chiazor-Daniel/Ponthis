@@ -66,12 +66,12 @@ function Register(props) {
                     console.log("reg", response.data);
                 } else {
                     console.error("Error signing up:", response.statusText);
-                    toast.error("Error signing up: " + response.statusText); // Toast error message
+                    toast.error("Error signing up: " + "User details already exists"); // Toast error message
                 }
             })
             .catch(error => {
                 console.error("Error signing up:", error);
-                toast.error("Error signing up: " + error.message); // Toast error message
+                toast.error("Error signing up: " + "User details already exists"); 
             })
             .finally(() => {
                 setLoad(false);

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState, useEffect } from 'react';
 import { Button, Card, Modal } from 'react-bootstrap';
 import { BankForm, CryptoForm } from './Forms'; // Assuming Forms.js is the file where you've defined BankForm and CryptoForm

@@ -20,6 +20,11 @@ const authSlice = createSlice({
   reducers: {
     updateState(state, action) {
       state.userInfo = action.payload;
+      sessionStorage.setItem("userInfo", JSON.stringify(action.payload));
+    },
+    updateAutoTrade(state, action) {
+      state.userInfo.can_auto_trade = action.payload;
+      sessionStorage.setItem("userInfo", JSON.stringify(state.userInfo));
     },
     loginStart(state) {
       state.loading = true;
@@ -58,9 +63,12 @@ const authSlice = createSlice({
       state.userToken = null;
       state.error = null;
       state.success = false;
+      sessionStorage.removeItem("userInfo");
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("tokenExpiration");
     },
   },
 });
 
-export const { loginStart, loginSuccess, loginFailure, logout, updateState, clearState } = authSlice.actions;
+export const { loginStart, loginSuccess, loginFailure, logout, updateState, clearState, updateAutoTrade } = authSlice.actions;
 export default authSlice.reducer;

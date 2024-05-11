@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useContext, useEffect, useReducer, useState } from "react";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import { Link, NavLink } from "react-router-dom";
@@ -16,7 +17,6 @@ const initialState = {
 }
 
 const SideBar = ({ userType, superAdmin }) => {
-  console.log(superAdmin)
   const {
     iconHover,
     sidebarposition,

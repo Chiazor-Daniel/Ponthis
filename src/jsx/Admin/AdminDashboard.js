@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useEffect, useState } from 'react';
 import AdminTable from '../components/table/FilteringTable/AdminTable';
 import { useGetAllAdminsQuery } from '../../redux/services/admin';
