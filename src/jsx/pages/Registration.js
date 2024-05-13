@@ -14,14 +14,14 @@ import { BASE_URL } from "../../api";
 function Register(props) {
     const navigate = useNavigate()
     const dispatch = useDispatch();
-    const [email, setEmail] = useState('steph@me.com');
-    const [firstName, setFirstName] = useState('MIly');
-    const [lastName, setLastName] = useState('Larry');
-    const [dob, setDob] = useState('1990-01-01'); // Format: YYYY-MM-DD
-    const [country, setCountry] = useState('United States');
-    const [phoneNumber, setPhoneNumber] = useState('787567890');
-    const [address, setAddress] = useState("Lousiana")
-    const [password, setPassword] = useState('rice');
+    const [email, setEmail] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [dob, setDob] = useState(''); // Format: YYYY-MM-DD
+    const [country, setCountry] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [address, setAddress] = useState("")
+    const [password, setPassword] = useState('');
     const [terms, setTerms] = useState(false);
     const [load, setLoad] = useState(false);
     const [errors, setErrors] = useState({});

@@ -4,7 +4,7 @@ import { Form, Button } from 'react-bootstrap';
 
 const BankForm = ({ editedDetail, setEditedDetail, saveFunction }) => {
   return (
-    <Form onSubmit={saveFunction}>
+    <Form>
       <Form.Group controlId="bankIban">
         <Form.Label>IBAN</Form.Label>
         <Form.Control
@@ -65,7 +65,7 @@ const BankForm = ({ editedDetail, setEditedDetail, saveFunction }) => {
           onChange={(e) => setEditedDetail({ ...editedDetail, reference: e.target.value })}
         />
       </Form.Group>
-      <Button variant="primary" type="submit">
+      <Button variant="primary" onClick={saveFunction}>
         {editedDetail.id ? 'Save' : 'Create'}
       </Button>
     </Form>
@@ -74,7 +74,7 @@ const BankForm = ({ editedDetail, setEditedDetail, saveFunction }) => {
 
 const CryptoForm = ({ editedCryptoDetail, setEditedCryptoDetail, saveFunction }) => {
   return (
-    <Form onSubmit={saveFunction}>
+    <Form>
       <Form.Group controlId="cryptoWalletAddress">
         <Form.Label>Wallet Address</Form.Label>
         <Form.Control
@@ -105,7 +105,7 @@ const CryptoForm = ({ editedCryptoDetail, setEditedCryptoDetail, saveFunction })
           onChange={(e) => setEditedCryptoDetail({ ...editedCryptoDetail, preferred_token: e.target.value })}
         />
       </Form.Group>
-      <Button variant="primary" type="submit">
+      <Button variant="primary" onClick={saveFunction}>
         {editedCryptoDetail.id ? 'Save' : 'Create'}
       </Button>
     </Form>

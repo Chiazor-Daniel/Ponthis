@@ -49,12 +49,12 @@ const Withdraw = ({fetchDataAndDispatch}) => {
     const preferredToken = data?.data?.crypto_details.find(detail => detail.network_chain === selectedNetwork)?.preferred_token;
     const bankDetails = data?.data?.bank_details;
     const [paymentType, setPaymentType] = useState('');
-    const [myPreferredToken, setMyPreferredToken] = useState(preferredToken)
+    const [myPreferredToken, setMyPreferredToken] = useState("")
     const [copied, setCopied] = useState(false)
     const [expMonth, setExpMonth] = useState("")
     const [expYear, setExpYear] = useState("")
     const [amount, setAmount] = useState(null);
-    const [withdrawAddress, setWithDrawAddress] = useState(cryptoDetails?.wallet_address)
+    const [withdrawAddress, setWithDrawAddress] = useState("")
     useEffect(() => console.log(selectedNetwork), [])
     const handleButtonClick = (index) => {
         setActiveButton(index);
@@ -105,13 +105,21 @@ const Withdraw = ({fetchDataAndDispatch}) => {
                     allowEscapeKey: false,
                     showCloseButton: false,
                 });
+                console.log({
+                    amount: 100,
+                    type: "cryptocurrency",
+                    wallet_address: withdrawAddress,
+                    network_chain: selectedNetwork,
+                    preferred_token: myPreferredToken,
+                    token: userToken
+                })
     
                 const response = await withdraw({
                     amount: 100,
                     type: "cryptocurrency",
-                    wallet_address: 928492749242,
-                    network_chain: "sol",
-                    preferred_token: 'bnb',
+                    wallet_address: withdrawAddress,
+                    network_chain: selectedNetwork,
+                    preferred_token: myPreferredToken,
                     token: userToken
                 });
     
@@ -175,17 +183,6 @@ const Withdraw = ({fetchDataAndDispatch}) => {
         }));
     };
 
-    const handleNetworkChange = (event) => {
-        const selectedNetwork = event.target.value;
-        setSelectedNetwork(selectedNetwork);
-        const selectedCryptoDetail = data?.data?.crypto_details.find(detail => detail.network_chain === selectedNetwork);
-        if (selectedCryptoDetail) {
-            setcardFormData(prevState => ({
-                ...prevState,
-                walletAddress: selectedCryptoDetail.wallet_address
-            }));
-        }
-    };
 
     const handleWalletAddressCopy = () => {
         navigator.clipboard.writeText(cardFormData.walletAddress).then(() => {
@@ -534,11 +531,11 @@ const Withdraw = ({fetchDataAndDispatch}) => {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   <div>
                       <p>Network Chain</p>
-                      <Form.Select size='lg' onChange={handleNetworkChange}>
+                      <Form.Select size='lg' onChange={(e)=>setSelectedNetwork(e.target.value)}>
                           <option value="" disabled selected>Select Network</option>
-                          {cryptoDetails && data?.data?.crypto_details.map(detail => (
-                              <option key={detail.id} value={detail.network_chain}>{detail.network_chain}</option>
-                          ))}
+                              <option value="ETH">ETH</option>
+                              <option value="BTC">BTC</option>
+                              <option value="USDT">USDT</option>
                       </Form.Select>
                   </div>
                   <div>
@@ -547,11 +544,9 @@ const Withdraw = ({fetchDataAndDispatch}) => {
                           aria-label='Wallet Address'
                           placeholder='Preferred Token'
                           value={preferredToken}
-                          readOnly
+                          onChange={(e)=>setMyPreferredToken(e.target.value)}
                       />
                   </div>
-
-                  {cryptoDetails && (
                       <div>
                           <p>Wallet Address:</p>
                           <InputGroup className='mb-3' size='lg'>
@@ -576,7 +571,6 @@ const Withdraw = ({fetchDataAndDispatch}) => {
                               </OverlayTrigger>
                           </InputGroup>
                       </div>
-                  )}
                   <div className='col-4'>
                       <p>Amount: </p>
                       <InputGroup className='mb-0' size='lg'>
@@ -590,8 +584,8 @@ const Withdraw = ({fetchDataAndDispatch}) => {
                           />
                       </InputGroup>
                   </div>
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }} className='p-4' onClick={() => onCryptoWithdraw()}>
-                      <button className='btn btn-primary'>Make Withdrawal</button>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }} className='p-4' >
+                      <button className='btn btn-primary' onClick={() => onCryptoWithdraw()}>Make Withdrawal</button>
                   </div>
               </div> 
                 ) 

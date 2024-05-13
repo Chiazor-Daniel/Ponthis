@@ -8,7 +8,7 @@ import Swal from 'sweetalert2';
 import { useCreateLeadMutation } from '../../../../redux/services/admin';
 import { useSelector } from 'react-redux';
 
-const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, refetch, showFilter }) => {
+const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, refetch, showFilter  }) => {
   const navigate = useNavigate();
   const { adminToken } = useSelector(state => state.adminAuth);
   const [createLead] = useCreateLeadMutation()

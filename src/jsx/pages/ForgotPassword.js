@@ -10,7 +10,7 @@ import axios from "axios";
 const ForgotPassword = ({ history }) => {
   const navigate = useNavigate();
   const [sentEmail, setSentEmail] = useState(false);
-  const [email, setEmail] = useState("danieltari873@gmail.com")
+  const [email, setEmail] = useState("")
   const { userToken } = useSelector(state => state.auth);
   const [verificationCode, setVerificationCode] = useState(''); // Change to a single string
 

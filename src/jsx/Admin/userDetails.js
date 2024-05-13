@@ -63,7 +63,7 @@ const UserDetails = ({setUserType, setAsAdmin}) => {
                     console.log(error);
                     Swal.fire({
                         icon: 'error',
-                        title: 'Failed to update user details!',
+                        title: 'Failed to update user details! No changes were made',
                         text: 'Try again',
                         showConfirmButton: true
                     });

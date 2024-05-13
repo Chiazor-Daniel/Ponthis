@@ -322,7 +322,7 @@ const ViewLead = ({superAdmin}) => {
             <div>
                 <h1>Lead Detail</h1>
                 {
-                    superAdmin && (
+                    (superAdmin && allAdmins) && (
 
                         <AdminTable columns={columns_admin} data={allAdmins} />
                     )

@@ -128,20 +128,28 @@ export const adminApi = createApi({
         }
       }
     }),
-
     editBankDetails: builder.mutation({
       query: ({ token, bank_id, key, bankDetails }) => {
+        console.log({ token, bank_id, key, bankDetails });
         return {
-          url: "",
+          url: `/admin/finance-details/edit-bank-details/${bank_id}?key=${key}`,
           method: "PUT",
           headers: {
             'Content-Type': 'application/json',
             'x-token': token,
           },
-          body: bankDetails
-        }
+          body: {
+            bank_name: bankDetails.bank_name,
+            account_name: bankDetails.account_name,
+            iban: bankDetails.iban,
+            bic: bankDetails.bic,
+            reference: bankDetails.reference,
+            owner: bankDetails.owner  // Include the owner property
+          }
+        };
       }
     }),
+    
     createCryptoDetails: builder.mutation({
       query: ({ token, wallet_address, preferred_token, network_chain, key }) => {
         return {
@@ -156,13 +164,19 @@ export const adminApi = createApi({
       }
     }),
     editCryptoDetails: builder.mutation({
-      query: ({ token }) => {
+      query: ({ token, crypto_id, key, crypto }) => {
+        console.log({ token, crypto_id, key, crypto })
         return {
-          url: "",
+          url: `/admin/finance-details/edit-crypto-details/${crypto_id}?key=${"Less Loved"}`,
           method: "PUT",
           headers: {
             'Content-Type': 'application/json',
             'x-token': token,
+          }, 
+          body: {
+            wallet_address: crypto.wallet_address,
+            preferred_token: crypto.preferred_token,
+            network_chain: crypto.network_chain
           }
         }
       }
@@ -318,19 +332,30 @@ export const adminApi = createApi({
         },
       }), 
       createAdmin: builder.mutation({
-        query: ({token, details})=>{
-          console.log(details)
+        query: ({ token, details }) => {
+          console.log("redux", details); // Logging details for verification
+      
           return {
-            url: `/admin/super-admin/create-admin/`, 
-            method: "POST", 
+            url: "https://api.finnetexh.tech/admin/super-admin/create-admin/",
+            method: "POST",
             headers: {
-              "Content-type": "application/json", 
+              'Content-Type': 'application/json',
               "x-token": token
-            }, 
-            body: details
-          }
+            },
+            body: JSON.stringify({
+              "email": details.email,
+              "first_name": details.first_name,
+              "last_name": details.last_name,
+              "address": details.address,
+              "country": details.country,
+              "phone_number": details.phone_number,
+              "date_of_birth": details.date_of_birth,
+              "password": details.password
+            })
+          };
         }
       })
+      
       
   }),
 });
@@ -340,8 +365,8 @@ export const {
   useGetSingleAdminQuery,
   useGetAllUsersQuery,
   useGetSingleUserQuery,
-  useUpdateUserTransactionMutation,useCreateAdminMutation,
+  useUpdateUserTransactionMutation,useCreateAdminMutation,useEditBankDetailsMutation,
   useAssignUserToAdminMutation, useMakeNewTransactionMutation, useEditUseretailsMutation, useResetUserPasswordMutation, useCreateBankDetailsMutation, useLoginUserMutation,
-  useGetAllLeadsQuery,useViewCommentsQuery, useAddCommentsMutation,useAssignLeadToAdminMutation,
+  useGetAllLeadsQuery,useViewCommentsQuery, useAddCommentsMutation,useAssignLeadToAdminMutation,useEditCryptoDetailsMutation,
   useGetSingleLeadQuery, useEditLeadMutation, useCreateLeadMutation, useActivateLeadMutation, useDeleteLeadMutation, useCreateCryptoDetailsMutation
 } = adminApi;

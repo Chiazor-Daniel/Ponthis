@@ -13,10 +13,10 @@ import SetLogo from '../../setLogo';
 function Login(props) {
 	const [load, setLoad] = useState(false)
 	const navigate = useNavigate();
-	const [email, setEmail] = useState('jane@exaple.com');
+	const [email, setEmail] = useState('');
 	let errorsObj = { email: '', password: '' };
 	const [errors, setErrors] = useState(errorsObj);
-	const [password, setPassword] = useState('default123');
+	const [password, setPassword] = useState('');
 	const dispatch = useDispatch();
 
 	const loginUser = (email, password) => {
@@ -151,12 +151,12 @@ function Login(props) {
 												<p>Enter your e-mail address and your password. </p>
 												<div className="form-group mb-3">
 													{/* <input name="dzName" required="" className="form-control" placeholder="User Name" type="text" /> */}
-													<input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} />
+													<input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} placeholder='Enter Email Address'/>
 													{errors.email && <div className="text-danger fs-12">{errors.email}</div>}
 												</div>
 												<div className="form-group mb-3">
 													{/* <input name="dzName" required="" className="form-control " placeholder="Type Password" type="password" /> */}
-													<input type="text" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} />
+													<input type="text" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Enter Password'/>
 													{errors.password && <div className="text-danger fs-12">{errors.password}</div>}
 												</div>
 												<div className="form-group text-left mb-5">
@@ -181,9 +181,9 @@ function Login(props) {
 														<Link to="/forgot-password">
 															Forgot password ?
 														</Link>
-														<Link to="/admin/admin-login">
+														{/* <Link to="/admin/admin-login">
 															Admin ?
-														</Link>
+														</Link> */}
 													</div>
 												</div>
 											</form>

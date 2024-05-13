@@ -5,14 +5,19 @@ import { BankForm, CryptoForm } from './Forms'; // Assuming Forms.js is the file
 import Swal from 'sweetalert2';
 import { useCreateBankDetailsMutation } from '../../redux/services/admin';
 import { useSelector } from 'react-redux';
+import { useEditCryptoDetailsMutation } from '../../redux/services/admin';
+import { useEditBankDetailsMutation } from '../../redux/services/admin';
 import { useCreateCryptoDetailsMutation } from '../../redux/services/admin';
 const Finance = ({ paymentDetails, token, refetch }) => {
   const [selectedButton, setSelectedButton] = useState('');
   const { adminToken } = useSelector(state => state.adminAuth)
+  const[editBankDetails] = useEditBankDetailsMutation();
+  const [editCryptoDetails] = useEditCryptoDetailsMutation()
   const [showModal, setShowModal] = useState(false);
   const [bankDetails, setBankDetails] = useState(paymentDetails.bank_details);
   const [editedDetail, setEditedDetail] = useState({
     id: '',
+    key: "Less Loved",
     iban: '',
     account_name: '',
     owner: '',
@@ -25,8 +30,8 @@ const Finance = ({ paymentDetails, token, refetch }) => {
   const [cryptoDetails, setCryptoDetails] = useState(paymentDetails.crypto_details);
   const [editedCryptoDetail, setEditedCryptoDetail] = useState({
     id: '',
+    key: "Less Loved",
     wallet_address: '',
-    key: "",
     preferred_token: '',
     network_chain: ''
   });
@@ -98,7 +103,7 @@ const Finance = ({ paymentDetails, token, refetch }) => {
           console.log(err)
           Swal.fire({
             title: "Error",
-            text: "An error occurred while updating the lead. Please try again later.",
+            text: "Details Please try again later.",
             icon: "error",
             confirmButtonColor: '#3085d6',
           })
@@ -149,10 +154,55 @@ const Finance = ({ paymentDetails, token, refetch }) => {
       }
     })
   };
-
+  const handleSaveEditedBankDetails = (bank) => {
+    setEditedDetail(bank);
+    handleShowModal();
+    Swal.fire({
+      icon: "info", 
+      title: "Edit bank details", 
+      text: "confirm edit bank details",
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, create it!'
+    }).then(async (result) =>{
+      if(result.isConfirmed){
+        const res = await editBankDetails({token: adminToken, bank_id: parseInt(editedDetail.id), bankDetails: editedDetail, key: "Less Loved"})
+        console.log(res)
+      }
+    })
+  handleCloseModal();
+};
   const handleSaveEditedDetails = () => {
-    // Logic to save edited details
-    // This can be implemented based on your requirements
+      setEditedCryptoDetail(crypto);
+      Swal.fire({
+        icon: "info", 
+        title: "Edit crypto details", 
+        text: "confirm edit crypto details",
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, create it!'
+      }).then(async (result) =>{
+        if(result.isConfirmed){
+          console.log(editedCryptoDetail)
+          const res = await editCryptoDetails({token: adminToken, crypto_id: parseInt(editedCryptoDetail.id), crypto: editedCryptoDetail, key: editedCryptoDetail.key})
+          console.log(res)
+          if(res.data.status === "success"){
+            Swal.fire({
+              icon: "success", 
+              title: "Edited success", 
+             
+            })
+          }
+        }
+      }).catch(err=>
+      {
+        Swal.fire({
+          icon: "error", 
+          title: "An error occured while editing"
+        })
+      })
     handleCloseModal();
   };
 
@@ -163,6 +213,7 @@ const Finance = ({ paymentDetails, token, refetch }) => {
 
   const handleEditCryptoDetails = (crypto) => {
     setEditedCryptoDetail(crypto);
+    console.log("c", cryptoDetails)
     handleShowModal();
   };
   console.log("crp", cryptoDetails)
@@ -214,7 +265,7 @@ const Finance = ({ paymentDetails, token, refetch }) => {
               </ul>
             ) : selectedButton === 'Crypto' && cryptoDetails.length > 0 ? (
               <ul className='list-unstyled' style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-              {cryptoDetails.map((crypto, index) => (
+              {paymentDetails?.crypto_details.map((crypto, index) => (
                 <li key={index} style={{ border: "0px solid gray", borderRadius: "20px", padding: "10px", flex: "1 1 300px" }}>
                   <div className='mb-3'>
                     <span className='font-weight-bold'>Network Chain:</span> {crypto.network_chain}<br />
@@ -245,7 +296,7 @@ const Finance = ({ paymentDetails, token, refetch }) => {
             <BankForm
               editedDetail={editedDetail}
               setEditedDetail={setEditedDetail}
-              saveFunction={editedDetail.id ? handleSaveEditedDetails : handleSaveBankDetails}
+              saveFunction={editedDetail.id ? handleSaveEditedBankDetails : handleSaveBankDetails}
             />
           ) : (
             <CryptoForm

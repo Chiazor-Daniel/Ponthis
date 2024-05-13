@@ -57,7 +57,7 @@ const Home = ({ theme, fetchDataAndDispatch }) => {
 
     }, [data, dispatch, isLoadingError, user_id, userInfo]);
     const [price, setPrice] = useState('');
-    const [amount, setAmount] = useState('232');
+    const [amount, setAmount] = useState('');
     const [total, setTotal] = useState('');
     const [orderType, setOrderType] = useState("market");
     const [searchTerm, setSearchTerm] = useState("")
@@ -129,7 +129,7 @@ const Home = ({ theme, fetchDataAndDispatch }) => {
                     .unwrap()
                     .then((response) => {
                         Swal.close(); // Close the loading spinner
-                        if (response && response[0] && response[0].status === "success") {
+                        if (response && response[0] && response[1].data.status === "success") {
                             fetchDataAndDispatch()
                             Swal.fire({
                                 title: "Trade Opened!",
@@ -186,7 +186,7 @@ const Home = ({ theme, fetchDataAndDispatch }) => {
                                                 <h2 className="heading">Assets lists</h2>
                                             </div>
                                             <div style={{ padding: "10px" }}>
-                                                <Form.Control type="text" placeholder="Search pair" className="form-control-sm col-6" value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value) }} />
+                                                <Form.Control type="text" placeholder="Search pair" className="form-control-sm col-12" value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value) }} />
 
                                             </div>
                                             <div className="card-body text-center pt-0 pb-2" style={{ overflow: "auto" }}>

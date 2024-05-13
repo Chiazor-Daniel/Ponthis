@@ -54,18 +54,25 @@ const Header = ({ onNote, onThemeChange, userType, superAdmin, asAdmin, setAsAdm
 						</nav>
 						{
 							asAdmin && (
-								<Button style={{width: "auto", marginRight: "20px"}} onClick={()=>{setAsAdmin(false); navigate("/admin/admin-dashboard"); setUserType("admin")}}>Admin Dashboard</Button>
+								<Button style={{width: "auto", marginRight: "20px"}} onClick={() => {
+									setAsAdmin(false);
+									navigate("/admin/admin-dashboard");
+									setUserType("admin");
+									sessionStorage.removeItem('userToken');
+									sessionStorage.removeItem('userInfo');
+								}}
+								>Admin Dashboard</Button>
 
 							)
 						}
 
 						{/* <MyTheme /> */}
 
-						<ToggleTheme
+						{/* <ToggleTheme
 							isDark={isDark}
 							invertedIconLogic
 							onChange={() => { setDark((prev) => !prev); onThemeChange(isDark) }}
-						/>
+						/> */}
 
 						<Dropdown as="li" className="nav-item dropdown header-profile">
 							<Dropdown.Toggle variant="" as="a" className="nav-link i-false c-pointer">
@@ -111,11 +118,11 @@ const Header = ({ onNote, onThemeChange, userType, superAdmin, asAdmin, setAsAdm
 						
 					
 						{/* <MyTheme /> */}
-						<ToggleTheme
+						{/* <ToggleTheme
 							isDark={isDark}
 							invertedIconLogic
 							onChange={() => { setDark((prev) => !prev); onThemeChange(isDark) }}
-						/>
+						/> */}
 						<Dropdown as="li" className="nav-item dropdown header-profile">
 							<Dropdown.Toggle variant="" as="a" className="nav-link i-false c-pointer">
 								<Avatar name={"A" + " " + "D"} size={50} round />

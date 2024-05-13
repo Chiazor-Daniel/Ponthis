@@ -46,7 +46,7 @@ const UserForm = ({ user, onSubmit, userResetPassword }) => {
                                 />
                             </div>
                         );
-                    } else if (key === 'created_at') {
+                    } else if (key === 'date_of_birth') {
                         return (
                             <div key={key} className="mb-3 col-6">
                                 <label htmlFor={key.replace(/_/g, ' ')} className="form-label">{key.replace(/_/g, ' ')}</label>
@@ -60,10 +60,11 @@ const UserForm = ({ user, onSubmit, userResetPassword }) => {
                                 />
                             </div>
                         );
-                    } else if (key === 'auto_trade_count' || key === 'id' || key === 'user_type' || key === 'assigned_to') {
+                    } else if (key === 'auto_trade_count' || key === 'id' || key === 'user_type' || key === 'assigned_to' || key === 'date_of_birth') {
                         // Exclude keys like "id", "auto_trade_count", and "assigned_to"
                         return null;
-                    } else {
+                    }
+                     else {
                         return (
                             <FormRow
                                 key={key}

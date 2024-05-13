@@ -17,11 +17,16 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
   const navigate = useNavigate();
   const { adminInfo, adminToken } = useSelector(state => state.adminAuth);
   const { data: allUsers, isLoading: isUsersLoading, error: isUsersError } = useGetAllUsersQuery(adminToken);
-  const { data: paymentDetails, isLoading: isPaymentLoading, error: isPaymentError, refetch: refetchPaymentDetails } = useGetPaymentDetailsQuery(adminToken);
   const { data, error, isLoading } = useGetAllAdminsQuery(adminToken);
   const [createAdmin, { isLoading: isCreatingAdmin }] = useCreateAdminMutation();
   const [showCreateAdminModal, setShowCreateAdminModal] = useState(false);
   const { data: admin, isLoading: isAdminLoading, error: isAdminError, refetch } = useGetSingleAdminQuery({ id: adminInfo.id, adminToken: adminToken });
+  const { data: paymentDetails, isLoading: isPaymentLoading, error: isPaymentError, refetch: refetchPaymentDetails } = useGetPaymentDetailsQuery(adminToken);
+
+  const handleRefetch = () => {
+    console.log("yuep")
+    refetchPaymentDetails();
+  };
 
   const handleCreateAdmin = (formData) => {
     const { email, first_name, last_name, address, country, phone_number, date_of_birth, password } = formData;
@@ -236,7 +241,7 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
     {!isLoading && allUsers && !superAdmin &&  <AdminTable columns={user_columns} data={allUsers} title={'Users'} />}
     {!isLoading && allUsers && superAdmin && <AdminTable columns={user_columns} data={allUsers} title={'Users'} superAdmin={superAdmin} />}
     {!isLoading && !superAdmin && admin && <AdminTable columns={user_columns} data={admin.users_assigned} title={"Assigned users"} />}
-    {!isLoading && paymentDetails && superAdmin && data && <Finance paymentDetails={paymentDetails?.data} token={adminToken} refetch={refetchPaymentDetails} />}
+    {!isLoading && paymentDetails && superAdmin && data && <Finance paymentDetails={paymentDetails?.data} token={adminToken} refetch={handleRefetch} />}
     {isUsersLoading && <div>Loading users...</div>}
     {isPaymentLoading && <div>Loading payment details...</div>}
   </>

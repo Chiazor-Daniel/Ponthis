@@ -9,16 +9,18 @@ import { BiSolidBoltCircle } from 'react-icons/bi';
 import AdminTable from '../components/table/FilteringTable/AdminTable';
 import Swal from 'sweetalert2';
 import { useUpdateUserTransactionMutation } from '../../redux/services/admin';
+import { useAssignLeadToAdminMutation } from '../../redux/services/admin';
 import { useGetAllLeadsQuery } from '../../redux/services/admin';
 import { useAssignUserToAdminMutation } from '../../redux/services/admin';
 
 const AdminDetails = ({superAdmin}) => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [assignLeadToAdmin] = useAssignLeadToAdminMutation()
   const { adminInfo, adminToken } = useSelector(state => state.adminAuth);
   const { data: allUsers, isLoading: isUsersLoading, error: isUsersError } = useGetAllUsersQuery(adminToken);
   const { data: admin, isLoading, error, refetch } = useGetSingleAdminQuery({ id, adminToken });
-  const { data: allLeads} = useGetAllLeadsQuery({admin_id: id, token: adminToken});
+  const { data: allLeads, refetch: refetchLeads} = useGetAllLeadsQuery({admin_id: id, token: adminToken});
   console.log(allLeads)
   const crmLeads = React.useMemo(
     () => [
@@ -69,6 +71,53 @@ const AdminDetails = ({superAdmin}) => {
         Header: 'Created At',
         accessor: 'created_at',
       },
+      {
+        Header: "", 
+        accessor: "id", 
+        Cell : ({row}) => <Button className='bg-danger'  onClick={() => {
+          Swal.fire({
+              icon: "info",
+              title: "Unassign lead from admin",
+              text: `Unassign lead ${row.values.first_name + " " + row.values.last_name} `,
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Unassign',
+          }).then(async (result) => {
+              if (result.isConfirmed) {
+                  try {
+                      const res = await assignLeadToAdmin({
+                          token: adminToken,
+                          lead_id: parseInt(row.values.id),
+                          admin_id: id,
+                          assign_task: "unassigned"
+                      });
+                      console.log(res);
+                      if(res.data.status === "success"){
+                        refetchLeads();
+                          Swal.fire({
+                              icon: "success", 
+                              title: `Unassigned ${row.values.first_name} success`
+                          })
+                      }else{
+                          Swal.fire({
+                              icon: "error", 
+                              title: "An error occured", 
+                              text: "An error occured. Please try again"
+                          })
+                      }
+                  } catch (error) {
+                      console.error("Error unassigning lead to admin:", error);
+                      Swal.fire({
+                          icon: "error", 
+                          title: "An error occured", 
+                          text: "An error occured. Please try again"
+                      })
+                  }
+              }
+          })
+      }}>Unassign Lead</Button>
+      }
     ],
     []
     );
@@ -203,6 +252,8 @@ const AdminDetails = ({superAdmin}) => {
     ],
     [navigate, admin]
   );
+
+  
 
   const [form, setForm] = useState({
     firstName: '',
@@ -415,20 +466,23 @@ const AdminDetails = ({superAdmin}) => {
       </div>
       <div className='row' style={{ padding: '30px' }}>
         {
-          admin && (
+          Array.isArray(admin?.users_assigned) && (
             <AdminTable columns={user_columns2} data={admin?.users_assigned} title={"Assigned users"} />
           )
         }
       </div>
-      {
-        allLeads.status !== "error" ?  (
-          <AdminTable columns={crmLeads} data={allLeads?.message} title={"Admin Leads"} />
-        ) : <p>No leads to fetch...</p>
-      }
+      
       <div className='row' style={{ padding: '20px' }}>
         {
           allUsers && (
             <AdminTable columns={user_columns} data={allUsers} title={'Assigns Users'} />
+          )
+        }
+      </div>
+      <div className='row' style={{ padding: '20px' }}>
+        {
+          Array.isArray(allLeads?.message) && (
+            <AdminTable columns={crmLeads} data={allLeads?.message} title={'Assigned Leads'} />
           )
         }
       </div>
