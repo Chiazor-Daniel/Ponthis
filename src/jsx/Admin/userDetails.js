@@ -18,16 +18,23 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import { BASE_URL } from '../../api';
 import { loginSuccess } from '../../redux/features/auth/authSlice';
-const UserDetails = ({setUserType, setAsAdmin}) => {
+import { useGetAllTradesQuery } from '../../redux/services/trades'
+import { Tab, Nav } from 'react-bootstrap';
+import { useCreateCustomProfitMutation } from '../../redux/services/admin';
+import FutureTable from '../components/Trading/futuretable';
+const UserDetails = ({ setUserType, setAsAdmin, userType }) => {
+    console.log(userType)
     const { id } = useParams();
     const dispatch = useDispatch()
     const navigate = useNavigate();
+    const [createCustomProfit] = useCreateCustomProfitMutation()
     const { adminToken } = useSelector(state => state.adminAuth)
-    const [editUserDetails, {isLoading: isEditing, error: editingError}] = useEditUseretailsMutation();
+    const [editUserDetails, { isLoading: isEditing, error: editingError }] = useEditUseretailsMutation();
     const { data: userData, isLoading, error, refetch } = useGetSingleUserQuery({ id, adminToken });
-    const [resetUserPassword, {isLoading: resetLoading, error: reseError}] = useResetUserPasswordMutation()
-    const [loginUser, {isLoading:loginLoading, error:loginError}] = useLoginUserMutation()
+    const [resetUserPassword, { isLoading: resetLoading, error: reseError }] = useResetUserPasswordMutation()
+    const [loginUser, { isLoading: loginLoading, error: loginError }] = useLoginUserMutation()
     const [shouldRefetch, setShouldRefetch] = useState(false);
+    const [fills, setFills] = useState("all")
     const handleSubmit = async (formData) => {
         Swal.fire({
             icon: 'info',
@@ -50,7 +57,7 @@ const UserDetails = ({setUserType, setAsAdmin}) => {
                 try {
                     const editRes = await editUserDetails({ user_id: id, userDetails: formData, token: adminToken });
                     console.log(editRes);
-                    if(editRes.data.status === "success"){
+                    if (editRes.data.status === "success") {
                         refetch()
                         Swal.fire({
                             icon: 'success',
@@ -93,7 +100,7 @@ const UserDetails = ({setUserType, setAsAdmin}) => {
                 try {
                     const resetRes = await resetUserPassword({ user_id: id, token: adminToken });
                     console.log(resetRes)
-                    if(resetRes.data.status === "success"){
+                    if (resetRes.data.status === "success") {
                         refetch()
                         Swal.fire({
                             icon: 'success',
@@ -101,7 +108,7 @@ const UserDetails = ({setUserType, setAsAdmin}) => {
                             showConfirmButton: false,
                             timer: 1500
                         });
-                    }else{
+                    } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Failed to reset!',
@@ -121,7 +128,7 @@ const UserDetails = ({setUserType, setAsAdmin}) => {
             }
         });
     };
-    
+
     const reUser = () => {
         refetch();
         setShouldRefetch(true); // Set state to trigger re-render
@@ -138,11 +145,11 @@ const UserDetails = ({setUserType, setAsAdmin}) => {
                     Swal.showLoading();
                 }
             });
-    
+
             const loginRes = await loginUser({ user_id: id, token: adminToken });
             console.log(loginRes);
             console.log("user token", loginRes?.data["access-token"]);
-    
+
             if (loginRes.data.status === 'success') {
                 const userToken = loginRes?.data["access-token"];
                 const userInfo = await axios.get(`${BASE_URL}/user/profile/users/`, {
@@ -150,20 +157,20 @@ const UserDetails = ({setUserType, setAsAdmin}) => {
                         "x-token": userToken
                     }
                 });
-    
+
                 sessionStorage.setItem("userToken", userToken); // Save user token in sessionStorage
                 sessionStorage.setItem("userInfo", JSON.stringify(userInfo.data)); // Save user info in sessionStorage
-                dispatch(loginSuccess({userInfo: userInfo.data, userToken: userToken}))
+                dispatch(loginSuccess({ userInfo: userInfo.data, userToken: userToken }))
                 localStorage.setItem("user", "user")
 
-    
+
                 Swal.fire({
                     icon: "success",
                     title: "Login user success",
                     text: "logged into user account successfully",
                     showConfirmButton: false,
                 });
-    
+
                 toast.success("Login successful!", {
                     autoClose: 1000,
                     position: toast.POSITION.TOP_CENTER,
@@ -189,10 +196,10 @@ const UserDetails = ({setUserType, setAsAdmin}) => {
             });
         }
     };
-    
-    
-        
-    
+
+
+
+
 
     useEffect(() => {
         if (shouldRefetch) {
@@ -228,10 +235,14 @@ const UserDetails = ({setUserType, setAsAdmin}) => {
     ];
 
     const transactionDataAvailable = userData[2]?.transaction_activities;
+    console.log(userData[1]['trading activities'])
+    console.log(userData)
+
+    
 
     return (
         <>
-        <ToastContainer />
+            <ToastContainer />
             <div className=''>
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                     <h1>User Details</h1>
@@ -265,16 +276,49 @@ const UserDetails = ({setUserType, setAsAdmin}) => {
                             </button>
                         </div>
                     </div>
-                    <div className='card col-5' style={{ padding: "20px" }}>
-                        <h1>Edit User Details</h1>
-                        <UserForm user={user} onSubmit={handleSubmit} userResetPassword={userResetPassword}/>
+                    <div className='col-5'>
+                        <div className='' style={{ padding: "20px" }}>
+                            <h1>Edit User Details</h1>
+                            <UserForm user={user} onSubmit={handleSubmit} userResetPassword={userResetPassword} />
+                        </div>
+                        <div className='card' style={{maxHeight:"400px", padding: '20px'}}>
+                            <h3>User Account</h3>
+                            <p style={{fontSize: '2rem'}}>Main Balance : $<span style={{fontWeight: 'bold'}}>{userData[3]?.accounts[0].main_balance}</span></p>
+                            <p style={{fontSize: '1.5rem'}}>Referral Balance : $<span style={{fontWeight: 'bold'}}>{userData[3]?.accounts[0].referral_balance}</span></p>
+                            <p style={{fontSize: '1.5rem'}}>Bonus Balance : $<span style={{fontWeight: 'bold'}}>{userData[3]?.accounts[0].bonus_balance}</span></p>
+
+                        </div>
                     </div>
                 </div>
                 <div>
-                    {/* Render FilteringTable only if transaction data is available */}
-                    {transactionDataAvailable && (
+                    {userData[2]?.transaction_activities && (
                         <FilteringTable user="admin" data={userData[2].transaction_activities} userId={id} refetchUser={reUser} />
                     )}
+                      <div className="card" style={{ padding: "20px" }}>
+                        <h4>User trading activities</h4>
+                        <Tab.Container defaultActiveKey="All">
+
+                            <div className="card-header border-0">
+                                <Nav as="ul" className="order  nav-tabs" id="pills-tab" role="tablist">
+                                    <Nav.Item as="li" className=" my-1" role="presentation">
+                                        <Nav.Link as="button" eventKey="All" type="button" onClick={()=>setFills("all")}>All Trade</Nav.Link>
+                                    </Nav.Item>
+                                    <Nav.Item as="li" className=" my-1" role="presentation">
+                                        <Nav.Link as="button" eventKey="Spot" type="button" onClick={()=>setFills("open")}>Opened</Nav.Link>
+                                    </Nav.Item>
+                                    <Nav.Item as="li" className=" my-1" role="presentation">
+                                        <Nav.Link as="button" className="me-0" eventKey="Listing" type="button" onClick={()=>setFills("close")}>Closed</Nav.Link>
+                                    </Nav.Item>
+                                </Nav>
+                                </div>
+                        <div className="card-body pt-0">
+                            <div style={{display: "flex", justifyContent: "flex-end"}}>
+                                
+                            </div>
+                            <FutureTable tradesData={userData[1]['trading activities']} isLoading={isLoading} refetchData={refetch} fills={'all'} userToken={adminToken} userType={userType} userId={parseInt(id)}/>
+                        </div>
+                        </Tab.Container>
+                      </div>
                 </div>
             </div>
         </>

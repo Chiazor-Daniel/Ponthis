@@ -99,13 +99,36 @@ function App() {
         />
       ))}
 
-      {adminPages.map(({ path, component: Component }) => (
+{adminPages.map(({ path, component: Component }) => (
         <Route
           key={path}
           path={path}
-          element={<MainLayout setAsAdmin={(as) => setAsAdmin(as)} asAdmin={asAdmin} superAdmin={superAdmin} setSuperAdmin={setSuperAdmin} userType={userType} setUserType={(user) => setUserType(user)}><Component setAsAdmin={(as) => setAsAdmin(as)} asAdmin={asAdmin} userType={userType} setUserType={(user) => setUserType(user)} superAdmin={superAdmin} setSuperAdmin={setSuperAdmin} /></MainLayout>}
+          element={
+            (adminToken && adminInfo) ? (
+              <MainLayout
+                setAsAdmin={setAsAdmin}
+                asAdmin={asAdmin}
+                superAdmin={superAdmin}
+                setSuperAdmin={setSuperAdmin}
+                userType={userType}
+                setUserType={setUserType}
+              >
+                <Component
+                  setAsAdmin={setAsAdmin}
+                  asAdmin={asAdmin}
+                  userType={userType}
+                  setUserType={setUserType}
+                  superAdmin={superAdmin}
+                  setSuperAdmin={setSuperAdmin}
+                />
+              </MainLayout>
+            ) : (
+              <Error400 />
+            )
+          }
         />
       ))}
+
 
       <Route path='/error' element={<Error400 />} />
       <Route path='/forgot-password' element={<ForgotPassword />} />

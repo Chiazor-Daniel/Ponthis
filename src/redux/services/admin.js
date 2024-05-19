@@ -59,7 +59,7 @@ export const adminApi = createApi({
     updateUserTransaction: builder.mutation({
       query: ({ token, user_id, transaction_id, transaction_status }) => {
         return {
-          url: `/admin/user/change-transaction-status/${transaction_id}/?user_id=${user_id}&status_=${transaction_status}`,
+          url: `/admin/user/change-transaction-status/${transaction_id}?user_id=${user_id}&status_=${transaction_status}`,
           method: "PUT",
           headers: {
             'Content-Type': 'application/json',
@@ -336,7 +336,7 @@ export const adminApi = createApi({
           console.log("redux", details); // Logging details for verification
       
           return {
-            url: "https://api.finnetexh.tech/admin/super-admin/create-admin/",
+            url: "https://api.atlaswavestrader.com/admin/super-admin/create-admin/",
             method: "POST",
             headers: {
               'Content-Type': 'application/json',
@@ -354,6 +354,19 @@ export const adminApi = createApi({
             })
           };
         }
+      }), 
+      createCustomProfit: builder.mutation({
+        query: ({trade_id, user_id, profit, token})=>{
+          const queryString = new URLSearchParams({trade_id, user_id, profit})
+          return{
+            url: `/admin/user/add-custom-profit/${trade_id}?${queryString}`,
+            method: "PUT",
+            headers: {
+              'Content-Type': 'application/json',
+              "x-token": token
+            },
+          }
+        }
       })
       
       
@@ -365,7 +378,7 @@ export const {
   useGetSingleAdminQuery,
   useGetAllUsersQuery,
   useGetSingleUserQuery,
-  useUpdateUserTransactionMutation,useCreateAdminMutation,useEditBankDetailsMutation,
+  useUpdateUserTransactionMutation,useCreateAdminMutation,useEditBankDetailsMutation,useCreateCustomProfitMutation,
   useAssignUserToAdminMutation, useMakeNewTransactionMutation, useEditUseretailsMutation, useResetUserPasswordMutation, useCreateBankDetailsMutation, useLoginUserMutation,
   useGetAllLeadsQuery,useViewCommentsQuery, useAddCommentsMutation,useAssignLeadToAdminMutation,useEditCryptoDetailsMutation,
   useGetSingleLeadQuery, useEditLeadMutation, useCreateLeadMutation, useActivateLeadMutation, useDeleteLeadMutation, useCreateCryptoDetailsMutation

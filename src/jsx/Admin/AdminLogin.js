@@ -15,8 +15,8 @@ import SetLogo from '../../setLogo';
 function AdminLogin(props) {
   const [load, setLoad] = useState(false);
   const navigate = useNavigate();
-  const [email, setEmail] = useState('oargap@nekosan.uk');
-  const [password, setPassword] = useState('string');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const dispatch = useDispatch();
 
   const loginUser = (email, password) => {
@@ -112,10 +112,10 @@ function AdminLogin(props) {
                         </div>
                         <p>Enter your e-mail address and your password. </p>
                         <div className="form-group mb-3">
-                          <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} />
+                          <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} placeholder='Enter Email Address'/>
                         </div>
                         <div className="form-group mb-3">
-                          <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} />
+                          <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Enter Password'/>
                         </div>
                         <div className="form-group text-left mb-5">
                           <button type="submit" className="btn btn-primary dz-xs-flex m-r5">

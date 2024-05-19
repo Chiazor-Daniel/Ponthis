@@ -10,6 +10,8 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { loginSuccess } from "../../redux/features/auth/authSlice";
 import { BASE_URL } from "../../api";
+import Form from 'react-bootstrap/Form';
+import { useGetCountriesQuery } from "../../redux/features/utils/countriesSlice";
 
 function Register(props) {
     const navigate = useNavigate()
@@ -22,9 +24,26 @@ function Register(props) {
     const [phoneNumber, setPhoneNumber] = useState('');
     const [address, setAddress] = useState("")
     const [password, setPassword] = useState('');
+    const [countries, setCountries] = useState(null)
     const [terms, setTerms] = useState(false);
     const [load, setLoad] = useState(false);
     const [errors, setErrors] = useState({});
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get("https://restcountries.com/v3.1/all");
+                const sortedCountries = response.data.sort((a, b) => a.name.common.localeCompare(b.name.common));
+                console.log(sortedCountries);
+                setCountries(sortedCountries);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+    
+        fetchData();
+    }, []);
+    
+
 
     const onSignUp = (e) => {
         e.preventDefault();
@@ -57,7 +76,7 @@ function Register(props) {
                                 localStorage.setItem("userInfo", JSON.stringify(user.data));
                                 console.log("resuser", user.data)
                                 dispatch(loginSuccess({ userInfo: user.data, userToken: response.data.message }));
-                                navigate("/dashboard");
+                                navigate("/");
                             })
                             .catch(error => {
                                 console.error("Error fetching user data:", error);
@@ -71,7 +90,7 @@ function Register(props) {
             })
             .catch(error => {
                 console.error("Error signing up:", error);
-                toast.error("Error signing up: " + "User details already exists"); 
+                toast.error("Error signing up: " + "User details already exists");
             })
             .finally(() => {
                 setLoad(false);
@@ -84,7 +103,7 @@ function Register(props) {
             <div className="page-wraper">
                 <ToastContainer />
                 <div className="browse-job login-style3">
-                <div className="bg-img-fix overflow-hidden" style={{ background: '#fff url(' + bg6 + ')', height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                    <div className="bg-img-fix overflow-hidden" style={{ background: '#fff url(' + bg6 + ')', height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
                         <div className="col-6 bg-white rounded">
                             <div className="col-12">
                                 <div className="card-body">
@@ -114,7 +133,11 @@ function Register(props) {
                                                         <input value={address} onChange={(e) => setAddress(e.target.value)} className="form-control" placeholder="Address" type="text" />
                                                     </div>
                                                     <div className="form-group mt-3">
-                                                        <input value={country} onChange={(e) => setCountry(e.target.value)} className="form-control" placeholder="Country" type="text" />
+                                                        <Form.Select aria-label="" value={country} onChange={(e) => setCountry(e.target.value)}>
+                                                           {
+                                                            countries && countries?.map((c)=> <option value={c?.name?.common}>{c?.name?.common}</option>)
+                                                           }
+                                                        </Form.Select>
                                                     </div>
                                                     <div className="form-group mt-3">
                                                         <input value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className="form-control" placeholder="Phone Number" type="text" />

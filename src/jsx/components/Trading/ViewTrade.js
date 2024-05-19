@@ -1,13 +1,20 @@
 /* eslint-disable */
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import FutureTable from './futuretable'
 import { Tab, Nav } from 'react-bootstrap';
 import ToggleTrade from '../toggleTrade';
-
-const ViewTrade = () => {
+import { useSelector } from 'react-redux';
+import { useGetAllTradesQuery } from '../../../redux/services/trades';
+const ViewTrade = ({fetchDataAndDispatch}) => {
     const [autoTrader, setAutoTrader] = useState(false)
+    const { userToken } = useSelector(state => state.auth);
+    const { data, isFetching, refetch: allTradesRefecth } = useGetAllTradesQuery(userToken);
     const handleAutoTrader = () => setAutoTrader(!autoTrader)
     const [fills, setFills] = useState("all")
+    useEffect(()=>{
+        allTradesRefecth();
+    }, [])
+    console.log(data)
     return (
         <div className=''>
             <div className="col-xl-12">
@@ -24,13 +31,15 @@ const ViewTrade = () => {
                                 <Nav.Item as="li" className=" my-1" role="presentation">
                                     <Nav.Link as="button" className="me-0" eventKey="Listing" type="button" onClick={()=>setFills("close")}>Closed</Nav.Link>
                                 </Nav.Item>
-                            </Nav>
-                           
+                            </Nav>    
                             <ToggleTrade />
-                        
                         </div>
                         <div className="card-body pt-0">
-                            <FutureTable fills={fills}/>
+                            {
+                                data && (
+                                    <FutureTable tradesData={data[1]?.data} isLoading={isFetching} refetchData={allTradesRefecth} fills={fills} fetchDataAndDispatch={fetchDataAndDispatch} userToken={userToken}/>
+                                )
+                            }
                         </div>
                     </Tab.Container>
                 </div>

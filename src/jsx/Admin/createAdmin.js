@@ -1,19 +1,34 @@
 /* eslint-disable */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Modal, Button, Form } from 'react-bootstrap'; // Assuming you're using Bootstrap for the modal and form components
 
 const CreateAdminModal = ({ show, onHide, onCreateAdmin }) => {
   const [formData, setFormData] = useState({
-    email: 'admin@example.com',
-    first_name: 'Katty',
-    last_name: 'White',
-    address: '123 Funny Street',
-    country: 'Funnyland',
-    phone_number: '1234567890',
-    date_of_birth: '1990-01-01',
-    password: 'pawpaw'
+    email: '',
+    first_name: '',
+    last_name: '',
+    address: '',
+    country: '',
+    phone_number: '',
+    date_of_birth: '',
+    password: ''
   });
-  
+  const [countries, setCountries] = useState(null)
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("https://restcountries.com/v3.1/all");
+        const sortedCountries = response.data.sort((a, b) => a.name.common.localeCompare(b.name.common));
+        console.log(sortedCountries);
+        setCountries(sortedCountries);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -53,7 +68,12 @@ const CreateAdminModal = ({ show, onHide, onCreateAdmin }) => {
           </Form.Group>
           <Form.Group controlId="country">
             <Form.Label>Country</Form.Label>
-            <Form.Control type="text" name="country" value={formData.country} onChange={handleChange} required />
+            {/* <Form.Control type="text" name="country" value={formData.country} onChange={handleChange} required /> */}
+            <Form.Select aria-label="" value={formData.country} onChange={handleChange}>
+              {
+                countries?.map((c) => <option value={c?.name?.common}>{c?.name?.common}</option>)
+              }
+            </Form.Select>
           </Form.Group>
           <Form.Group controlId="phone_number">
             <Form.Label>Phone Number</Form.Label>

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { createContext, useEffect, useReducer } from "react";
 import {dezThemeSet} from './ThemeDemo';
 

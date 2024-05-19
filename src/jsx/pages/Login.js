@@ -8,6 +8,8 @@ import Spinner from 'react-bootstrap/Spinner';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import logo from '../../images/atlas.png'
+import { IoEyeSharp } from "react-icons/io5";
+import { FaEyeSlash } from "react-icons/fa";
 import { BASE_URL } from '../../api';
 import SetLogo from '../../setLogo';
 function Login(props) {
@@ -118,6 +120,7 @@ function Login(props) {
 		}
 	}
 	const [rememberMe, setRememberMe] = useState(true);
+	const [showPass, setShowPass] = useState(false)
 
 	return (
 		<div className="page-wraper">
@@ -154,9 +157,16 @@ function Login(props) {
 													<input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} placeholder='Enter Email Address'/>
 													{errors.email && <div className="text-danger fs-12">{errors.email}</div>}
 												</div>
-												<div className="form-group mb-3">
+												<div className="form-group mb-3" style={{position: "relative"}}>
 													{/* <input name="dzName" required="" className="form-control " placeholder="Type Password" type="password" /> */}
-													<input type="text" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Enter Password'/>
+													{
+														(showPass && password.length > 0) ? (
+															<FaEyeSlash style={{position: "absolute", right: 8, top: 10, cursor: "pointer"}} size={30} onClick={()=> setPassword(true)} />
+														): (
+															<IoEyeSharp style={{position: "absolute", right: 8, top: 10, cursor: "pointer"}} size={30} onClick={()=> setPassword(false)}/>
+														)
+													}
+													<input type={showPass ? "text" : "password"} className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Enter Password'/>
 													{errors.password && <div className="text-danger fs-12">{errors.password}</div>}
 												</div>
 												<div className="form-group text-left mb-5">

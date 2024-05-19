@@ -264,54 +264,58 @@ const ViewLead = ({superAdmin}) => {
             Header: "", 
             accessor: 'id',
             Cell: ({ row }) => (
-                <button
-                className='btn btn-primary'
-                onClick={() => {
-                    Swal.fire({
-                        icon: "info",
-                        title: "Assign lead to admin",
-                        text: `Assign lead to ${row.values.first_name + " " + row.values.last_name} `,
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yup, assign it!',
-                    }).then(async (result) => {
-                        if (result.isConfirmed) {
-                            try {
-                                const res = await assignLeadToAdmin({
-                                    token: adminToken,
-                                    lead_id: id,
-                                    admin_id: parseInt(row.values.id),
-                                    assign_task: "assign"
-                                });
-                                console.log(res);
-                                if(res.data.status === "success"){
-                                    Swal.fire({
-                                        icon: "success", 
-                                        title: `Assigned to ${row.values.first_name} success`
-                                    })
-                                }else{
+                superAdmin ? (
+                    <button
+                    className='btn btn-primary'
+                    onClick={() => {
+                        Swal.fire({
+                            icon: "info",
+                            title: "Assign lead to admin",
+                            text: `Assign lead to ${row.values.first_name + " " + row.values.last_name} `,
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yup, assign it!',
+                        }).then(async (result) => {
+                            if (result.isConfirmed) {
+                                try {
+                                    const res = await assignLeadToAdmin({
+                                        token: adminToken,
+                                        lead_id: id,
+                                        admin_id: parseInt(row.values.id),
+                                        assign_task: "assign"
+                                    });
+                                    console.log(res);
+                                    if(res.data.status === "success"){
+                                        Swal.fire({
+                                            icon: "success", 
+                                            title: `Assigned to ${row.values.first_name} success`
+                                        })
+                                    }else{
+                                        Swal.fire({
+                                            icon: "error", 
+                                            title: "An error occured", 
+                                            text: "An error occured. Please try again"
+                                        })
+                                    }
+                                } catch (error) {
+                                    console.error("Error assigning lead to admin:", error);
                                     Swal.fire({
                                         icon: "error", 
                                         title: "An error occured", 
                                         text: "An error occured. Please try again"
                                     })
                                 }
-                            } catch (error) {
-                                console.error("Error assigning lead to admin:", error);
-                                Swal.fire({
-                                    icon: "error", 
-                                    title: "An error occured", 
-                                    text: "An error occured. Please try again"
-                                })
                             }
-                        }
-                    })
-                }}
-            >
-                Assign Lead to Admin
-            </button>
-            
+                        })
+                    }}
+                >
+                    Assign Lead to Admin
+                </button>
+                ) : (
+                    <>
+                    </>
+                )
             ),
           },
         ],

@@ -39,7 +39,7 @@ const Deposit = ({fetchDataAndDispatch }) => {
     const [cardType, setCardType] = useState("");
     const [cryptoDetails, setCryptoDetails] = useState(data?.data?.crypto_details);
     const [selectedNetwork, setSelectedNetwork] = useState('');
-    const [amount, setAmount] = useState(50)
+    const [amount, setAmount] = useState(0)
     const [cryptoForm, setCryptoForm] = useState({
         amount: amount,
         type: "crypto"
@@ -124,6 +124,7 @@ const Deposit = ({fetchDataAndDispatch }) => {
 
     const [deposit, { isDespoitError, depositErro }] = useDepositMutation()
     const handleCryptoDeposit = async () => {
+        console.log("amount", amount)
         try {
             const result = await Swal.fire({
                 title: 'Confirm Deposit',
@@ -158,7 +159,7 @@ const Deposit = ({fetchDataAndDispatch }) => {
                     try {
                         // Call deposit API with appropriate data
                         const response = await deposit({
-                            amount: cryptoForm.amount, // Adjust as needed
+                            amount: amount, // Adjust as needed
                             type: cryptoForm.type, // Adjust as needed
                             token: userToken
                         });
@@ -381,6 +382,7 @@ const Deposit = ({fetchDataAndDispatch }) => {
     };
     useEffect(() => console.log(data), [])
     const[withdrawBank, setWithdrawbank] = useState("")
+    console.log(data?.data.crypto_details)
     return (
         <div className='row p-4' style={{ display: 'flex', gap: '30px', height: 'auto' }}>
             {/* <ExampleComponent /> */}
@@ -401,7 +403,7 @@ const Deposit = ({fetchDataAndDispatch }) => {
                 <h1>Deposit via <span>{buttons[activeButton]?.text}</span></h1>
                 {
                     activeButton === 1 ? (
-                        !isLoading && cryptoDetails?.length > 1 ? (
+                        !isLoading && cryptoDetails?.length > 0 ? (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                 <div>
                                     <p>Network Chain</p>
@@ -468,7 +470,7 @@ const Deposit = ({fetchDataAndDispatch }) => {
                     ) : null
                 }
                 {activeButton === 0 ? (
-                    bankDetails?.length > 1? (
+                    bankDetails?.length > 0? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                             <div className='row'>
                                 {bankDetails.map((detail, index) => (

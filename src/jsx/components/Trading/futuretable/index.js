@@ -1,27 +1,28 @@
-/* eslint-disable */
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaUserCircle } from 'react-icons/fa';
 import { RiAdminFill } from 'react-icons/ri';
-import { useGetAllTradesQuery } from '../../../../redux/services/trades';
-import { useSelector } from 'react-redux';
 import swal from 'sweetalert';
 import axios from 'axios';
 import { BASE_URL } from '../../../../api';
-import { Spinner } from 'react-bootstrap'; // Import Spinner component
+import Swal from 'sweetalert2';
+import { Form } from 'react-bootstrap';
+import { useCreateCustomProfitMutation } from '../../../../redux/services/admin';
+import { Button, Spinner } from 'react-bootstrap'; // Import Spinner component
 
-const FutureTable = ({fills}) => {
-  const { userToken } = useSelector((state) => state.auth);
+const FutureTable = ({ fills, tradesData, isLoading, refetchData, userToken, fetchDataAndDispatch, userId }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize] = useState(10);
-  const { data: trades = [], isFetching, refetch } = useGetAllTradesQuery(userToken);
-  const [updatedTrades, setUpdatedTrades] = useState(trades[1]?.data);
+  const [createCustomProfit] = useCreateCustomProfitMutation();
+  const [updatedTrades, setUpdatedTrades] = useState(tradesData);
+  const [customProfits, setCustomProfits] = useState({});
+
 
   useEffect(() => {
-    if (trades) {
-      setUpdatedTrades(trades[1]?.data);
+    if (tradesData) {
+      setUpdatedTrades(tradesData);
     }
-  }, [trades]);
+  }, [tradesData]);
 
   const handleCloseTrade = async (tradeId) => {
     try {
@@ -43,8 +44,9 @@ const FutureTable = ({fills}) => {
         });
 
         if (response) {
-          refetch();
+          refetchData();
           swal('Success', 'Trade closed successfully!', 'success');
+          fetchDataAndDispatch && fetchDataAndDispatch();
         } else {
           swal('Error', response.data.message || 'Failed to close the trade. Please try again later.', 'error');
         }
@@ -54,17 +56,128 @@ const FutureTable = ({fills}) => {
       swal('Error', 'Failed to close the trade. Please try again later.', 'error');
     }
   };
+
   useEffect(() => {
     if (fills === "open") {
-      setUpdatedTrades(trades[1]?.data.filter(trade => trade.status.toLowerCase() === "open"));
+      setUpdatedTrades(tradesData.filter(trade => trade.status.toLowerCase() === "open"));
     } else if (fills === "close") {
-      setUpdatedTrades(trades[1]?.data.filter(trade => trade.status.toLowerCase() === "closed"));
+      setUpdatedTrades(tradesData.filter(trade => trade.status.toLowerCase() === "closed"));
     } else {
-      setUpdatedTrades(trades[1]?.data);
+      setUpdatedTrades(tradesData);
     }
-  }, [fills, trades]);
+  }, [fills, tradesData]);
+
+  useEffect(() => {
+    function maxNum(min, max) {
+      return Math.random() * (max - min) + min;
+    }
   
+    const intervalIds = new Map();
+
+    // Create random intervals for each trade
+    tradesData.forEach(trade => {
+      if(trade.status !== "closed"){
+
+        const intervalTime = Math.random() * (30000 - 3000) + 3000; // Generate random interval time between 500ms and 3000ms
+        const intervalId = setInterval(() => {
+        setUpdatedTrades(prevTrades => prevTrades.map(prevTrade => {
+          if (prevTrade.id === trade.id) {
+            const currentProfit = parseFloat(prevTrade.profit);
   
+            let minProfit, maxProfit;
+  
+            if (currentProfit < 0) {
+              minProfit = currentProfit / 3; 
+              maxProfit = (currentProfit * -1) * 5;
+            } else if (currentProfit > 0) {
+              minProfit = currentProfit / 5; 
+              maxProfit = currentProfit * 3;
+            } else {
+              // If currentProfit is exactly 0, set default range
+              minProfit = -1; // Default minimum
+              maxProfit = 1;  // Default maximum
+            }
+
+            const modifier = Math.random() < 0.5 ? -1 : 1;
+            let newProfit = currentProfit + modifier * maxNum(minProfit, maxProfit);
+  
+            if (newProfit > maxProfit) {
+              newProfit = maxProfit;
+            } else if (newProfit < minProfit) {
+              newProfit = minProfit;
+            }
+            
+            return {
+              ...prevTrade,
+              profit: newProfit.toFixed(2),
+            };
+          } else {
+            return prevTrade;
+          }
+        }));
+      }, intervalTime);
+
+      // Use a unique identifier for the interval ID, combining prefix with trade ID
+      const uniqueIntervalId = `tradeInterval_${trade.id}`;
+      intervalIds.set(uniqueIntervalId, intervalId);
+    }
+    });
+    
+    return () => {
+      // Clear all intervals when component unmounts
+      intervalIds.forEach(intervalId => clearInterval(intervalId));
+    };
+  }, [tradesData]);
+
+
+  
+
+
+  const handleCreateCustomProfit = (tradeId) => {
+    Swal.fire({
+      icon: 'info',
+      title: 'Confirm create custom profit',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      cancelButtonText: "No",
+      confirmButtonText: 'Yes',
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const profit = customProfits[tradeId];
+        if (profit !== null && profit !== undefined) {
+          console.log({
+            trade_id: tradeId,
+            token: userToken,
+            userId: parseInt(userId),
+            profit: parseInt(profit)
+          })
+          const res = await createCustomProfit({
+            trade_id: tradeId,
+            token: userToken,
+            user_id: parseInt(userId),
+            profit: profit
+          })
+          console.log(res)
+          if(res.data.status === "success"){
+            refetchData()
+            Swal.fire({
+              icon: "success", 
+              title:"Custom profit addedd successfully"
+            })
+          }else{
+            Swal.fire({
+              icon: "error", 
+              title: "An Error occured"
+            })
+          }
+        } else {
+          // Handle error: profit not provided for this trade
+        }
+      }
+    })
+  }
+
   return (
     <>
       <div className="table-responsive dataTablemarket">
@@ -83,7 +196,7 @@ const FutureTable = ({fills}) => {
               </tr>
             </thead>
             <tbody>
-              {isFetching ? (
+              {isLoading ? (
                 <tr>
                   <td colSpan="8" className="text-center">
                     <Spinner animation="border" role="status">
@@ -126,6 +239,22 @@ const FutureTable = ({fills}) => {
                         </button>
                       )}
                     </td>
+                    {
+                       (!sessionStorage.getItem('userInfo') && trade.status === 'open') && (
+                      <td className=''>
+                        <Form.Control
+                          size="sm"
+                          type="text"
+                          style={{ width: '100px', margin: "auto" }}
+                          onChange={(e) => setCustomProfits({ ...customProfits, [trade.id]: e.target.value })}
+                          value={customProfits[trade.id] || ''} // Set value based on trade ID
+                          placeholder="Add custom profit"
+                        />
+                        <Button className='mt-2' onClick={() => handleCreateCustomProfit(trade.id)}>Add custom profit</Button>
+                      </td>
+
+                      )
+                    }
                   </tr>
                 ))
               )}

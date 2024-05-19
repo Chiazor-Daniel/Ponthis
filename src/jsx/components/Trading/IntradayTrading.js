@@ -110,21 +110,22 @@ const IntradayTrading = ({ fetchDataAndDispatch }) => {
                     .then((response) => {
                         console.log("Trade response:", response);
                         Swal.close(); // Close the loading spinner
-                        if (response && response[0] && response[0].status === "success") {
-                            fetchDataAndDispatch()
-                            Swal.fire({
-                                title: "Trade Opened!",
-                                text: "Trade opened successfully.",
-                                icon: "success",
-                            });
-                            // Add any success handling code here
-                        } else {
-                            // Show error modal if status is not success
-                            Swal.fire({
-                                title: "Error!",
-                                text: "Something went wrong. Please try again later.",
-                                icon: "error",
-                            });
+                        if(response[0].status === "success"){
+                            if (Object.values(response[1].data).length === 0) {
+                                fetchDataAndDispatch()
+                                Swal.fire({
+                                    title: "Trade Opened!",
+                                    text: "Trade opened successfully.",
+                                    icon: "success",
+                                });
+                            } else {
+                                // Show error modal if status is not success
+                                Swal.fire({
+                                    title: "Error!",
+                                    text: "Insufficient Balance. Please deposit funds to your account.",
+                                    icon: "error",
+                                });
+                            }
                         }
                     })
                     .catch((error) => {

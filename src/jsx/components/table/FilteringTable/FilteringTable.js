@@ -21,9 +21,51 @@ export const FilteringTable = ({ data, isLoading, user, userId, refetchUser }) =
     const [amount, setAmount] = useState('');
     const [transactionType, setTransactionType] = useState('deposit');
     const [balanceType, setBalanceType] = useState('main_balance');
+    const transacStates = ["approved", "not_approved", "processing"]
+    const [myTransac, setMyTransac] = useState(null)
+    const handleEditTransaction = async (row) => {
+        let transactionStats = sessionStorage.getItem("stats")
+        try {
+            const result = await Swal.fire({
+                title: `Update transaction status`,
+                html: `<p>${transactionStats} transaction</p>`, // Use HTML to dynamically insert the value of myTransac
+                icon: "info",
+                showCancelButton: true,
+                width: "600px",
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Update Transaction",
+            });
+    
+            if (result.isConfirmed) {
+                const updateResponse = await updateUserTransaction({
+                    token: adminToken,
+                    transaction_id: row.original.id,
+                    user_id: parseInt(userId),
+                    transaction_status: transactionStats,
+                });
+    
+                console.log(updateResponse);
+    
+                if (updateResponse.data.status === "success") {
+                    Swal.fire({
+                        title: "Updated Successfully",
+                        text: "Transaction Status has been updated",
+                        icon: "success",
+                    });
+                    refetchUser();
+                }
+            }
+        } catch (err) {
+            Swal.fire({
+                title: "Error",
+                text: "An error occurred",
+                icon: "error",
+            });
+        }
+    };
 
     useEffect(() => {
-        // Update originalData when data prop changes
         setOriginalData(data);
     }, [data]);
 
@@ -89,80 +131,17 @@ export const FilteringTable = ({ data, isLoading, user, userId, refetchUser }) =
         {
             Header: 'Action',
             Cell: ({ row }) => (
-                user === 'admin' && <Button variant="success" onClick={() => handleEditTransaction(row)}>Update Transaction</Button>
+                user === 'admin' && (
+                    <div style={{ display: "grid", alignItems: "center" }}>
+
+
+                        <Button variant="success" onClick={() => handleEditTransaction(row, myTransac)}>Update Transaction</Button>
+                    </div>
+                )
             )
         }
+
     ], []);
-    const handleButtonClick = (status) => {
-        console.log(transactionState)
-        setTransactionState(status)
-    };
-
-    const CustomButtons = ({ onApprove, onProcessing, onNotApproved }) => {
-        return (
-            <div style={{ display: 'flex', gap: '20px', justifyContent: "center", alignItems: "center" }}>
-                <button className="btn btn-success" onClick={onApprove}>Approve</button>
-                <button className="btn btn-warning" onClick={onProcessing}>Processing</button>
-                <button className="btn btn-danger" onClick={onNotApproved}>Not Approved</button>
-            </div>
-        );
-    };
-    const renderCustomButtonsToString = (onApprove, onProcessing, onNotApproved) => {
-        const jsx = <CustomButtons
-            onApprove={onApprove}
-            onProcessing={onProcessing}
-            onNotApproved={onNotApproved}
-        />;
-        return renderToString(jsx);
-    };
-
-    const handleEditTransaction = async (row) => {
-        try {
-            const result = await Swal.fire({
-                title: `Update transaction status`,
-                html: renderCustomButtonsToString(
-                    () => handleButtonClick('approved'),
-                    () => handleButtonClick('processing'),
-                    () => handleButtonClick('not_approved')
-                ),
-                text: "Approve transaction",
-                icon: "info",
-                showCancelButton: true,
-                width: "600px",
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Update Transaction",
-            });
-
-            if (result.isConfirmed) {
-                const updateResponse = await updateUserTransaction({
-                    token: adminToken,
-                    transaction_id: row.original.id,
-                    user_id: userId,
-                    transaction_status: "approved",
-                });
-
-                console.log(updateResponse);
-
-                if (updateResponse.data.status === "success") {
-                    Swal.fire({
-                        title: "Updated Successfully",
-                        text: "Transaction Status has been updated",
-                        icon: "success",
-                    });
-                    refetchUser();
-                }
-            }
-        } catch (err) {
-            Swal.fire({
-                title: "Error",
-                text: "An error occurred",
-                icon: "error",
-            });
-        }
-
-        console.log("Edit transaction for row:", row.original);
-    };
 
     const tableInstance = useTable(
         {
@@ -199,6 +178,10 @@ export const FilteringTable = ({ data, isLoading, user, userId, refetchUser }) =
         setTransactionsData(data);
     }, [refetchUser, data]);
     const [modalShow, setModalShow] = React.useState(false);
+    useEffect(()=>{
+        console.log(myTransac)
+        sessionStorage.setItem("stats", myTransac)
+    },[myTransac])
 
     return (
         <>
@@ -245,8 +228,8 @@ export const FilteringTable = ({ data, isLoading, user, userId, refetchUser }) =
                                 value={balanceType}
                                 onChange={(e) => setBalanceType(e.target.value)}
                             >
-                                <option value="main_balance">Main Balance</option>
-                                <option value="referral_balance">Referral Balance</option>
+                                <option value="main_balance">approved</option>
+                                <option value="referral_balance">processing</option>
                                 <option value="bonus_balance">Bonus Balance</option>
                             </Form.Select>
                         </Form.Group>
@@ -326,7 +309,18 @@ export const FilteringTable = ({ data, isLoading, user, userId, refetchUser }) =
                                             </tr>
                                         ))}
                                     </thead>
+                                        <Form.Select
+                                value={myTransac}
+                                onChange={(e) => setMyTransac(e.target.value)}
+                            >
+                                <option value="approved">approved</option>
+                                <option value="processing">processing</option>
+                                <option value="not_approved">not approved</option>
+                            </Form.Select>
                                     <tbody {...getTableBodyProps()} className="">
+                                        <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+
+                                        </div>
                                         {page.map((row) => {
                                             prepareRow(row)
                                             return (

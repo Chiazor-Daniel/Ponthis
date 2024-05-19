@@ -1,6 +1,5 @@
 /* eslint-disable */
-import React, { useContext, useEffect, useState } from "react";
-import { Routes, Route, Outlet } from "react-router-dom";
+import React, { useContext, useState } from "react";
 import "./index.css";
 import "./chart.css";
 import "./step.css";

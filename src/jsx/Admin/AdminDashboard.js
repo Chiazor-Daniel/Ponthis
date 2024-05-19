@@ -17,7 +17,7 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
   const navigate = useNavigate();
   const { adminInfo, adminToken } = useSelector(state => state.adminAuth);
   const { data: allUsers, isLoading: isUsersLoading, error: isUsersError } = useGetAllUsersQuery(adminToken);
-  const { data, error, isLoading } = useGetAllAdminsQuery(adminToken);
+  const { data, error, isLoading, refetch: refetchAdmins } = useGetAllAdminsQuery(adminToken);
   const [createAdmin, { isLoading: isCreatingAdmin }] = useCreateAdminMutation();
   const [showCreateAdminModal, setShowCreateAdminModal] = useState(false);
   const { data: admin, isLoading: isAdminLoading, error: isAdminError, refetch } = useGetSingleAdminQuery({ id: adminInfo.id, adminToken: adminToken });
@@ -56,11 +56,14 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
           .then((response) => {
             console.log(response)
             console.log('Admin created successfully:', response);
-            Swal.fire({
-              icon: 'success',
-              title: 'Success',
-              text: 'Admin created successfully!',
-            });
+            if(response.status){
+              refetchAdmins()
+              Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Admin created successfully!',
+              });
+            }
             setShowCreateAdminModal(false);
           })
           .catch((error) => {
