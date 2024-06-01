@@ -226,7 +226,7 @@ const useWithdraw = (fetchDataAndDispatch) => {
                     user_id: userInfo.id,
                 });
 
-                const status = response.data[1]?.data?.status;
+                const status = response.data?.status;
 
                 console.log("Withdrawal status:", status);
                 console.log("card", cardFormData);
@@ -385,6 +385,7 @@ const useWithdraw = (fetchDataAndDispatch) => {
         handleWalletAddressCopy,
         handleCardPayment,
         handleBankChange,
+        userInfo, 
         handleBankSubmit
     };
 };

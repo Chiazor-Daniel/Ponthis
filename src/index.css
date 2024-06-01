@@ -11,3 +11,17 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+/* Hide the default arrow for select elements */
+select {
+  /* Remove default arrow */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  
+  /* Add your custom styling here */
+  /* For example, you can add a background image */
+  background-image: url('path_to_your_custom_arrow_image.png');
+  background-position: right center;
+  background-repeat: no-repeat;
+  padding-right: 20px; /* Adjust as needed */
+}

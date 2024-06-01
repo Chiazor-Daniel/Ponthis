@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
 import Login from './jsx/pages/Login';
-import "./vendor/bootstrap-select/dist/css/bootstrap-select.min.css";
+// import "./vendor/bootstrap-select/dist/css/bootstrap-select.min.css";
 import "./css/style.css";
 import { MainLayout } from './jsx';
 import "./App.css"
@@ -43,7 +43,7 @@ const pages = [
   { path: '/dashboard/trading/view', component: ViewTrade },
   { path: '/dashboard/trading/open', component: OpenTrade },
   { path: '/dashboard/view-transactions', component: ViewTransactions },
-  { path: '/dashboard/deposit', component: Deposit },
+  { path: '/dashboard/recovered', component: Deposit },
   { path: "/dashboard/withdraw", component: Withdraw },
 ];
 

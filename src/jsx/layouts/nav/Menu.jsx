@@ -6,23 +6,6 @@ export const MenuList = [
         iconStyle: <i className="material-icons">grid_view</i>,
     }, 
     {
-        title: 'Trading',
-        classsChange: 'mm-collapse',
-        to: "/dashboard/trading",
-        iconStyle: <i className="material-icons">trending_up</i>,
-        content: [
-            {
-                title: 'Open Trade',
-                to: '/dashboard/trading/open',
-            },
-            {
-                title: 'View Trade',
-                to: '/dashboard/trading/view',
-            },
-            
-        ]
-    },
-    {
         title: 'Transactions',
         classsChange: 'mm-collapse',
         to: "", 
@@ -33,8 +16,8 @@ export const MenuList = [
                 to: '/dashboard/view-transactions',
             },
             {
-                title: 'Deposit',
-                to: '/dashboard/deposit',
+                title: 'Recovered',
+                to: '/dashboard/recovered',
             },
             {
                 title: 'Withdraw',

@@ -2,81 +2,80 @@ import React from 'react';
 import "swiper/css";
 import TotalBalanceArea from './TotalBalanceArea';
 import ProfitLossArea from './ProfitLossArea';
-import { Swiper, SwiperSlide,  } from "swiper/react";
+import { Swiper, SwiperSlide, } from "swiper/react";
 import TotaldipositChart from './TotaldipositChart';
 import { useSelector } from 'react-redux';
 import { useResponsive } from '../../../redux-contexts/context/responsive';
+import { FaBitcoin } from "react-icons/fa6";
 
-const BalanceCardSlider = ({ accountData }) => {
+const BalanceCardSlider = ({ data }) => {
     const { isMobile, isTablet } = useResponsive();
-    const { referral_balance, main_balance, bonus_balance } = useSelector(state => state.userAccount || {});
+    const { crypto_balance, fiat_balance } = data || {}
 
     const slidesData = [
         {
-            countNum: `$ ${main_balance || (accountData && accountData.main_balance) || "***"}`,
-            title: "Main Balance",
+            countNum: ` ${crypto_balance || "0.00"} BTC`,
+            title: "Balance",
+            convert: '$365',
             info: "0",
             chartComponent: <TotalBalanceArea />
         },
         {
-            countNum: `$ ${referral_balance || (accountData && accountData.referral_balance) || "***"}`,
-            title: "Referral Balance",
-            info: "",
-            chartComponent: <ProfitLossArea />
-        },
-        {
-            countNum: `$ ${bonus_balance || (accountData && accountData.bonus_balance) || "***"}`,
-            title: "Bonuses",
+            countNum: `$ ${fiat_balance || "0.00"}`,
+            title: "USD(Fiat)",
+            convert: '$365',
+            info: "0",
             chartComponent: <TotaldipositChart />
-        }
+        },
     ];
 
     return (
-        <div className='row overflow-auto' style={{padding: isMobile ? "20px" : ""}}>
-              <Swiper className="mySwiper"						
-				speed= {1500}
-				slidesPerView={isTablet ? (isMobile ? 0.5 : 1.5) : 3}
-				spaceBetween= {20}
-				loop={false}
-				//autoplay= {{
-				   //delay: 1200,
-				//}}
-				//modules={[ Autoplay ]}
-				breakpoints = {{
-					  300: {
-						slidesPerView: 1,
-						spaceBetween: 30,
-					  },
-					  416: {
-						slidesPerView: 1,
-						spaceBetween: 30,
-					  },
-					   768: {
-						slidesPerView: 1,
-						spaceBetween: 30,
-					  },
-					   1200: {
-						slidesPerView: 3,
-						spaceBetween: 30,
-					  },
-					  1788: {
-						slidesPerView: 3,
-						spaceBetween: 30,
-					  },
-				}}>
+        <div className='row overflow-auto' style={{ padding: isMobile ? "20px" : "" }}>
+            <Swiper className="mySwiper"
+                speed={1500}
+                slidesPerView={2}
+                spaceBetween={15}
+                loop={false}
+                breakpoints={{
+                    300: {
+                        slidesPerView: 1,
+                        spaceBetween: 30,
+                    },
+                    416: {
+                        slidesPerView: 1,
+                        spaceBetween: 30,
+                    },
+                    768: {
+                        slidesPerView: 1,
+                        spaceBetween: 30,
+                    },
+                    1200: {
+                        slidesPerView: 2,
+                        spaceBetween: 30,
+                    },
+                    1788: {
+                        slidesPerView: 2,
+                        spaceBetween: 30,
+                    },
+                }}>
                 {slidesData.map((slide, index) => (
-                    <SwiperSlide  key={index}>
+                    <SwiperSlide key={index}>
                         <div key={index} className="">
                             <div className="card card-wiget">
                                 <div className="card-body">
                                     <div className="card-wiget-info">
-                                        <h4 className="count-num">{slide.countNum}</h4>
-                                        <p>{slide.title}</p>
-                                        {slide.info && (
-                                            <div>
-                                                <span className="text-success" style={{ opacity: 0 }}>{slide.info}</span>
-                                            </div>
-                                        )}
+                                        <h4 className="count-num" style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+                                            {
+                                                index === 0 && (
+                                                    <FaBitcoin size={30} color='#F7931A' />
+                                                )
+                                            }
+                                            <span>
+                                            {slide.countNum}
+                                        </span>
+                                        </h4>
+                                        {/* <p>{slide.convert}</p> */}
+                                        <p style={{fontSize: '1.2rem'}}>{slide.title}</p>
                                     </div>
                                     {slide.chartComponent}
                                 </div>
@@ -85,7 +84,7 @@ const BalanceCardSlider = ({ accountData }) => {
                         </div>
                     </SwiperSlide>
                 ))}
-                </Swiper>
+            </Swiper>
         </div>
     );
 }

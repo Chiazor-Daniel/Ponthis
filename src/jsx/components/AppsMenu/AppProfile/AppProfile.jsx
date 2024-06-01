@@ -103,7 +103,7 @@ const AppProfile = ({ userType }) => {
                                 </div>
                                 <h4 className="text-primary mb-0" style={{ fontSize: "2rem" }}>{`${firstName} ${lastName}`}</h4>
                                 <p className="" style={{ fontSize: "1.1rem" }}>{email}</p>
-                                <p className="" style={{ fontSize: "1.1rem", color: "gray" }}>Account Type : <FaMedal color="#DC6B19" /> <span style={{ fontWeight: "bold" }}>{account_type.toUpperCase()}</span></p>
+                                <p className="" style={{ fontSize: "1.1rem", color: "gray" }}>Account Type : <FaMedal color="#DC6B19" /> <span style={{ fontWeight: "bold" }}>{account_type?.toUpperCase()}</span></p>
                             </div>
                         </div>
                     )

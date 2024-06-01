@@ -26,15 +26,6 @@ class TotalBalanceArea extends React.Component {
 						enabled: true
 					}
 				},
-                
-				/* plotOptions: {
-                    bar: {
-                        horizontal: false,
-                        endingShape:'rounded',
-                        columnWidth: '35%',
-                        borderRadius: 2,                    
-                    },
-                }, */
 				
 				colors:['var(--primary)'],
 				dataLabels: {
@@ -166,7 +157,7 @@ class TotalBalanceArea extends React.Component {
 					series={this.state.series} 
 					type="area" 
 					height={130}  
-					width={400}
+					width={500}
 				/>
             </div>
         );

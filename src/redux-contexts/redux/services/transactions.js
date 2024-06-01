@@ -26,7 +26,7 @@ export const transactionsApi = createApi({
         console.log(withdrawBody)
         
         return {
-          url: 'https://api.atlaswavestrader.com/user/transaction/withdraw-transaction',
+          url: '/user/withdraw/withdraw-transaction',
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -36,10 +36,9 @@ export const transactionsApi = createApi({
         };
       },
     }),
-    
     getTransactions: builder.query({
       query: (token) => ({
-        url: '/user/transaction/get-transactions/',
+        url: '/user/withdraw/get-withdraw-transactions/',
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -47,10 +46,32 @@ export const transactionsApi = createApi({
         },
       }),
     }),
+    convertCrypto: builder.mutation({
+      query: ({amount, token}) => ({
+        url: `/user/withdraw/convert-crypto-to-fiat/?amount=${amount}`, 
+        method: 'POST', 
+        headers: {
+          'Content-Type': 'application/json',
+          "x-token": token
+        },
+      })
+    }),
+    getRecoveryTransactions: builder.query({
+      query: (token) => {
+        return{
+          url: '/user/withdraw/get-recovery-transactions/',
+          method: 'GET', 
+          headers: {
+            'Content-Type': 'application/json',
+            "x-token": token
+          },
+        }
+      }
+    })
   }),
 });
 
-export const { useDepositMutation, useWithdrawMutation, useGetTransactionsQuery } = transactionsApi;
+export const { useDepositMutation, useWithdrawMutation, useGetTransactionsQuery, useConvertCryptoMutation, useGetRecoveryTransactionsQuery } = transactionsApi;
 
 
 const generateDepositBody = (amount, type, cardData) => {

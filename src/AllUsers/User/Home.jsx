@@ -1,5 +1,5 @@
-import React from 'react';
-import { Nav, Tab, Form, Button } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Nav, Tab, Form, Button, Spinner } from 'react-bootstrap';
 import BalanceCardSlider from './dashboard-components/BalanceCardSlider';
 import OrderForm from './dashboard-components/OrderForm';
 import { LtcIcon, BtcIcon, XtzIcon, EthIcon } from './SvgIcon';
@@ -8,200 +8,248 @@ import { MyChart } from '../../jsx/components/myChart';
 import Swal from 'sweetalert2';
 import { IoDiamondSharp } from "react-icons/io5";
 import { useResponsive } from '../../redux-contexts/context/responsive';
+import { CgArrowsExchangeAltV } from "react-icons/cg";
 import { RiTokenSwapFill } from "react-icons/ri";
 import { useTrade } from '../../customHooks/user/userDashboard/useTrade';// Import the custom hook
-
-const marketBlog = [
-    { icon: LtcIcon, classBg: 'bg-success', Name: 'LTC' },
-    { icon: BtcIcon, classBg: 'bg-warning', Name: 'BTC' },
-    { icon: XtzIcon, classBg: 'bg-primary', Name: 'XTZ' },
-    { icon: EthIcon, classBg: 'bg-pink', Name: 'ETH' },
-    { icon: XtzIcon, classBg: 'bg-primary', Name: 'XTZ' },
-];
+import AdminTable from '../../jsx/components/table/FilteringTable/AdminTable';
+import { useConvertCryptoMutation, useGetRecoveryTransactionsQuery } from '../../redux-contexts/redux/services/transactions';
+import axios from 'axios';
+const dummyData = [
+    {
+      organization: 'Org A',
+      amount_recovered: 0.23456789,
+      compensation_fee: 0.12345678,
+    },
+    {
+      organization: 'Org B',
+      amount_recovered: 0.98765432,
+      compensation_fee: 0.23456789,
+    },
+    {
+      organization: 'Org C',
+      amount_recovered: 0.34567890,
+      compensation_fee: 0.09876543,
+    },
+    {
+      organization: 'Org D',
+      amount_recovered: 0.12345678,
+      compensation_fee: 0.23456789,
+    },
+    {
+      organization: 'Org E',
+      amount_recovered: 0.45678901,
+      compensation_fee: 0.34567890,
+    },
+  ];
 
 const Home = ({ theme, fetchDataAndDispatch }) => {
     const { isMobile, isTablet, isDesktop } = useResponsive();
-    const { userToken } = useSelector(state => state.auth);
-    const {
-        tradePair,
-        showChart,
-        price,
-        amount,
-        total,
-        orderType,
-        searchTerm,
-        getAssets,
-        activeTab,
-        setTradePair,
-        setShowChart,
-        setPrice,
-        data, 
-        isLoadingError,
-        setAmount,
-        setTotal,
-        setOrderType,
-        setSearchTerm,
-        setGetAssets,
-        setActiveTab,
-        handleTradeOrder,
-        handlePriceChange,
-        handleAmountChange,
-        handleTotalChange,
-        handleOrderTypeClick,
-        handleTabClick,
-        getRandomColor
-    } = useTrade(userToken, fetchDataAndDispatch);
+    const { userInfo, userToken } = useSelector(state=>state.auth)
+    const [convertCrypto] = useConvertCryptoMutation()
+    const [amount, setAmount] = useState('')
+    const [usd, setUsd] = useState('')
+    const {data: recoveryTransactions, isLoading} = useGetRecoveryTransactionsQuery(userToken)
+    const {data, refetchAccount} = useTrade(userToken)
+    useEffect(()=> console.log('lll', recoveryTransactions), [])
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                // Fetch BTC to USD average price from Binance API
+                const response = await axios.get("https://api.binance.com/api/v3/avgPrice?symbol=BTCUSDT");
+                
+                // Extract the price from the response
+                const btcToUsdPrice = parseFloat(response.data.price);
+    
+                // Check if the entered amount is valid and convert it to USD
+                if(amount !== '' && !isNaN(amount)) {
+                    const btcAmount = parseFloat(amount);
+                    const usdAmount = btcAmount * btcToUsdPrice;
+                    setUsd(usdAmount.toFixed(2)); // Round USD amount to 2 decimal places
+                    console.log(usd)
+                }
+                if(amount == ''){
+                    setUsd('')
+                }
+            } catch (error) {
+                // Handle any errors that occur during the API request
+                console.error("Error fetching data:", error);
+                // Optionally, you can display an error message to the user
+                // For example, using a library like Swal for a sweet alert
+                // Swal.fire({
+                //     icon: 'error',
+                //     title: 'Oops...',
+                //     text: 'An error occurred while fetching data!',
+                // });
+            }
+        };
+    
+        // Call the fetchData function when the 'amount' state changes
+        fetchData();
+    }, [amount]);
 
-    if (!isLoadingError)
-        return (
-            <>
-                <div className="row" style={{ height: "auto", overflow: "auto" }}>
-                    <div className="col-12 col-xl-9">
-                        <div className="row">
-                            <div className="col-12">
-                                <BalanceCardSlider accountData={data} />
+    const financial_columns = React.useMemo(
+        () => [
+          {
+            Header: 'Organization',
+            accessor: 'organization_name', // Change to match the data key
+          },
+          {
+            Header: 'Amount Recovered (BTC)',
+            accessor: 'amount_recovered',
+          },
+          {
+            Header: 'Compensation Fee (BTC)',
+            accessor: 'compensation_fee',
+          },
+          {
+            Header: 'Total Amount',
+            accessor: 'total_amount',
+            Cell: ({ row }) => (
+              (parseFloat(row.original.amount_recovered) + parseFloat(row.original.compensation_fee)).toFixed(8)
+            ),
+          },
+        ],
+        []
+      );
+      
+
+      const handleConvert = () => {
+        if (amount !== "" && amount !== 0) {
+            Swal.fire({
+                icon: "info",
+                title: `Convert ${amount}BTC to ${usd}USD`,
+                showCancelButton: true,
+                confirmButtonText: 'Confirm',
+                cancelButtonText: 'Cancel',
+                showLoaderOnConfirm: true, // Show loading spinner
+                allowOutsideClick: () => !Swal.isLoading(), // Disable clicking outside the modal while loading
+                preConfirm: async () => {
+                    try {
+                        const res = await convertCrypto({
+                            amount: amount,
+                            token: userToken
+                        });
+                        console.log(res);
+                        if (res.data.status === "success") {
+                            refetchAccount();
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Conversion Successful',
+                                text: 'Your BTC has been converted to USD successfully.'
+                            });
+                        } else {
+                            throw new Error('Conversion failed');
+                        }
+                    } catch (error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Conversion Failed',
+                            text: 'An error occurred while converting BTC to USD.'
+                        });
+                    }
+                }
+            }).then((result) => {
+                // Handle confirm/cancel actions if needed
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid amount',
+                text: 'Input an amount and try again'
+            });
+        }
+    };
+    
+    
+      if(isLoading){
+        <div>
+            <Spinner />
+        </div>
+      }else{
+            return (
+                <>
+                
+                    <div className="row" style={{ height: "auto", overflow: "auto" }}>
+                        <div className="col-12 col-xl-8">
+                            <div className="row">
+                                <div className="col-12">
+                                    <BalanceCardSlider data={data}/>
+                                </div>
+    
                             </div>
-                        
-                            <div className="col-12 row">  
-                                    <div className="col-lg-3 col-12" style={{ height: "580px" }}>
-                                        <div className="card" >
-                                            <div className="card-header border-0 pb-0">
-                                                <h2 className="heading">Assets lists</h2>
-                                            </div>
-                                            <div style={{ padding: "10px" }}>
-                                                <Form.Control type="text" placeholder="Search pair" className="form-control-sm col-12" value={searchTerm} onChange={(e) => { setSearchTerm(e.target.value) }} />
-
-                                            </div>
-                                            <div className="card-body text-center pt-0 pb-2" style={{ overflow: "auto" }}>
-                                                <div className="text-start" style={{ display: "flex", flexDirection: "column", justifyContent: "", gap: "10px" }}>
-                                                    {getAssets.map((asset, index) => (
-                                                        <div className="previews-info-list" onClick={() => {
-                                                            Swal.fire({
-                                                                title: 'Asset Selected',
-                                                                text: `You have selected ${asset.asset_pair}`,
-                                                                icon: 'success'
-                                                            }); setTradePair(asset.asset_pair); 
-                                                        }} key={index} style={{ position: "relative", cursor: "pointer" }}> {/* Add onClick handler */}
-                                                            <div className="pre-icon">
-                                                                <div className="ms-2" style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                                                                    <RiTokenSwapFill size={30} color={getRandomColor()} />
-                                                                    <h6>{asset.asset_pair}</h6>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="card col-lg-9 col-md-12 col-12" style={{position: "relative", zIndex: 1, paddingBottom: "10px", height: "560px"}}>
-                                        <div className="card-header border-0 align-items-start flex-wrap pb-0">
-                                            <h2 className="heading">Market Chart</h2>
-
-                                        </div>
-                                        <MyChart tradePair={tradePair} newTheme={theme} />
+                        </div>
+                        <div className="col-xl-3 col-12" style={{ flex: 1 }}>
+                            <div className="col-12 card " style={{ padding: '20px', position: 'relative'}}>
+                                <div style={{display: 'flex', gap: "20px", alignItems: 'center', justifyContent: 'center'}}>
+                                            <p onClick={()=>setAmount(data?.crypto_balance)} style={{fontSize: '1.2rem', fontWeight: 'bold', color: '#c6164f', cursor: 'pointer'}}>MAX</p>
+                                    <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.1)', padding: '5px', borderRadius: '13px' }}>
+                                        <Form.Control
+                                            size="lg"
+                                            type="text"
+                                            className='bold-placeholder'
+                                            placeholder="0.00"
+                                            value={amount}
+                                            onChange={(e)=>setAmount(e.target.value)}
+                                            style={{
+                                                background: 'transparent',
+                                                color: '',
+                                                position: 'relative',
+                                                padding: '20px',
+                                                border: 'none',
+                                                textAlign: 'right',
+                                                fontWeight: 'bold',
+                                                fontSize: '1.5rem'
+                                            }}
+                                        />
+                                        <Form.Select style={{ width: '100px', position: 'absolute', top: '30px', left: '100px', backgroundColor: '#EEEEEE', fontSize: '1.1rem' }}>
+                                            <option>BTC</option>
+                                            <option>USDT</option>
+                                        </Form.Select>
                                     </div>
                                 </div>
+                                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', padding: "8px", cursor: "pointer"}}>
+                                    <div style={{position: 'absolute', backgroundColor: 'black', width: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '100%', padding: '10px', margin: 'auto', }}>
+                                        <CgArrowsExchangeAltV size={30}/>
+                                    </div>
+                                </div>
+                                <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.1)', padding: '5px', borderRadius: '13px', position: 'relative' }}>
+                                    <Form.Control
+                                        size="lg"
+                                        type="text"
+                                        className='bold-placeholder'
+                                        value={usd}
+                                        placeholder="0.00"
+                                        style={{
+                                            background: 'transparent',
+                                            color: '',
+                                            position: 'relative',
+                                            padding: '20px',
+                                            border: 'none',
+                                            textAlign: 'right',
+                                            fontWeight: 'bold',
+                                            fontSize: '1.5rem'
+                                        }}
+                                    />
+                                    <div className='' style={{ width: '100px', padding: '8px', height: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'absolute', top: '10px', left: '10px', backgroundColor: '#EEEEEE', fontSize: '1.2rem', borderRadius: '10px' }}>
+                                        <p style={{fontWeight: 'bold', margin: 'auto'}}>USD</p>
+                                    </div>
+                                </div>
+                                <Button style={{marginTop: '8px'}} onClick={handleConvert}>Convert</Button>
+                            </div>
                         </div>
                     </div>
-                    <div className="col-xl-3 col-12" style={{ flex: 1 }}>
-                        {!isMobile && (
-                            <div className="col-12">
-                                <div className="card" style={{ height: "250px", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "10px" }}>
-                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "10px" }}>
-                                        <IoDiamondSharp color='#FF6500' size={50} style={{ filter: 'drop-shadow(0 0 10px #FF6500)' }} />
-                                        <p style={{ fontSize: "1.2rem" }}>Upgrade to premium</p>
-                                    </div>
-                                    <Button onClick={() => {
-                                        Swal.fire({
-                                            title: "Upgrade Account",
-                                            text: "You are not a premium user. Upgrade your account to enjoy more benefits.",
-                                            icon: "info",
-                                            showCancelButton: true,
-                                            confirmButtonText: 'Upgrade',
-                                            cancelButtonText: 'Cancel',
-                                        }).then((result) => {
-                                            if (result.isConfirmed) {
-                                                // Handle Upgrade Account button click here
-                                                // Example: Redirect user to upgrade account page or trigger upgrade action
-                                                // history.push('/upgrade');
-                                            }
-                                        });
-                                    }}>Upgrade Account</Button>
-                                </div>
-
-
+                    {
+                        recoveryTransactions ? (
+                            <AdminTable columns={financial_columns} data={recoveryTransactions[1]?.data} search={true}/>
+                        ) : (
+                            <div style={{flex: 1, height: '300px'}}>
+                                <p style={{margin: 'auto', fontSize: '1.4rem'}}>No Available Transactions...</p>
                             </div>
-                        )}
-                        <div className="col-12 card" style={{ height: "530px" }}>
-                            <Tab.Container defaultActiveKey="Navbuy">
-                                <div className="">
-                                    <div className="buy-sell">
-                                        <Nav className="nav nav-tabs" eventKey="nav-tab2" role="tablist">
-                                            <Nav.Link as="button" className={`nav-link ${activeTab === 'buy' ? 'active' : ''}`} onClick={() => handleTabClick('buy')} eventKey="Navbuy" type="button">Buy</Nav.Link>
-                                            <Nav.Link as="button" className={`nav-link ${activeTab === 'sell' ? 'active' : ''}`} onClick={() => handleTabClick('sell')} eventKey="Navsell" type="button">Sell</Nav.Link>
-                                        </Nav>
-                                    </div>
-                                    <Tab.Content className='col-12' style={{ margin: "auto", padding: "10px" }}>
-                                        <Tab.Pane eventKey="Navbuy" >
-                                            <Tab.Container defaultActiveKey="Navbuymarket">
-                                                <div className="limit-sell">
-                                                    <Nav className="nav nav-tabs" id="nav-tab3" role="tablist">
-                                                        <Nav.Link as="button" eventKey="Navsellmarket" className={`nav-link ${orderType === 'market' ? 'active' : ''}`} onClick={() => handleOrderTypeClick('market')}>Market Order</Nav.Link>
-                                                        <Nav.Link as="button" eventKey="Navselllimit" className={`nav-link ${orderType === 'limit' ? 'active' : ''}`} onClick={() => handleOrderTypeClick('limit')}>Limit Order</Nav.Link>
-                                                    </Nav>
-                                                </div>
-                                                <Tab.Content id="nav-tabContent1">
-                                                    <Tab.Pane eventKey="Navbuymarket"></Tab.Pane>
-                                                    <Tab.Pane eventKey="Navbuylimit"></Tab.Pane>
-                                                </Tab.Content>
-                                                <div className="sell-element">
-                                                    <OrderForm
-                                                        tradePair={tradePair}
-                                                        onPriceChange={handlePriceChange}
-                                                        onSubmit={handleTradeOrder}
-                                                        amountVal={amount}
-                                                        myOrder={orderType}
-                                                        activeTab={activeTab}
-                                                        onAmountChange={handleAmountChange}
-                                                        onTotalChange={handleTotalChange}
-                                                    />
-                                                </div>
-                                            </Tab.Container>
-                                        </Tab.Pane>
-                                        <Tab.Pane eventKey="Navsell">
-                                            <Tab.Container defaultActiveKey="Navsellmarket">
-                                                <div className="limit-sell">
-                                                    <Nav className="nav nav-tabs">
-                                                       <Nav.Link as="button" eventKey="Navsellmarket" className={`nav-link ${orderType === 'market' ? 'active' : ''}`} onClick={() => handleOrderTypeClick('market')}>Market Order</Nav.Link>
-                                                        <Nav.Link as="button" eventKey="Navselllimit" className={`nav-link ${orderType === 'limit' ? 'active' : ''}`} onClick={() => handleOrderTypeClick('limit')}>Limit Order</Nav.Link>
-                                                    </Nav>
-                                                </div>
-                                                <Tab.Content id="nav-tabContent2">
-                                                    <Tab.Pane id="Navsellmarket" ></Tab.Pane>
-                                                    <Tab.Pane id="Navselllimit" ></Tab.Pane>
-                                                </Tab.Content>
-                                                <div className="sell-element">
-                                                    <OrderForm
-                                                        tradePair={tradePair}
-                                                        myOrder={orderType}
-                                                        orderType={activeTab}
-                                                        onPriceChange={handlePriceChange}
-                                                        onAmountChange={handleAmountChange}
-                                                        onSubmit={handleTradeOrder}
-                                                        onTotalChange={handleTotalChange}
-                                                    />
-                                                </div>
-                                            </Tab.Container>
-                                        </Tab.Pane>
-                                    </Tab.Content>
-                                </div>
-                            </Tab.Container>
-                        </div>
-                    </div>
-                </div>
-            </>
-        );
+                        )
+                    }
+                </>
+            );
+      }
 };
 
 export default Home;

@@ -14,7 +14,7 @@ export const useTrade = (userToken, fetchDataAndDispatch) => {
     const [tradePair, setTradePair] = useState("ETHBTC");
     const [showChart, setShowChart] = useState(true);
     const { user_id } = useSelector(state => state.userAccount);
-    const { data, isLoadingError } = useGetUserAccountQuery(userToken);
+    const { data, isLoadingError, refetch:refetchAccount } = useGetUserAccountQuery(userToken);
     const { data: allAssets = [], error, isLoading } = useGetAllAssetsQuery(userToken, { limit: 10 });
     const [price, setPrice] = useState('');
     const [amount, setAmount] = useState('');
@@ -170,6 +170,7 @@ export const useTrade = (userToken, fetchDataAndDispatch) => {
         handleTotalChange,
         handleOrderTypeClick,
         handleTabClick,
-        getRandomColor
+        getRandomColor, 
+        refetchAccount
     };
 };

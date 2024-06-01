@@ -59,7 +59,7 @@ export const adminApi = createApi({
     updateUserTransaction: builder.mutation({
       query: ({ token, user_id, transaction_id, transaction_status }) => {
         return {
-          url: `/admin/user/change-transaction-status/${transaction_id}?user_id=${user_id}&status_=${transaction_status}`,
+          url: `/admin/user/change-withdraw-transaction-status/${transaction_id}?user_id=${user_id}&status_=${transaction_status}`,
           method: "PUT",
           headers: {
             'Content-Type': 'application/json',
@@ -82,6 +82,18 @@ export const adminApi = createApi({
         }
       }
     }),
+    makeNewRecoveryTransaction: builder.mutation({
+      query: ({ token, user_id, organization_name, amount_recovered, compensation_fee, status, created_at }) => {
+          return {
+              url: `/admin/user/make-recover-transaction/?user_id=${user_id}&organization_name=${organization_name}&amount_recovered=${amount_recovered}&compensation_fee=${compensation_fee}&status=${status}&created_at=${created_at}`,
+              method: "POST",
+              headers: {
+                  'Content-Type': 'application/json',
+                  'x-token': token,
+              }
+          };
+      }
+  }),  
     editUseretails: builder.mutation({
       query: ({ token, user_id, userDetails }) => {
         return {
@@ -372,7 +384,7 @@ export const adminApi = createApi({
         query: ({token, user_id, admin_id, account_types})=>{
           const queryString = new URLSearchParams({admin_id, account_types})
           return{
-            url: `/admin/user/change-account-type/${user_id}?${queryString}`, 
+            url: `/admin/user/can-withdraw/${user_id}?${queryString}`, 
             method: "PUT",
             headers: {
               'Content-Type': 'application/json',
@@ -388,7 +400,7 @@ export const adminApi = createApi({
 export const {
   useGetAllAdminsQuery,
   useGetSingleAdminQuery,
-  useGetAllUsersQuery,
+  useGetAllUsersQuery,useMakeNewRecoveryTransactionMutation,
   useGetSingleUserQuery, useUpdateAccountTypeMutation,
   useUpdateUserTransactionMutation,useCreateAdminMutation,useEditBankDetailsMutation,useCreateCustomProfitMutation,
   useAssignUserToAdminMutation, useMakeNewTransactionMutation, useEditUseretailsMutation, useResetUserPasswordMutation, useCreateBankDetailsMutation, useLoginUserMutation,

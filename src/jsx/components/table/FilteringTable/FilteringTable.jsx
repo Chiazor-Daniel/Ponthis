@@ -135,9 +135,54 @@ export const FilteringTable = ({ data, isLoading, user, userId, refetchUser, sup
             Header: 'Transaction Amount',
             accessor: 'transaction_amount'
         },
+
+    ], []);
+    const columnsAdmin = useMemo(() => [
         {
-            Header: 'Transaction Type',
-            accessor: 'transaction_type'
+            Header: 'Id',
+            accessor: 'id',
+            Cell: ({ row }) => row.index + 1 // Use index to assign IDs starting from 1
+        },
+        {
+            Header: 'Transaction Method',
+            accessor: 'transaction_method'
+        },
+        {
+            Header: 'Status',
+            accessor: 'status',
+            Cell: ({ value }) => {
+                return (
+                    <p style={{
+                        padding: "4px",
+                        backgroundColor: value === 'approved' ? 'green' : value === 'not_approved' ? 'red' : '#F3CA52',
+                        color: "white",
+                        textAlign: "center",
+                        borderRadius: "20px"
+                    }}>
+                        {value}
+                    </p>
+
+                );
+            }
+        },
+        {
+            Header: 'Created At',
+            accessor: 'created_at',
+            Cell: ({ value }) => {
+                const formattedDate = new Date(value).toLocaleString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    second: 'numeric'
+                });
+                return formattedDate;
+            }
+        },
+        {
+            Header: 'Transaction Amount',
+            accessor: 'transaction_amount'
         },
         {
             Header: 'Action',
@@ -169,7 +214,7 @@ export const FilteringTable = ({ data, isLoading, user, userId, refetchUser, sup
 
     const tableInstance = useTable(
         {
-            columns,
+            columns: user === 'admin' ? columnsAdmin : columns,
             data: transactionsData,
             initialState: { pageIndex: 0 }
         },
@@ -316,9 +361,7 @@ export const FilteringTable = ({ data, isLoading, user, userId, refetchUser, sup
                                         <Nav.Item as="li" className="my-1" role="presentation">
                                             <Nav.Link as="button" className="me-0" eventKey="Listing" type="button" onClick={() => setCurrentTab("card")}>Card Payment</Nav.Link>
                                         </Nav.Item>
-                                        <Nav.Item as="li" className="my-1" role="presentation">
-                                            <Nav.Link as="button" className="me-0" eventKey="Crypto" type="button" onClick={() => setCurrentTab("crypto")}>Crypto Payment</Nav.Link>
-                                        </Nav.Item>
+                                       
                                     </Nav>
                                 </div>
                                 <table {...getTableProps()} className="table dataTable display">

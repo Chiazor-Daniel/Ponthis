@@ -13,7 +13,7 @@ import Swal from 'sweetalert2';
 import { Button } from 'react-bootstrap';
 import { useCreateAdminMutation } from '../../redux-contexts/redux/services/admin';
 
-const AdminDashboard = ({setUserType, superAdmin}) => {
+const AdminDashboard = ({ setUserType, superAdmin }) => {
   const navigate = useNavigate();
   const { adminInfo, adminToken } = useSelector(state => state.adminAuth);
   const { data: allUsers, isLoading: isUsersLoading, error: isUsersError } = useGetAllUsersQuery(adminToken);
@@ -40,7 +40,7 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
       date_of_birth,
       password
     };
-  
+
     Swal.fire({
       title: 'Create Admin',
       text: 'Are you sure you want to create this admin?',
@@ -56,7 +56,7 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
           .then((response) => {
             console.log(response)
             console.log('Admin created successfully:', response);
-            if(response.status){
+            if (response.status) {
               refetchAdmins()
               Swal.fire({
                 icon: 'success',
@@ -77,7 +77,7 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
       }
     });
   };
-  
+
   const user_columns = React.useMemo(
     () => [
       {
@@ -122,7 +122,7 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
             >
               View User
             </button>
-          
+
           </>
         ),
       },
@@ -180,7 +180,7 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
     [navigate, admin]
   );
   useEffect(() => {
-  console.log(adminInfo)
+    console.log(adminInfo)
   }, []);
 
   const columns = React.useMemo(
@@ -228,27 +228,26 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
 
   return (
     <>
-       <CreateAdminModal show={showCreateAdminModal} onHide={() => setShowCreateAdminModal(false)} onCreateAdmin={handleCreateAdmin} />
-    <div style={{display: "flex", justifyContent:"space-between", alignItems: "center", padding: "10px"}}>
-      {
-        superAdmin ?(
-          <>
-          <h1>Admin Management</h1>
-          <Button onClick={() => setShowCreateAdminModal(true)}>Create an Admin</Button>
-          </>
-        ): <h1>User Management</h1>
-      }
-    </div>
-    {isLoading && <div>Loading...</div>}
-    {!isLoading && data && superAdmin && <AdminTable columns={columns} data={data} />}
-    {!isLoading && allUsers && !superAdmin &&  <AdminTable columns={user_columns} data={allUsers} title={'Users'} />}
-    {!isLoading && allUsers && superAdmin && <AdminTable columns={user_columns} data={allUsers} title={'Users'} superAdmin={superAdmin} />}
-    {!isLoading && !superAdmin && admin && <AdminTable columns={user_columns} data={admin.users_assigned} title={"Assigned users"} />}
-    {!isLoading && paymentDetails && superAdmin && data && <Finance paymentDetails={paymentDetails?.data} token={adminToken} refetch={handleRefetch} />}
-    {isUsersLoading && <div>Loading users...</div>}
-    {isPaymentLoading && <div>Loading payment details...</div>}
-  </>
-  
+      <CreateAdminModal show={showCreateAdminModal} onHide={() => setShowCreateAdminModal(false)} onCreateAdmin={handleCreateAdmin} />
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px" }}>
+        {
+          superAdmin ? (
+            <>
+              <h1>Admin Management</h1>
+              <Button onClick={() => setShowCreateAdminModal(true)}>Create an Admin</Button>
+            </>
+          ) : <h1>User Management</h1>
+        }
+      </div>
+      {isLoading && <div>Loading...</div>}
+      {!isLoading && data && superAdmin && <AdminTable columns={columns} data={data} title={'Admins'}/>}
+      {!isLoading && allUsers && !superAdmin && <AdminTable columns={user_columns} data={allUsers?.message} title={'Users'} />}
+      {!isLoading && allUsers && superAdmin && <AdminTable columns={user_columns} data={allUsers?.message} title={'Users'} superAdmin={superAdmin} />}
+      {!isLoading && !superAdmin && admin && <AdminTable columns={user_columns} data={admin.users_assigned} title={"Assigned users"} />}
+      {isUsersLoading && <div>Loading users...</div>}
+      {isPaymentLoading && <div>Loading payment details...</div>}
+    </>
+
   );
 };
 

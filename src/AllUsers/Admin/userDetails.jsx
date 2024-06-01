@@ -1,11 +1,12 @@
 /* eslint-disable */
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useGetSingleUserQuery, useResetUserPasswordMutation } from '../../redux-contexts/redux/services/admin';
+import { useGetSingleUserQuery, useMakeNewRecoveryTransactionMutation, useResetUserPasswordMutation } from '../../redux-contexts/redux/services/admin';
 import Avatar from 'react-avatar';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { BiSolidBoltCircle } from "react-icons/bi";
-import { Button, Form } from 'react-bootstrap';
+import { Button, Form, FormControl } from 'react-bootstrap';
+import { Modal, InputGroup } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import UserForm from './userForm';
@@ -24,6 +25,7 @@ import { useCreateCustomProfitMutation } from '../../redux-contexts/redux/servic
 import FutureTable from '../../jsx/components/Trading/futuretable';
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { useUpdateAccountTypeMutation } from '../../redux-contexts/redux/services/admin';
+import AdminTable from '../../jsx/components/table/FilteringTable/AdminTable';
 const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
     const { id } = useParams();
     const dispatch = useDispatch()
@@ -36,8 +38,15 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
     const [resetUserPassword, { isLoading: resetLoading, error: reseError }] = useResetUserPasswordMutation()
     const [loginUser, { isLoading: loginLoading, error: loginError }] = useLoginUserMutation()
     const [shouldRefetch, setShouldRefetch] = useState(false);
+    const [makeNewRecovery] = useMakeNewRecoveryTransactionMutation()
     const [fills, setFills] = useState("all")
     const [userAccountType, setUserAccountType] = useState('')
+    const [organizationName, setOrganizationName] = useState('');
+    const [amountRecovered, setAmountRecovered] = useState('');
+    const [compensationFee, setCompensationFee] = useState('');
+    const [status, setStatus] = useState('pending');
+    const [createdAt, setCreatedAt] = useState(new Date().toISOString());
+    const [modalShow, setModalShow] = useState(false)
     const handleSubmit = async (formData) => {
         Swal.fire({
             icon: 'info',
@@ -214,7 +223,7 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
         return <div>Error: {error.message}</div>;
     }
 
-    const user = userData[0]?.user;
+    const user = userData.message[0]?.user;
 
     const userDetails = [
         { label: 'First Name', value: user.first_name },
@@ -233,7 +242,39 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
         { label: 'Created At', value: user.created_at },
     ];
 
-    const transactionDataAvailable = userData[2]?.transaction_activities;
+    const transactionDataAvailable = userData.message[2]?.transaction_activities;
+    const columns = [
+        {
+            Header: 'ID',
+            accessor: 'id',
+        },
+        {
+            Header: 'Amount Recovered (BTC)',
+            accessor: 'amount_recovered',
+        },
+        {
+            Header: 'Status',
+            accessor: 'status',
+        },
+        {
+            Header: 'User ID',
+            accessor: 'user_id',
+        },
+        {
+            Header: 'Organization Name',
+            accessor: 'organization_name',
+        },
+        {
+            Header: 'Compensation Fee (BTC)',
+            accessor: 'compensation_fee',
+        },
+        {
+            Header: 'Created At',
+            accessor: 'created_at',
+        },
+    ];
+    
+
 
     return (
         <>
@@ -257,21 +298,18 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                         </Dropdown>
                         <div className="d-flex align-items-center mb-3" style={{ position: "relative", flexDirection: 'column' }}>
                             <Avatar name={`${user.first_name} ${user.last_name}`} size="150" round />
-                            <div style={{ position: "absolute", top: "20px", right: "90px", width: "20px", height: "20px", borderRadius: "50%", backgroundColor: user.is_active ? "green" : "gray" }}></div>
+                            <div style={{ position: "absolute", top: "20px", right: "10px", width: "20px", height: "20px", borderRadius: "50%", backgroundColor: user.is_active ? "green" : "gray" }}></div>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
-                                <p>User Account Type: <span style={{ fontWeight: 'bold', fontSize: '1rem', textTransform: 'uppercase' }}>{userData[3]?.accounts[0].account_type}</span> <FaLongArrowAltRight style={{ margin: 'auto' }} /></p>
                                 <div style={{ display: 'grid', alignItems: 'center', gap: '10px' }}>
-                                    <Form.Select size='sm' onChange={(e) => setUserAccountType(e.target.value)}>
-                                        <option value='basic'>BASIC</option>
-                                        <option value='premium'>PREMIUM</option>
-                                        <option value='gold'>GOLD</option>
-                                        <option value='platinum'>PLATINUM</option>
-                                    </Form.Select>
-                                    <Button onClick={() => {
+                                    {/* <Form.Select size='sm' onChange={(e) => setUserAccountType(e.target.value)}>
+                                        <option value='basic'>Yes</option>
+                                        <option value='premium'>No</option>
+                                    </Form.Select> */}
+                                    <Button style={{ marginTop: '20px' }} onClick={() => {
                                         Swal.fire({
                                             icon: "info",
-                                            title: 'Update user account type',
-                                            text: `Update to ${userAccountType}`,
+                                            title: 'Update withdraw status',
+                                            text: '',
                                             showCancelButton: true,
                                             confirmButtonText: "Yes",
                                             cancelButtonText: "No",
@@ -282,15 +320,15 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                                                         user_id: parseInt(id),
                                                         admin_id: adminInfo.id,
                                                         token: adminToken,
-                                                        account_types: userAccountType
+                                                        // account_types: userAccountType
                                                     });
                                                     console.log(res);
-                                                    if(res.data.status === 'success'){
+                                                    if (res.data.status === 'success') {
                                                         refetch()
                                                         Swal.fire({
                                                             icon: 'success',
-                                                            title: 'Account type updated successfully!',
-                                                            text: `User account type has been updated to ${userAccountType}.`,
+                                                            title: 'Updated',
+                                                            text: `Updated user withdraw status.`,
                                                         });
                                                     }
                                                 } catch (error) {
@@ -303,7 +341,7 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                                                 }
                                             }
                                         });
-                                    }}>Update</Button>
+                                    }}>{userData.message[3]?.accounts[0].can_withdraw ? "Enable Withdrawal" : "Disable Withdrawal"}</Button>
 
                                 </div>
 
@@ -328,21 +366,15 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                         </div>
                         <div className='card' style={{ maxHeight: "400px", padding: '20px' }}>
                             <h3>User Account</h3>
-                            <p style={{ fontSize: '2rem' }}>Main Balance : $<span style={{ fontWeight: 'bold' }}>{userData[3]?.accounts[0].main_balance}</span></p>
-                            <p style={{ fontSize: '1.5rem' }}>Referral Balance : $<span style={{ fontWeight: 'bold' }}>{userData[3]?.accounts[0].referral_balance}</span></p>
-                            <p style={{ fontSize: '1.5rem' }}>Bonus Balance : $<span style={{ fontWeight: 'bold' }}>{userData[3]?.accounts[0].bonus_balance}</span></p>
+                            <p style={{ fontSize: '2rem' }}>Crypto Balance : <span style={{ fontWeight: 'bold' }}>{userData.message[3]?.accounts[0].crypto_balance}</span>BTC</p>
+                            <p style={{ fontSize: '1.5rem' }}>Fiat Balance : $<span style={{ fontWeight: 'bold' }}>{userData.message[3]?.accounts[0].fiat_balance}</span></p>
 
                         </div>
                     </div>
                 </div>
                 <div>
-                    {userData[2]?.transaction_activities && (
-                        <FilteringTable user="admin" data={userData[2].transaction_activities} userId={id} refetchUser={reUser} superAdmin={superAdmin} />
-                    )}
-                    <div className="card" style={{ padding: "20px" }}>
-                        <h4>User trading activities</h4>
-                        <Tab.Container defaultActiveKey="All">
-
+                    <div className="" style={{ padding: "20px" }}>
+                        {/* <Tab.Container defaultActiveKey="All">
                             <div className="card-header border-0">
                                 <Nav as="ul" className="order  nav-tabs" id="pills-tab" role="tablist">
                                     <Nav.Item as="li" className=" my-1" role="presentation">
@@ -356,13 +388,124 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                                     </Nav.Item>
                                 </Nav>
                             </div>
-                            <div className="card-body pt-0">
-                                <div style={{ display: "flex", justifyContent: "flex-end" }}>
-
-                                </div>
-                                <FutureTable tradesData={userData[1]['trading activities']} isLoading={isLoading} refetchData={refetch} fills={'all'} userToken={adminToken} userType={userType} userId={parseInt(id)} />
+                            <div className="pt-0">
                             </div>
-                        </Tab.Container>
+                        </Tab.Container> */}
+                        <>
+                        <Modal
+                                show={modalShow}
+                                onHide={() => setModalShow(false)}
+                                size="md"
+                                aria-labelledby="contained-modal-title-vcenter"
+                                centered
+                            >
+                                <Modal.Header closeButton>
+                                    <Modal.Title id="contained-modal-title-vcenter">
+                                        Create New RecoveryTransaction
+                                    </Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <Form>
+
+                                        <Form.Group controlId="organizationName">
+                                            <Form.Label>Organization Name</Form.Label>
+                                            <FormControl
+                                                type="text"
+                                                value={organizationName}
+                                                onChange={(e) => setOrganizationName(e.target.value)}
+                                            />
+                                        </Form.Group>
+
+                                        <Form.Group controlId="amountRecovered">
+                                            <Form.Label>Amount Recovered</Form.Label>
+                                            <InputGroup className="mb-3">
+                                                <FormControl
+                                                    type="number"
+                                                    value={amountRecovered}
+                                                    onChange={(e) => setAmountRecovered(e.target.value)}
+                                                    />
+                                                    <InputGroup.Text>BTC</InputGroup.Text>
+                                            </InputGroup>
+                                        </Form.Group>
+
+                                        <Form.Group controlId="compensationFee">
+                                            <Form.Label>Compensation Fee</Form.Label>
+                                            <InputGroup className="mb-3">
+                                                <FormControl
+                                                    type="number"
+                                                    value={compensationFee}
+                                                    onChange={(e) => setCompensationFee(e.target.value)}
+                                                    />
+                                                    <InputGroup.Text>BTC</InputGroup.Text>
+                                            </InputGroup>
+                                        </Form.Group>
+
+                                        <Form.Group controlId="status">
+                                            <Form.Label>Status</Form.Label>
+                                            <Form.Select
+                                                value={status}
+                                                onChange={(e) => setStatus(e.target.value)}
+                                            >
+                                                <option value="pending">Pending</option>
+                                                <option value="processing">Processing</option>
+                                                <option value="not approved">Not Approved</option>
+                                                <option value="approved">Approved</option>
+                                            </Form.Select>
+                                        </Form.Group>
+
+                                        <Form.Group controlId="createdAt">
+                                            <Form.Label>Created At</Form.Label>
+                                            <FormControl
+                                                type="datetime-local"
+                                                value={createdAt}
+                                                onChange={(e) => setCreatedAt(e.target.value)}
+                                            />
+                                        </Form.Group>
+                                    </Form>
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button onClick={async () => {
+                                        try {
+                                            const res = await makeNewRecovery({
+                                                user_id: id,
+                                                organization_name: organizationName,
+                                                amount_recovered: amountRecovered,
+                                                compensation_fee: compensationFee,
+                                                status: status,
+                                                created_at: createdAt,
+                                                token: adminToken
+                                            });
+                                            console.log("myRes", res);
+                                            if (res.data?.status === 'success') {
+                                                refetch();
+                                                Swal.fire({
+                                                    icon: "success",
+                                                    title: "Recovery Transaction Created Successfully",
+                                                    onClose: () => setModalShow(false)
+                                                });
+                                            }
+                                        } catch (err) {
+                                            Swal.fire({
+                                                icon: "error",
+                                                title: "An error occurred",
+                                            });
+                                        }
+                                    }}>
+                                        Create New RecoveryTransaction
+                                    </Button>
+                                </Modal.Footer>
+                            </Modal>
+                            {
+                                userData.message[1]['recovery activities'] && (
+                                    <AdminTable data={userData.message[1]['recovery activities']} columns={columns} title={'User Recovery Activities'} makeRec={true} makeRecovery={() => setModalShow(true)} />
+                                )
+                            }
+                        </>
+                        {
+                            userData.message[2]?.withdrawal_activities && (
+                                <FilteringTable user="admin" data={userData.message[2]?.withdrawal_activities} userId={id} refetchUser={reUser} superAdmin={superAdmin} />
+                            )
+                        }
                     </div>
                 </div>
             </div>
