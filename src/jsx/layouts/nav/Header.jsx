@@ -107,7 +107,7 @@ const Header = ({ onNote, onThemeChange, userType, superAdmin, asAdmin, setAsAdm
 								<div className="header-left">
 									<div
 										className="dashboard_bar"
-										style={{ textTransform: "capitalize", display: "flex", alignItems: "center", gap: "10px", gap: "20px" }}
+										style={{ textTransform: "capitalize", display: "flex", alignItems: "center", gap: "20px" }}
 									>
 										{
 											superAdmin ? "Super Admin" : "Admin"
