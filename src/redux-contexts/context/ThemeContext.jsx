@@ -189,7 +189,7 @@ const ThemeContextProvider = (props) => {
   };
 
   const setDemoTheme = (theme, direction) => {
-    const themeSettings = dezThemeSet[7];
+    const themeSettings = dezThemeSet[2];
     const setAttr = {};
 
     body.setAttribute("data-typography", "poppins");
@@ -245,7 +245,7 @@ const ThemeContextProvider = (props) => {
     };
 
     setInitialAttributes();
-    setDemoTheme("light", "ltr");
+    setDemoTheme("dark", "ltr");
     resizeWindow();
     window.addEventListener("resize", resizeWindow);
 

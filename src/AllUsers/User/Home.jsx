@@ -74,22 +74,7 @@ const Home = ({ theme, fetchDataAndDispatch }) => {
                                             </div>
                                             <div className="card-body text-center pt-0 pb-2" style={{ overflow: "auto" }}>
                                                 <div className="text-start" style={{ display: "flex", flexDirection: "column", justifyContent: "", gap: "10px" }}>
-                                                    {getAssets.map((asset, index) => (
-                                                        <div className="previews-info-list" onClick={() => {
-                                                            Swal.fire({
-                                                                title: 'Asset Selected',
-                                                                text: `You have selected ${asset.asset_pair}`,
-                                                                icon: 'success'
-                                                            }); setTradePair(asset.asset_pair); 
-                                                        }} key={index} style={{ position: "relative", cursor: "pointer" }}> {/* Add onClick handler */}
-                                                            <div className="pre-icon">
-                                                                <div className="ms-2" style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-                                                                    <RiTokenSwapFill size={30} color={getRandomColor()} />
-                                                                    <h6>{asset.asset_pair}</h6>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    ))}
+                                                   
                                                 </div>
                                             </div>
                                         </div>

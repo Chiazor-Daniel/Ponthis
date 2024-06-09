@@ -69,11 +69,11 @@ const Header = ({ onNote, onThemeChange, userType, superAdmin, asAdmin, setAsAdm
 
 						{/* <MyTheme /> */}
 
-						{/* <ToggleTheme
+						<ToggleTheme
 							isDark={isDark}
 							invertedIconLogic
 							onChange={() => { setDark((prev) => !prev); onThemeChange(isDark) }}
-						/> */}
+						/>
 
 						<Dropdown as="li" className="nav-item dropdown header-profile">
 							<Dropdown.Toggle variant="" as="a" className="nav-link i-false c-pointer">
