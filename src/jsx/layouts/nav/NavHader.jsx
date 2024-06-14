@@ -10,8 +10,8 @@ import SetLogo from "../../../setLogo";
 
 import { useResponsive } from "../../../redux-contexts/context/responsive";
 export function NavMenuToggle() {
+  let mainwrapper = document.querySelector("#main-wrapper");
   setTimeout(() => {
-    let mainwrapper = document.querySelector("#main-wrapper");
     if (mainwrapper.classList.contains('menu-toggle')) {
       mainwrapper.classList.remove("menu-toggle");
     } else {
@@ -19,7 +19,6 @@ export function NavMenuToggle() {
     }
   }, 200);
 }
-
 
 const NavHader = () => {
   const { isMobile, isTablet, isDesktop } = useResponsive();
@@ -30,7 +29,7 @@ const NavHader = () => {
   
   
   return (
-    <div className="nav-header">
+    <div className="nav-header" style={{backgroundColor: 'rgba(243, 243, 243, 0.04)'}}>
       <Link to="/dashboard" className="brand-logo">
         {
           !isMobile && (

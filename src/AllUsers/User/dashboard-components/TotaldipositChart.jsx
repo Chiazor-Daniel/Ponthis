@@ -165,8 +165,8 @@ class TotaldipositChart extends React.Component {
 					options={this.state.options} 
 					series={this.state.series} 
 					type="area" 
-					height={130}  
-					width={400}
+					height={100}  
+					width={500}
 				/>
             </div>
         );

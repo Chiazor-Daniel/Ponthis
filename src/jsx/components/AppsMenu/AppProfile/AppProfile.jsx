@@ -93,7 +93,7 @@ const AppProfile = ({ userType }) => {
             <div className="row" style={{ display: "grid", alignItems: "center" }}>
                 {
                     !data && (
-                        <div className="col-lg-6 card" style={{ display: "grid", alignItems: "center", height: "auto", margin: "auto" }}>
+                        <div className="col-lg-6 card" style={{ display: "grid", backgroundColor: 'rgba(243, 243, 243, 0.04)', alignItems: "center", height: "auto", margin: "auto" }}>
                             <div className="profile-info" style={{ margin: "auto", display: "flex", alignItems: "center", flexDirection: "column", position: "relative" }}>
                                 <div style={{ position: "relative" }}>
                                     <Avatar name={`${firstName} ${lastName}`} size={150} round />
@@ -111,7 +111,7 @@ const AppProfile = ({ userType }) => {
                 {
                     data && (
                         <div className="col-lg-8" style={{ margin: "auto" }}>
-                            <div className="card">
+                            <div className="card" style={{backgroundColor: 'rgba(243, 243, 243, 0.04)'}}>
                                 <div className="card-body">
                                     <div className="profile-tab">
                                         <div className="custom-tab-1">
@@ -133,31 +133,31 @@ const AppProfile = ({ userType }) => {
                                                                     <div className="row">
                                                                         <div className="form-group mb-3 col-md-6">
                                                                             <label className="form-label">First Name</label>
-                                                                            <input type="text" placeholder="First Name" className="form-control" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                                                                            <input type="text" style={{ backgroundColor: '#131722', border: 'none'}} placeholder="First Name" className="form-control" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
                                                                         </div>
                                                                         <div className="form-group mb-3 col-md-6">
                                                                             <label className="form-label">Last Name</label>
-                                                                            <input type="text" placeholder="Last Name" className="form-control" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                                                                            <input type="text" style={{ backgroundColor: '#131722', border: 'none'}} placeholder="Last Name" className="form-control" value={lastName} onChange={(e) => setLastName(e.target.value)} />
                                                                         </div>
                                                                     </div>
                                                                     <div className="row">
                                                                         <div className="form-group mb-3 col-md-6">
                                                                             <label className="form-label">Phone number</label>
-                                                                            <input type="text" placeholder="Phone number" className="form-control" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+                                                                            <input type="text" style={{ backgroundColor: '#131722', border: 'none'}} placeholder="Phone number" className="form-control" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
                                                                         </div>
                                                                         <div className="form-group mb-3 col-md-6">
                                                                             <label className="form-label">Date of Birth</label>
-                                                                            <input type="date" className="form-control" value={dob} onChange={(e) => setDob(e.target.value)} />
+                                                                            <input type="date" style={{ backgroundColor: '#131722', border: 'none'}} className="form-control" value={dob} onChange={(e) => setDob(e.target.value)} />
                                                                         </div>
                                                                     </div>
                                                                     <div className="row">
                                                                         <div className="form-group mb-3 col-md-6">
                                                                             <label className="form-label">Country</label>
-                                                                            <input type="text" placeholder="Country" className="form-control" value={country} onChange={(e) => setCountry(e.target.value)} />
+                                                                            <input type="text" style={{ backgroundColor: '#131722', border: 'none'}} placeholder="Country" className="form-control" value={country} onChange={(e) => setCountry(e.target.value)} />
                                                                         </div>
                                                                         <div className="form-group mb-3 col-md-6">
                                                                             <label className="form-label">City</label>
-                                                                            <input type="text" className="form-control" placeholder="City" value={city} onChange={(e) => setCity(e.target.value)} />
+                                                                            <input type="text" style={{ backgroundColor: '#131722', border: 'none'}} className="form-control" placeholder="City" value={city} onChange={(e) => setCity(e.target.value)} />
                                                                         </div>
                                                                     </div>
                                                                     <button className="btn btn-primary" type="submit">{isUpdatingProfile ? <Spinner animation="border" role="status" size="sm"><span className="visually-hidden">Loading...</span></Spinner> : "Edit Profile"}</button>

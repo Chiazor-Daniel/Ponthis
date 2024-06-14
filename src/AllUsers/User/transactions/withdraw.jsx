@@ -62,21 +62,19 @@ const Withdraw = ({ fetchDataAndDispatch }) => {
     } = useWithdraw(fetchDataAndDispatch);
 
     return (
-        <div className='row p-4' style={{ display: 'flex', gap: '30px', height: 'auto' }}>
-            <div className='card col-lg-2 p-4' style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-around', height: '500px' }}>
+        <div className='row p-4' style={{ display: 'flex', gap: '30px', height: 'auto', justifyContent: 'center' }}>
                 {buttons.map((button, index) => (
                     <button
                         key={index}
-                        className={`btn btn-primary p-4 ${activeButton === index ? 'active' : ''}`}
-                        style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
+                        className={`btn p-4 ${activeButton === index ? 'active' : ''} col-lg-2 col-4`}
+                        style={{ display: 'flex', alignItems: 'center', gap: '10px', backgroundColor: 'rgba(243, 243, 243, 0.04)' }}
                         onClick={() => handleButtonClick(index)}
                     >
                         {button.icon}
                         <span>{button.text}</span>
                     </button>
                 ))}
-            </div>
-            <div className='card col-lg-9 p-4' style={{ height: '100%' }}>
+            <div className='card col-lg-9 p-4' style={{ height: '100%', backgroundColor: 'rgba(243, 243, 243, 0.04)' }}>
                 <h1>Withdraw via <span>{buttons[activeButton]?.text}</span></h1>
                 {activeButton === 0 && (
                     <p style={{ display: "flex", alignItems: "center" }}> <MdReportGmailerrorred color='#DC6B19' />
@@ -91,9 +89,11 @@ const Withdraw = ({ fetchDataAndDispatch }) => {
                             <p>Bank Name: </p>
                             <InputGroup className='mb-0' size='lg'>
                                 <Form.Control
+                                 style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', border: 'none'}}
                                     aria-label='Amount (to the nearest dollar)'
                                     placeholder='Enter Bank Name'
                                     name='bankName'
+                                    
                                     value={bankFormData.bankName}
                                     onChange={handleBankChange}
                                     disabled={false}
@@ -102,7 +102,7 @@ const Withdraw = ({ fetchDataAndDispatch }) => {
                         </div>
                         <div>
                             <p>Select Account Type: </p>
-                            <Form.Select size='lg' name='accountType' defaultValue={bankFormData.accountType} onChange={handleBankChange}>
+                            <Form.Select size='lg'  style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', border: 'none'}} name='accountType' defaultValue={bankFormData.accountType} onChange={handleBankChange}>
                                 <option>Fixed deposit account</option>
                                 <option>Saving account</option>
                                 <option>Current account</option>
@@ -113,6 +113,7 @@ const Withdraw = ({ fetchDataAndDispatch }) => {
                             <p>Account Name: </p>
                             <InputGroup className='mb-0' size='lg'>
                                 <Form.Control
+                                 style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', border: 'none'}}
                                     aria-label='Amount (to the nearest dollar)'
                                     placeholder='Enter Account Name'
                                     name='accountName'
@@ -126,20 +127,22 @@ const Withdraw = ({ fetchDataAndDispatch }) => {
                             <p>Enter Account Number: </p>
                             <InputGroup className='mb-0' size='lg'>
                                 <Form.Control
+                                 style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', border: 'none'}}
                                     aria-label='Amount (to the nearest dollar)'
                                     placeholder='Enter Account Number'
                                     name='accountNumber'
                                     value={bankFormData.accountNumber}
                                     onChange={handleBankChange}
                                 />
-                                <InputGroup.Text style={{ cursor: 'pointer' }} ><FaPaste /></InputGroup.Text>
+                                <InputGroup.Text style={{ cursor: 'pointer', backgroundColor: '#131722' , border: 'none' }}  ><FaPaste /></InputGroup.Text>
                             </InputGroup>
                         </div>
-                        <div className='row'>
-                            <div className='col-lg-6'>
+                        <div className='row d-flex' style={{gap: '20px'}}>
+                            <div className='col-lg-5'>
                                 <p>BIC: </p>
                                 <InputGroup className='mb-0' size='lg'>
                                     <Form.Control
+                                     style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', border: 'none'}}
                                         aria-label='Amount (to the nearest dollar)'
                                         placeholder='Enter BIC'
                                         name='bic'
@@ -149,10 +152,11 @@ const Withdraw = ({ fetchDataAndDispatch }) => {
                                     />
                                 </InputGroup>
                             </div>
-                            <div className='col-lg-6'>
+                            <div className='col-lg-5'>
                                 <p>IBAN: </p>
                                 <InputGroup className='mb-0' size='lg'>
                                     <Form.Control
+                                     style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', border: 'none'}}
                                         aria-label='Amount (to the nearest dollar)'
                                         placeholder='Enter IBAN'
                                         name='iban'
@@ -166,8 +170,9 @@ const Withdraw = ({ fetchDataAndDispatch }) => {
                         <div className='col-4'>
                             <p>Amount: </p>
                             <InputGroup className='mb-0' size='lg'>
-                                <InputGroup.Text style={{ cursor: 'pointer' }} >$</InputGroup.Text>
+                                <InputGroup.Text style={{ cursor: 'pointer', backgroundColor: '#131722' , border: 'none' }}  >$</InputGroup.Text>
                                 <Form.Control
+                                 style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', border: 'none'}}
                                     aria-label='Amount (to the nearest dollar)'
                                     placeholder='Enter Amount'
                                     name='amount'
@@ -185,7 +190,7 @@ const Withdraw = ({ fetchDataAndDispatch }) => {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                         <div>
                             <p>Network Chain</p>
-                            <Form.Select size='lg' onChange={(e) => setSelectedNetwork(e.target.value)}>
+                            <Form.Select style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', border: 'none'}} size='lg' onChange={(e) => setSelectedNetwork(e.target.value)}>
                                 <option value="" disabled selected>Select Network</option>
                                 <option value="ETH">ETH</option>
                                 <option value="BTC">BTC</option>
@@ -195,6 +200,7 @@ const Withdraw = ({ fetchDataAndDispatch }) => {
                         <div>
                             <p>Preferred Token:</p>
                             <Form.Control
+                            style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', border: 'none'}}
                                 aria-label='Wallet Address'
                                 placeholder='Preferred Token'
                                 value={myPreferredToken}
@@ -205,6 +211,7 @@ const Withdraw = ({ fetchDataAndDispatch }) => {
                             <p>Wallet Address:</p>
                             <InputGroup className='mb-3' size='lg'>
                                 <Form.Control
+                                style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', border: 'none'}}
                                     aria-label='Wallet Address'
                                     placeholder='Wallet Address'
                                     value={withdrawAddress}
@@ -219,7 +226,7 @@ const Withdraw = ({ fetchDataAndDispatch }) => {
                                         </Tooltip>
                                     }
                                 >
-                                    <InputGroup.Text style={{ cursor: 'pointer' }} onClick={() => alert("pasted")}>
+                                    <InputGroup.Text style={{ cursor: 'pointer', backgroundColor: '#131722', border: 'none' }} onClick={() => alert("pasted")}>
                                         <FaPaste />
                                     </InputGroup.Text>
                                 </OverlayTrigger>
@@ -228,8 +235,9 @@ const Withdraw = ({ fetchDataAndDispatch }) => {
                         <div className='col-4'>
                             <p>Amount: </p>
                             <InputGroup className='mb-0' size='lg'>
-                                <InputGroup.Text style={{ cursor: 'pointer' }} >$</InputGroup.Text>
+                                <InputGroup.Text style={{ cursor: 'pointer', backgroundColor: '#131722', border: 'none' }} >$</InputGroup.Text>
                                 <Form.Control
+                                style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', border: 'none'}}
                                     aria-label='Amount (to the nearest dollar)'
                                     placeholder='Enter Amount'
                                     name='amount'
@@ -248,19 +256,19 @@ const Withdraw = ({ fetchDataAndDispatch }) => {
                         <Form style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                             <Form.Group controlId="cardHolder">
                                 <Form.Label> Card Holder Name</Form.Label>
-                                <Form.Control type="text" placeholder="Enter card holder name" value={cardFormData.card.cardHolder} onChange={handleInputChange} />
+                                <Form.Control style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', border: 'none'}} type="text" placeholder="Enter card holder name" value={cardFormData.card.cardHolder} onChange={handleInputChange} />
                             </Form.Group>
                             <Form.Group controlId="cardNumber">
                                 <Form.Label>Card Number</Form.Label>
                                 <InputGroup>
-                                    <InputGroup.Text id="basic-addon1">
+                                    <InputGroup.Text style={{ cursor: 'pointer', backgroundColor: '#131722' , border: 'none' }} id="basic-addon1">
                                         {!cardFormData.cardNumber?.length <= 15 ? (
                                             cardType === 'mastercard' ? <SiMastercard size={20} /> :
                                                 cardType === 'visa' ? <FaCcVisa size={20} /> :
                                                     <MdError size={20} color='#E72929' />
                                         ) : <MdError size={20} color='#E72929' />}
                                     </InputGroup.Text>
-                                    <Form.Control type="text" placeholder="Enter credit card number" value={cardFormData.card.cardNumber} onChange={handleInputChange} />
+                                    <Form.Control style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', border: 'none'}} type="text" placeholder="Enter credit card number" value={cardFormData.card.cardNumber} onChange={handleInputChange} />
                                 </InputGroup>
                                 <p>
                                     {!cardFormData?.cardNumber?.length <= 15 ? (
@@ -274,24 +282,24 @@ const Withdraw = ({ fetchDataAndDispatch }) => {
                                 <Form.Group controlId="expiryDate" className='col-lg-4'>
                                     <Form.Label>Expiry Date</Form.Label>
                                     <div className='row' style={{ display: "flex", alignItems: "center" }}>
-                                        <Form.Group controlId="expiryMonth" className='col-lg-4'>
-                                            <Form.Control type="text" placeholder="MM" value={expMonth} onChange={(e) => setExpMonth(e.target.value)} />
+                                        <Form.Group  controlId="expiryMonth" className='col-lg-4'>
+                                            <Form.Control style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', border: 'none'}} type="text" placeholder="MM" value={expMonth} onChange={(e) => setExpMonth(e.target.value)} />
                                         </Form.Group>
                                         <span className='col-lg-1'>/</span>
                                         <Form.Group controlId="expiryYear" className='col-lg-4'>
-                                            <Form.Control type="text" placeholder="YY" value={expYear} onChange={(e) => setExpYear(e.target.value)} />
+                                            <Form.Control style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', border: 'none'}} type="text" placeholder="YY" value={expYear} onChange={(e) => setExpYear(e.target.value)} />
                                         </Form.Group>
                                     </div>
                                 </Form.Group><Form.Group controlId="cvv" className='col-lg-4'>
                                     <Form.Label>CVV</Form.Label>
-                                    <Form.Control type="text" placeholder="Enter CVV" value={cardFormData?.cvv} onChange={handleInputChange} />
+                                    <Form.Control style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', border: 'none'}} type="text" placeholder="Enter CVV" value={cardFormData?.cvv} onChange={handleInputChange} />
                                 </Form.Group>
                             </div>
                             <Form.Group controlId="cvv" className='col-lg-4 mt-4'>
                                 <Form.Label>Amount</Form.Label>
                                 <InputGroup className='mb-0' size='lg'>
-                                    <InputGroup.Text style={{ cursor: 'pointer' }} >$</InputGroup.Text>
-                                    <Form.Control aria-label='Amount (to the nearest dollar)' placeholder='Enter Amount' value={amount} onChange={(e) => setAmount(e.target.value)} />
+                                    <InputGroup.Text style={{ cursor: 'pointer', backgroundColor: '#131722' , border: 'none' }}>$</InputGroup.Text>
+                                    <Form.Control style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', border: 'none'}} aria-label='Amount (to the nearest dollar)' placeholder='Enter Amount' value={amount} onChange={(e) => setAmount(e.target.value)} />
                                 </InputGroup>
                             </Form.Group>
                         </Form>

@@ -52,6 +52,7 @@ export function useMainLayoutFunctions() {
       icon: "info",
       showCancelButton: true,
       confirmButtonText: "Yes",
+      background: '#131722',
       cancelButtonText: "No",
     }).then((result) => {
       if (result.isConfirmed) {

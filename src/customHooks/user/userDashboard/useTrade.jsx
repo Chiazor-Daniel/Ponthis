@@ -56,7 +56,7 @@ export const useTrade = (userToken, fetchDataAndDispatch) => {
     const transactionProcessing = () => {
         const loadingElement = ReactDOMServer.renderToString(
             <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
-                <RingLoader color="#36d7b7" size={100} />
+                <RingLoader color="#36d7b7" size={200} />
                 <p>Processing Trade...</p>
             </div>
         );
@@ -78,6 +78,7 @@ export const useTrade = (userToken, fetchDataAndDispatch) => {
             text: `Are you sure you want to ${activeTab === 'buy' ? 'buy' : 'sell'} $${price} worth ${tradePair}?`,
             icon: 'question',
             showCancelButton: true,
+            background: '#131722',
             confirmButtonText: 'Confirm',
             cancelButtonText: 'Cancel',
         }).then((result) => {
@@ -101,12 +102,14 @@ export const useTrade = (userToken, fetchDataAndDispatch) => {
                                     title: "Trade Opened!",
                                     text: "Trade opened successfully.",
                                     icon: "success",
+                                    background: '#131722',
                                 });
                             } else {
                                 Swal.fire({
                                     title: "Error!",
                                     text: "Insufficient Balance. Please deposit funds to your account.",
                                     icon: "error",
+                                    background: '#131722',
                                 });
                             }
                         }
@@ -117,6 +120,7 @@ export const useTrade = (userToken, fetchDataAndDispatch) => {
                             title: "Error!",
                             text: "Insufficient Balance. Please deposit funds to your account.",
                             icon: "error",
+                            background: '#131722',
                         });
                     });
             }

@@ -28,6 +28,7 @@ function TradingViewWidget() {
           "allow_symbol_change": true,
           "save_image": false,
           "details": true,
+          backgroundColor": "rgba(9, 4, 67, 1)",
           "hotlist": true,
           "calendar": false
         }`;
@@ -45,3 +46,5 @@ function TradingViewWidget() {
 }
 
 export default memo(TradingViewWidget);
+
+

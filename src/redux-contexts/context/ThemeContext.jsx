@@ -20,7 +20,7 @@ const initialState = {
   navigationHader: "color_4",
   haderColor: "color_1",
   sidebarColor: "color_4",
-  // background: { value: "dark", label: "dark" },
+  background: { value: "dark", label: "dark" },
   containerPositionSize: { value: "wide-boxed", label: "Wide Boxed" },
   iconHover: false,
   menuToggle: false,
@@ -189,8 +189,8 @@ const ThemeContextProvider = (props) => {
   };
 
   const setDemoTheme = (theme, direction) => {
-    const themeSettings = dezThemeSet[2];
-    const setAttr = {};
+    const themeSettings = dezThemeSet[0];
+    const setAttr = { value: "dark", label: "dark" };
 
     body.setAttribute("data-typography", "poppins");
 
@@ -248,6 +248,7 @@ const ThemeContextProvider = (props) => {
     setDemoTheme("dark", "ltr");
     resizeWindow();
     window.addEventListener("resize", resizeWindow);
+    changeBackground({ value: "dark", label: "dark" })
 
     return () => window.removeEventListener("resize", resizeWindow);
   }, []);

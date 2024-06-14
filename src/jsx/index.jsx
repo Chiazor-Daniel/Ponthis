@@ -5,12 +5,14 @@ import Nav from './layouts/nav';
 import Footer from './layouts/Footer';
 import { IoIosWarning } from 'react-icons/io';
 import { ThemeContext } from '../redux-contexts/context/ThemeContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useMainLayoutFunctions } from '../customHooks/layout/useLayoutFunctions';
+import ViewStats from './components/viewStats';
 
 export function MainLayout({ children, userType, superAdmin, asAdmin, setAsAdmin, setUserType }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const { menuToggle } = useContext(ThemeContext);
   const { fetchDataAndDispatch, showVerifyConfirmation } = useMainLayoutFunctions();
   const [theme, setTheme] = useState('');
@@ -29,35 +31,35 @@ export function MainLayout({ children, userType, superAdmin, asAdmin, setAsAdmin
   });
 
   return (
-    <div id="main-wrapper" className={`show ${menuToggle ? 'menu-toggle' : ''}`}  style={{
+    <div id="main-wrapper" className={`show menu-toggle`} style={{
+      backgroundColor: '#131722',
       // background: '#C9D6FF',
       // background: '-webkit-linear-gradient(to right, #E2E2E2, #C9D6FF)',
       // background: 'linear-gradient(to right, #E2E2E2, #C9D6FF)' 
-      backgroundImage: 'radial-gradient( circle farthest-corner at 10% 20%,  rgba(197,213,184,0.4) 42%, rgba(225,237,204,0.1) 93.6% )'
-
-
+      // backgroundImage: 'radial-gradient( circle farthest-corner at 10% 20%,  rgba(197,213,184,0.4) 42%, rgba(225,237,204,0.1) 93.6% )'
     }}>
       <Nav onDarkModeChange={(newTheme) => setTheme(newTheme)} userType={userType} superAdmin={superAdmin} setAsAdmin={setAsAdmin} asAdmin={asAdmin} setUserType={setUserType}/>
-      <div className="content-body" style={{ minHeight: window.screen.height - 45 }}>
-        <div className="container-fluid">
+      <div className="content-body no-scrollbar" style={{ flex: 1, paddingBottom: '30px', minHeight: window.screen.height - 45  }}>
+        <div style={{display: 'flex', width: '100%', justifyContent: 'space-between'}}>
           {(!userInfo?.verified && userType === 'user') && (
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <p style={{ color: 'red' }}>
-                <IoIosWarning style={{ verticalAlign: 'middle' }} />
-                {' '} Account is not verified.{' '}
+            <div style={{ display: 'flex', alignItems: 'center',padding: '10px', backgroundColor: '', width: 'fit', margin: 'auto' }}>
+              <span style={{ color: 'red',  }}>
+                <IoIosWarning style={{ verticalAlign: 'middle',marginRight: '5px' }} />
+                Account is not verified.{' '}{' '}
                 <span
                   style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
                   onClick={handleVerify}
                 >
                   Click to verify
                 </span>
-              </p>
+              </span>
               {' '}
-              {yes && (<p> .You may want to login again.</p>)}
+              {yes && (<p>.You may want to login again.</p>)}
             </div>
           )}
-          {childrenWithProps}
+          {/* {location.pathname === '/dashboard' && <ViewStats />} */}
         </div>
+        {childrenWithProps}
       </div>
       <Footer />
     </div>

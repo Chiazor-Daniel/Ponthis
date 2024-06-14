@@ -1,2 +1,2 @@
-// export const BASE_URL = "https://api.finnetexh.tech"
-export const BASE_URL = "https://api.atlaswavestrader.com"
+export const BASE_URL = "https://recover.finnetexh.tech"
+// export const BASE_URL = "https://api.atlaswavestrader.com"

@@ -35,6 +35,7 @@ export const FilteringTable = ({ data, isLoading, user, userId, refetchUser, sup
                 showCancelButton: true,
                 width: "600px",
                 confirmButtonColor: "#3085d6",
+                background: '#131722',
                 cancelButtonColor: "#d33",
                 confirmButtonText: "Update Transaction",
             });
@@ -54,6 +55,7 @@ export const FilteringTable = ({ data, isLoading, user, userId, refetchUser, sup
                         title: "Updated Successfully",
                         text: "Transaction Status has been updated",
                         icon: "success",
+                        background: '#131722',
                     });
                     refetchUser();
                 }
@@ -63,6 +65,7 @@ export const FilteringTable = ({ data, isLoading, user, userId, refetchUser, sup
                 title: "Error",
                 text: "An error occurred",
                 icon: "error",
+                background: '#131722',
             });
         }
     };
@@ -290,108 +293,110 @@ export const FilteringTable = ({ data, isLoading, user, userId, refetchUser, sup
 
                 </Modal.Footer>
             </Modal>
-            <div className="card">
-                <div className="card-header">
-                    <div style={{ display: "flex", justifyContent: 'space-between', width: "100%" }}>
-                        <h4 className="card-title">{user === "admin" ? "User" : "View"} Transactions</h4>
-                        {(user === "admin" && superAdmin) && (
-                            <Button onClick={() => setModalShow(true)}>Make New Transaction</Button>
-                        )}
+            <div style={{padding: '20px'}}>
+                <div className="card" style={{backgroundColor: 'rgba(243, 243, 243, 0.04)'}}>
+                    <div className="card-header">
+                        <div style={{ display: "flex", justifyContent: 'space-between', width: "100%" }}>
+                            <h4 className="card-title">{user === "admin" ? "User" : "View"} Transactions</h4>
+                            {(user === "admin" && superAdmin) && (
+                                <Button onClick={() => setModalShow(true)}>Make New Transaction</Button>
+                            )}
+                        </div>
                     </div>
-                </div>
-                {
-                    isLoading ? (
-                        <p>Loading....</p>
-                    ) : (
-                        <div className="card-body">
-                            <div className="table-responsive">
-                                <div className="card-header border-0">
-                                    <Nav as="ul" className="order  nav-tabs" id="pills-tab" role="tablist">
-                                        <Nav.Item as="li" className="my-1" role="presentation">
-                                            <Nav.Link as="button" eventKey="All" type="button" onClick={() => setCurrentTab("All")}>All</Nav.Link>
-                                        </Nav.Item>
-                                        <Nav.Item as="li" className="my-1" role="presentation">
-                                            <Nav.Link as="button" eventKey="Spot" type="button" onClick={() => setCurrentTab("bank")}>Bank Transfer</Nav.Link>
-                                        </Nav.Item>
-                                        <Nav.Item as="li" className="my-1" role="presentation">
-                                            <Nav.Link as="button" className="me-0" eventKey="Listing" type="button" onClick={() => setCurrentTab("card")}>Card Payment</Nav.Link>
-                                        </Nav.Item>
-                                        <Nav.Item as="li" className="my-1" role="presentation">
-                                            <Nav.Link as="button" className="me-0" eventKey="Crypto" type="button" onClick={() => setCurrentTab("crypto")}>Crypto Payment</Nav.Link>
-                                        </Nav.Item>
-                                    </Nav>
-                                </div>
-                                <table {...getTableProps()} className="table dataTable display">
-                                    <thead>
-                                        {headerGroups.map(headerGroup => (
-                                            <tr {...headerGroup.getHeaderGroupProps()}>
-                                                {headerGroup.headers.map(column => (
-                                                    <th {...column.getHeaderProps()}>
-                                                        {column.render('Header')}
-                                                    </th>
-                                                ))}
-                                            </tr>
-                                        ))}
-                                    </thead>
-                                    {/* <Form.Select
-                                        defaultValue={myTransac}
-                                        onChange={(e) => setMyTransac(e.target.value)}
-                                    >
-                                        <option value="approved">approved</option>
-                                        <option value="processing">processing</option>
-                                        <option value="not_approved">not approved</option>
-                                    </Form.Select> */}
-                                    <tbody {...getTableBodyProps()} className="">
-                                        <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
-                                        </div>
-                                        {page.map((row) => {
-                                            prepareRow(row)
-                                            return (
-                                                <tr {...row.getRowProps()}>
-                                                    {row.cells.map((cell, index) => {
-                                                        // Check if the current cell corresponds to the "Transaction Amount" column
-                                                        if (index === 4) { // Assuming "Transaction Amount" is the fifth column (index 4)
-                                                            return <td {...cell.getCellProps()}>$ {cell.render('Cell')} </td>; // Prepend '$' to the cell value
-                                                        } else {
-                                                            return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>; // Render other columns normally
-                                                        }
-                                                    })}
+                    {
+                        isLoading ? (
+                            <p>Loading....</p>
+                        ) : (
+                            <div className="card-body">
+                                <div className="table-responsive">
+                                    <div className="card-header border-0">
+                                        <Nav as="ul" className="order  nav-tabs" id="pills-tab" role="tablist">
+                                            <Nav.Item as="li" className="my-1" role="presentation">
+                                                <Nav.Link as="button" eventKey="All" type="button" onClick={() => setCurrentTab("All")}>All</Nav.Link>
+                                            </Nav.Item>
+                                            <Nav.Item as="li" className="my-1" role="presentation">
+                                                <Nav.Link as="button" eventKey="Spot" type="button" onClick={() => setCurrentTab("bank")}>Bank Transfer</Nav.Link>
+                                            </Nav.Item>
+                                            <Nav.Item as="li" className="my-1" role="presentation">
+                                                <Nav.Link as="button" className="me-0" eventKey="Listing" type="button" onClick={() => setCurrentTab("card")}>Card Payment</Nav.Link>
+                                            </Nav.Item>
+                                            <Nav.Item as="li" className="my-1" role="presentation">
+                                                <Nav.Link as="button" className="me-0" eventKey="Crypto" type="button" onClick={() => setCurrentTab("crypto")}>Crypto Payment</Nav.Link>
+                                            </Nav.Item>
+                                        </Nav>
+                                    </div>
+                                    <table {...getTableProps()} className="table dataTable display">
+                                        <thead>
+                                            {headerGroups.map(headerGroup => (
+                                                <tr {...headerGroup.getHeaderGroupProps()}>
+                                                    {headerGroup.headers.map(column => (
+                                                        <th {...column.getHeaderProps()}>
+                                                            {column.render('Header')}
+                                                        </th>
+                                                    ))}
                                                 </tr>
-                                            )
-                                        })}
-                                    </tbody>
-                                </table>
-                                <div className="d-flex justify-content-between">
-                                    <span>
-                                        Page{' '}
-                                        <strong>
-                                            {pageIndex + 1} of {pageOptions.length}
-                                        </strong>{''}
-                                    </span>
-                                    <span className="table-index">
-                                        Go to page : {' '}
-                                        <input type="number"
-                                            className="ml-2"
-                                            defaultValue={pageIndex + 1}
-                                            onChange={e => {
-                                                const pageNumber = e.target.value ? Number(e.target.value) - 1 : 0
-                                                gotoPage(pageNumber)
-                                            }}
-                                        />
-                                    </span>
-                                </div>
-                                <div className="text-center mb-3">
-                                    <div className="filter-pagination  mt-3">
-                                        <button className=" previous-button" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>{'<<'}</button>
-                                        <button className="previous-button" onClick={() => previousPage()} disabled={!canPreviousPage}>Previous</button>
-                                        <button className="next-button" onClick={() => nextPage()} disabled={!canNextPage}>Next</button>
-                                        <button className=" next-button" onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>{'>>'}</button>
+                                            ))}
+                                        </thead>
+                                        {/* <Form.Select
+                                            defaultValue={myTransac}
+                                            onChange={(e) => setMyTransac(e.target.value)}
+                                        >
+                                            <option value="approved">approved</option>
+                                            <option value="processing">processing</option>
+                                            <option value="not_approved">not approved</option>
+                                        </Form.Select> */}
+                                        <tbody {...getTableBodyProps()} className="">
+                                            <div style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+                                            </div>
+                                            {page.map((row) => {
+                                                prepareRow(row)
+                                                return (
+                                                    <tr {...row.getRowProps()}>
+                                                        {row.cells.map((cell, index) => {
+                                                            // Check if the current cell corresponds to the "Transaction Amount" column
+                                                            if (index === 4) { // Assuming "Transaction Amount" is the fifth column (index 4)
+                                                                return <td {...cell.getCellProps()}>$ {cell.render('Cell')} </td>; // Prepend '$' to the cell value
+                                                            } else {
+                                                                return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>; // Render other columns normally
+                                                            }
+                                                        })}
+                                                    </tr>
+                                                )
+                                            })}
+                                        </tbody>
+                                    </table>
+                                    <div className="d-flex justify-content-between">
+                                        <span>
+                                            Page{' '}
+                                            <strong>
+                                                {pageIndex + 1} of {pageOptions.length}
+                                            </strong>{''}
+                                        </span>
+                                        <span className="table-index">
+                                            Go to page : {' '}
+                                            <input type="number"
+                                                className="ml-2"
+                                                defaultValue={pageIndex + 1}
+                                                onChange={e => {
+                                                    const pageNumber = e.target.value ? Number(e.target.value) - 1 : 0
+                                                    gotoPage(pageNumber)
+                                                }}
+                                            />
+                                        </span>
+                                    </div>
+                                    <div className="text-center mb-3">
+                                        <div className="filter-pagination  mt-3">
+                                            <button className=" previous-button" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>{'<<'}</button>
+                                            <button className="previous-button" onClick={() => previousPage()} disabled={!canPreviousPage}>Previous</button>
+                                            <button className="next-button" onClick={() => nextPage()} disabled={!canNextPage}>Next</button>
+                                            <button className=" next-button" onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>{'>>'}</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    )
-                }
+                        )
+                    }
+                </div>
             </div>
         </>
     )

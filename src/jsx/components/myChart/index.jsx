@@ -33,6 +33,7 @@ export const MyChart = (props) => {
             "theme": "${theme}",
             "style": "1",
             "locale": "en",
+            "backgroundColor": "",
             "enable_publishing": false,
             "allow_symbol_change": true,
             "calendar": false,

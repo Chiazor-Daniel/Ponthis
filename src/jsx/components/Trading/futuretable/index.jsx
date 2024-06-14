@@ -27,33 +27,54 @@ const FutureTable = ({ fills, tradesData, isLoading, refetchData, userToken, fet
   const handleCloseTrade = async (tradeId) => {
     try {
       tradeId = parseInt(tradeId);
-      const confirmed = await swal({
+      const confirmed = await Swal.fire({
         title: 'Confirm',
         text: 'Are you sure you want to close this trade?',
         icon: 'warning',
-        buttons: ['Cancel', 'Close Trade'],
+        background: '#131722',
+        showCancelButton: true,
+        confirmButtonText: 'Close Trade',
+        cancelButtonText: 'Cancel',
         dangerMode: true,
       });
-
-      if (confirmed) {
+  
+      if (confirmed.isConfirmed) {
         const response = await axios.post(`${BASE_URL}/user/trader/close-trade/${tradeId}`, null, {
           headers: {
             'Content-Type': 'application/json',
             'x-token': userToken,
           },
         });
-
+  
         if (response) {
           refetchData();
-          swal('Success', 'Trade closed successfully!', 'success');
+          Swal.fire({
+            title: 'Success',
+            text: 'Trade closed successfully!',
+            icon: 'success',
+            background: '#131722',
+            color: 'white',
+          });
           fetchDataAndDispatch && fetchDataAndDispatch();
         } else {
-          swal('Error', response.data.message || 'Failed to close the trade. Please try again later.', 'error');
+          Swal.fire({
+            title: 'Error',
+            text: response.data.message || 'Failed to close the trade. Please try again later.',
+            icon: 'error',
+            background: '#131722',
+            color: 'white',
+          });
         }
       }
     } catch (error) {
       console.error('Error closing trade:', error);
-      swal('Error', 'Failed to close the trade. Please try again later.', 'error');
+      Swal.fire({
+        title: 'Error',
+        text: 'Failed to close the trade. Please try again later.',
+        icon: 'error',
+        background: '#131722',
+        color: 'white',
+      });
     }
   };
 

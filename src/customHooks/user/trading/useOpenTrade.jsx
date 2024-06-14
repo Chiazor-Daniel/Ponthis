@@ -21,21 +21,17 @@ export const useOpenTrade = (fetchDataAndDispatch) => {
     const [openTradeMutation] = useOpenTradeMutation();
 
     const getRandomColor = () => {
-        const letters = '0123456789ABCDEF';
-        let color = '#';
-        for (let i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
+        const h = Math.floor(Math.random() * 360); // Hue: 0-360
+        const s = Math.floor(Math.random() * 60) + 40; // Saturation: 40-100%
+        const l = Math.floor(Math.random() * 40) + 30; // Lightness: 30-70%
+    
+        return `hsl(${h}, ${s}%, ${l}%)`;
     };
+    
 
     const handleClick = (pair) => {
         setTradePair(pair);
-        Swal.fire({
-            title: 'Asset Selected',
-            text: `You have selected ${pair}`,
-            icon: 'success'
-        });
+       
     };
 
     const handleTabClick = (tab) => {
@@ -61,8 +57,8 @@ export const useOpenTrade = (fetchDataAndDispatch) => {
 
     const transactionProcessing = () => {
         const loadingElement = ReactDOMServer.renderToString(
-            <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
-                <RingLoader color="#36d7b7" size={100} />
+            <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center", }}>
+                <RingLoader color="#36d7b7" size={200} />
                 <p>Processing Trade...</p>
             </div>
         );
@@ -84,6 +80,7 @@ export const useOpenTrade = (fetchDataAndDispatch) => {
             icon: 'question',
             showCancelButton: true,
             confirmButtonText: 'Confirm',
+            background: '#131722',
             cancelButtonText: 'Cancel',
         }).then((result) => {
             if (result.isConfirmed) {
@@ -107,12 +104,14 @@ export const useOpenTrade = (fetchDataAndDispatch) => {
                                     title: "Trade Opened!",
                                     text: "Trade opened successfully.",
                                     icon: "success",
+                                    background: '#131722',
                                 });
                             } else {
                                 Swal.fire({
                                     title: "Error!",
                                     text: "Insufficient Balance. Please deposit funds to your account.",
                                     icon: "error",
+                                    background: '#131722',
                                 });
                             }
                         }
@@ -124,6 +123,7 @@ export const useOpenTrade = (fetchDataAndDispatch) => {
                             title: "Error!",
                             text: "Insufficient Balance. Please deposit funds to your account.",
                             icon: "error",
+                            background: '#131722',
                         });
                     });
             }

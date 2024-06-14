@@ -25,6 +25,7 @@ const ToggleTrade = ({ autoTrader, handleAutoTrader }) => {
             icon: "info",
             showCancelButton: true,
             confirmButtonText: "Yes",
+            background: '#131722',
             cancelButtonText: "No",
             showLoaderOnConfirm: true, // Show loading spinner on confirm button
             preConfirm: () => {
@@ -51,6 +52,7 @@ const ToggleTrade = ({ autoTrader, handleAutoTrader }) => {
                     toast.success("🤖 Auto trader " + (newCanAutoTrade ? "activated" : "deactivated") + " successfully!", { autoClose: 1000 });
                     Swal.fire({
                         icon: 'success',
+                        background: '#131722',
                         title: 'Success',
                         text: "Auto trader " + (newCanAutoTrade ? "activated" : "deactivated") + " successfully!"
                     });
@@ -58,6 +60,7 @@ const ToggleTrade = ({ autoTrader, handleAutoTrader }) => {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
+                        background: '#131722',
                         text: 'Please try again later.',
                     });
                 }

@@ -151,8 +151,8 @@ function ProfitLossArea () {
 					options={state.options} 
 					series={state.series} 
 					type="area" 
-					height={130}  
-					width={400}
+					height={100}  
+					width={500}
 				/>
             </div>
         );

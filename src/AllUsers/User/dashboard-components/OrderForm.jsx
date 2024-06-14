@@ -15,10 +15,10 @@ const OrderForm = ({ tradePair, onPriceChange, onAmountChange, onTotalChange, on
         <>
             <form onSubmit={onSubmit} style={{ flex: 1, height: "100%" , display: "grid", gap: "20px", margin: "auto"}}>
                 <div className="sell-blance">
-                    <label className="form-label text-primary">{tradePair}</label>
-                    <div className="form-label blance"><span>BALANCE:</span><p>${main_balance}</p></div>
+                    <label className="form-label" style={{color: 'gray'}}>{tradePair}</label>
+                    <div className="form-label blance"><span style={{color: 'gray'}}>BALANCE:</span><p style={{color: 'white'}}>${main_balance}</p></div>
                     <div className="input-group">
-                        <input type="text" className="form-control" placeholder="0.00" onChange={onPriceChange} />
+                        <input type="text" className="form-control" placeholder="0.00" onChange={onPriceChange} style={{background: 'rgba(243, 243, 243, 0.04)', color: 'white'}}/>
                     </div>
                 </div>
 

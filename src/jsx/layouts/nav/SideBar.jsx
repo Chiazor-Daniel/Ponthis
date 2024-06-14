@@ -65,7 +65,8 @@ const SideBar = ({ userType, superAdmin }) => {
 
   return (
     <div
-      className={`deznav border-right ${iconHover} ${sidebarposition.value === "fixed" &&
+      style={{backgroundColor: 'rgba(243, 243, 243, 0.04)'}}
+      className={`deznav ${iconHover} ${sidebarposition.value === "fixed" &&
         sidebarLayout.value === "horizontal" &&
         headerposition.value === "static"
         ? hideOnScroll > 120

@@ -47,8 +47,8 @@ function Login(props) {
             <ToastContainer />
             <div className="browse-job login-style3">
                 <div className="bg-img-fix overflow-hidden" style={{ background: '#fff url(' + bg6 + ')', height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                    <div className="row col-lg-6 col-12 rounded bg-white">
-                        <div className="col-12">
+                    <div className="row col-lg-6 col-12 rounded">
+                        <div className="col-12" >
                             <div className="card-body">
                                 <div className="logo-header">
                                     <Link to={"#"} className="logo"><SetLogo /></Link>

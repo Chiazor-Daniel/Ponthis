@@ -4,9 +4,9 @@ import { useEffect } from 'react';
 export function useTheme() {
   const { setDemoTheme } = useContext(ThemeContext);
 
-  useEffect(() => {
-    setDemoTheme(7, 'ltr');
-  }, [setDemoTheme]);
+  // useEffect(() => {
+  //   setDemoTheme(7, 'ltr');
+  // }, [setDemoTheme]);
 
   return { setDemoTheme };
 }

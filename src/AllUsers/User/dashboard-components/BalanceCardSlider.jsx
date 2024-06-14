@@ -36,7 +36,7 @@ const BalanceCardSlider = ({ accountData }) => {
               <Swiper className="mySwiper"						
 				speed= {1500}
 				slidesPerView={isTablet ? (isMobile ? 0.5 : 1.5) : 3}
-				spaceBetween= {20}
+				spaceBetween= {1}
 				loop={false}
 				//autoplay= {{
 				   //delay: 1200,
@@ -57,17 +57,17 @@ const BalanceCardSlider = ({ accountData }) => {
 					  },
 					   1200: {
 						slidesPerView: 3,
-						spaceBetween: 30,
+						spaceBetween: 10,
 					  },
 					  1788: {
 						slidesPerView: 3,
-						spaceBetween: 30,
+						spaceBetween: 10,
 					  },
 				}}>
                 {slidesData.map((slide, index) => (
                     <SwiperSlide  key={index}>
-                        <div key={index} className="">
-                            <div className="card card-wiget">
+                        <div key={index} className="" style={{paddingLeft: '20px', paddingRight: '20px'}}>
+                            <div className="card-wiget" style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', borderRadius: '20px', height: '200px'}}>
                                 <div className="card-body">
                                     <div className="card-wiget-info">
                                         <h4 className="count-num">{slide.countNum}</h4>

@@ -693,8 +693,6 @@ progress {
     max-width: 1320px; } }
 
 .row {
-  --bs-gutter-x: 30px;
-  --bs-gutter-y: 0;
   display: flex;
   flex-wrap: wrap;
   margin-top: calc(var(--bs-gutter-y) * -1);
@@ -8636,14 +8634,14 @@ label {
     display: none; }
 
 .header {
-  height: 5rem;
+  /* height: 5rem; */
   z-index: 1;
   position: relative;
-  padding: 0rem;
+  padding: 10px;
+  align-items: center;
   background: var(--headerbg);
   z-index: 3;
-  padding-left: 18.563rem;
-  padding-right: 100px;
+  
   padding-top: 0rem;
   transition: all .2s ease; }
   @media only screen and (max-width: 100rem) {
@@ -11469,7 +11467,7 @@ html[dir="rtl"] [direction="rtl"][data-sidebar-style="compact"]:not([data-layout
   margin-left: 18.563rem;
   z-index: 0;
   transition: all .2s ease;
-  padding-right: 0.425rem; }
+  ; }
   @media only screen and (max-width: 87.5rem) {
     .content-body {
       margin-left: 17rem; } }
@@ -19840,7 +19838,7 @@ Fixing Order => Base + Typography >> General Layout + Grid >> Page Layout + Comp
   stroke: #3A2D60; }
 
 [data-theme-version="dark"] .previews-info-list:hover {
-  background-color: #15073A; }
+  background-color: black; }
 
 [data-theme-version="dark"] .sell-element .sell-blance .form-control,
 [data-theme-version="dark"] .limit-sell .nav-tabs,
@@ -28506,7 +28504,7 @@ table.dataTable thead .sorting_asc {
 
 .card-wiget {
   overflow: hidden;
-  height: 240px; }
+  height: 200px; }
   .card-wiget p {
     font-size: 18px; }
     @media only screen and (max-width: 111.875rem) {
@@ -28592,7 +28590,7 @@ table.dataTable thead .sorting_asc {
     .limit-sell {
       padding: 0 20px; } }
   .limit-sell .nav-tabs {
-    background: var(--rgba-primary-1);
+    background: 'rgba(243, 243, 243, 0.04)';
     justify-content: space-around;
     border-radius: 0.625rem;
     border-bottom: 0;
@@ -28746,9 +28744,9 @@ table.dataTable thead .sorting_asc {
     color: #EB62D0;
     font-size: 12px; }
   .previews-info-list:hover {
-    background-color: var(--rgba-primary-1); }
+    background-color: black; }
     [data-theme-version="dark"] .previews-info-list:hover {
-      background-color: var(--primary);
+      background-color: black;
       color: #fff; }
 
 .bg-pink {
