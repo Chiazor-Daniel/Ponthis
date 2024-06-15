@@ -382,6 +382,7 @@ const useWithdraw = (fetchDataAndDispatch) => {
         handleButtonClick,
         onCryptoWithdraw,
         handleInputChange,
+        userInfo,
         handleWalletAddressCopy,
         handleCardPayment,
         handleBankChange,

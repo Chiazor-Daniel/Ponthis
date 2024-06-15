@@ -10,11 +10,14 @@ import { FaEyeSlash } from "react-icons/fa";
 import { BASE_URL } from '../../api';
 import SetLogo from '../../setLogo';
 import bg6 from '../../assets/images/background/bg6.jpg';
+import finno from '../../assets/finno.png';
 import useAuth from '../../customHooks/user/auth/useAuth';
-
+// import finno from "../../assets/finno.png"
+import { useResponsive } from '../../redux-contexts/context/responsive';
 function Login(props) {
     const { loginUser, load } = useAuth(); // Use the custom hook
     const navigate = useNavigate();
+    const {isMobile} = useResponsive()
     const [email, setEmail] = useState('');
     let errorsObj = { email: '', password: '' };
     const [errors, setErrors] = useState(errorsObj);
@@ -46,13 +49,24 @@ function Login(props) {
         <div className="page-wraper">
             <ToastContainer />
             <div className="browse-job login-style3 row">
-                <div className="bg-img-fix overflow-hidden col-4" style={{ background: '#fff url(' + bg6 + ')', height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                </div>
-                <div className="col-8 row" style={{ backgroundColor: '', border: 'none' }}>
-                    <div className="card-body col-6">
-                        <div className="logo-header">
-                            <Link to={"#"} className="logo"><SetLogo /></Link>
-                        </div>
+                {
+                    !isMobile && (
+                    <div className="bg-img-fix overflow-hidden col-md-5 col-0" style={{ background: '#fff url(' + bg6 + ')', height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
+                        <img src={finno}  style={{margin: 'auto', width: '500px'}}/>
+                    </div>
+                    )
+                }
+                <div className="col-md-7 row" style={{ backgroundColor: '#131722', border: 'none', display: 'flex', alignItems: 'center' }}>
+                    <div className="card-body">
+                        {
+                            isMobile && (
+                            <div className="logo-header">
+                                <Link to={"#"} style={{width: '100%', display: 'flex', justifyContent: 'center'}}>
+                                    <img src={finno} style={{width: '400px', height: '300px', margin: 'auto'}}/>
+                                </Link>
+                            </div>
+                            )
+                        }
                         <div className="nav nav-tabs border-bottom-0" >
                             <div className="tab-content w-100" id="nav-tabContent">
                                 <div className="tab-pane fade active show" id="nav-personal">
@@ -67,13 +81,13 @@ function Login(props) {
                                         </div>
                                     )}
                                     <form className=" dz-form pb-3" onSubmit={onLogin}>
-                                        <h3 className="form-title m-t0">Personal Information</h3>
+                                        <h1 className="form-title m-t0">Welcome !</h1>
                                         <div className="dz-separator-outer m-b5">
                                             <div className="dz-separator bg-primary style-liner"></div>
                                         </div>
                                         <p>Enter your e-mail address and your password. </p>
                                         <div className="form-group mb-3">
-                                            <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} placeholder='Enter Email Address' />
+                                            <input type="email" style={{background: 'transparent', border: '1px solid rgba(243, 243, 243, 0.04)'}} className="form-control " value={email} onChange={(e) => setEmail(e.target.value)} placeholder='Enter Email Address' />
                                             {errors.email && <div className="text-danger fs-12">{errors.email}</div>}
                                         </div>
                                         <div className="form-group mb-3" style={{ position: "relative" }}>
@@ -84,7 +98,7 @@ function Login(props) {
                                                     <IoEyeSharp style={{ position: "absolute", right: 8, top: 10, cursor: "pointer" }} size={30} onClick={() => setShowPass(true)} />
                                                 )
                                             }
-                                            <input type={showPass ? "text" : "password"} className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Enter Password' />
+                                            <input style={{background: 'transparent', border: '1px solid rgba(243, 243, 243, 0.04)'}} type={showPass ? "text" : "password"} className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Enter Password' />
                                             {errors.password && <div className="text-danger fs-12">{errors.password}</div>}
                                         </div>
                                         <div className="form-group text-left mb-5">

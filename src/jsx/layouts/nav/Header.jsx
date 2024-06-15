@@ -52,7 +52,7 @@ const Header = ({ onNote, onThemeChange, userType, superAdmin, asAdmin, setAsAdm
 							<div className="collapse navbar-collapse justify-content-between">
 								<div className="" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '', width: '100%' }}>
 									<div>
-										<p style={{ margin: 'auto', fontSize: '1.4rem', color: 'white' }}>Fintexch Global</p>
+										<p style={{ margin: 'auto', fontSize: '1.4rem', color: 'white' }}>Finnovent Capitals</p>
 									</div>
 									{
 										!isMobile && (
@@ -122,7 +122,7 @@ const Header = ({ onNote, onThemeChange, userType, superAdmin, asAdmin, setAsAdm
 						</nav>
 						{
 							asAdmin && (
-								<Button style={{ width: "350px", marginRight: "20px", display: "flex", alignItems: "center", gap: "20px" }} onClick={() => {
+								<Button style={{ width: "350px", marginRight: "20px", display: "flex", alignItems: "center", gap: "20px", marginLeft: '20px' }} onClick={() => {
 									setAsAdmin(false);
 									navigate("/admin/admin-dashboard");
 									setUserType("admin");

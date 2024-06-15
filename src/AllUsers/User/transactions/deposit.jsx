@@ -128,7 +128,7 @@ const Deposit = ({ fetchDataAndDispatch }) => {
                     )
                 ) : null}
                 {activeButton === 0 ? (
-                    !bankDetails?.length > 0 ? (
+                    !bankDetails?.length > 0 && Array.isArray(bankDetails) ? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                             <div className='row'>
                                 {bankDetails.map((detail, index) => (

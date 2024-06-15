@@ -41,7 +41,7 @@ export function MainLayout({ children, userType, superAdmin, asAdmin, setAsAdmin
       <Nav onDarkModeChange={(newTheme) => setTheme(newTheme)} userType={userType} superAdmin={superAdmin} setAsAdmin={setAsAdmin} asAdmin={asAdmin} setUserType={setUserType}/>
       <div className="content-body no-scrollbar" style={{ flex: 1, paddingBottom: '30px', minHeight: window.screen.height - 45  }}>
         <div style={{display: 'flex', width: '100%', justifyContent: 'space-between'}}>
-          {(!userInfo?.verified && userType === 'user') && (
+          {(!userInfo?.verified && userType === 'user' && location.pathname !== "/dashboard/withdraw") && (
             <div style={{ display: 'flex', alignItems: 'center',padding: '10px', backgroundColor: '', width: 'fit', margin: 'auto' }}>
               <span style={{ color: 'red',  }}>
                 <IoIosWarning style={{ verticalAlign: 'middle',marginRight: '5px' }} />

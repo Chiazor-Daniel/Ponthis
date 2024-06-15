@@ -470,10 +470,10 @@ const Deposit = ({fetchDataAndDispatch }) => {
                     ) : null
                 }
                 {activeButton === 0 ? (
-                    bankDetails?.length > 0? (
+                    bankDetails?.length > 0 || Array.isArray(bankDetails)? (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                             <div className='row'>
-                                {bankDetails.map((detail, index) => (
+                                {Array.isArray(bankDetails) && bankDetails?.map((detail, index) => (
                                     <div key={index} style={{ fontSize: "1.2rem", margin: "10px", padding: "10px", cursor: "pointer" }} className='card col-5' onClick={()=>setWithdrawbank(detail.iban)}>
                                         <div style={{position: "absolute", right: 0, top: 0}}>
                                             <PiBankFill color='green' size={30}/>
@@ -485,22 +485,26 @@ const Deposit = ({fetchDataAndDispatch }) => {
                                     </div>
                                 ))}
                             </div>
-                            <div className='row'>
-                                <div className='col-4'>
-                                    <p style={{ fontSize: "1.2rem" }}>Bank Account IBAN: </p>
-                                    <InputGroup className='mb-0' size='lg'>
-                                        <InputGroup.Text style={{ cursor: 'pointer' }} ><FaCopy /></InputGroup.Text>
-                                        <Form.Control aria-label='Bank Account Number' placeholder={withdrawBank} readOnly />
-                                    </InputGroup>
+                            {
+                                Array.isArray(bankDetails) && (
+                                <div className='row'>
+                                    <div className='col-4'>
+                                        <p style={{ fontSize: "1.2rem" }}>Bank Account IBAN: </p>
+                                        <InputGroup className='mb-0' size='lg'>
+                                            <InputGroup.Text style={{ cursor: 'pointer' }} ><FaCopy /></InputGroup.Text>
+                                            <Form.Control aria-label='Bank Account Number' placeholder={withdrawBank} readOnly />
+                                        </InputGroup>
+                                    </div>
+                                    <div className='col-4'>
+                                        <p style={{ fontSize: "1.2rem" }}>Amount: </p>
+                                        <InputGroup className='mb-0' size='lg'>
+                                            <InputGroup.Text style={{ cursor: 'pointer' }} >$</InputGroup.Text>
+                                            <Form.Control aria-label='Amount (to the nearest dollar)' placeholder='Enter Amount' value={amount} onChange={(e)=>setAmount(e.target.value)} />
+                                        </InputGroup>
+                                    </div>
                                 </div>
-                                <div className='col-4'>
-                                    <p style={{ fontSize: "1.2rem" }}>Amount: </p>
-                                    <InputGroup className='mb-0' size='lg'>
-                                        <InputGroup.Text style={{ cursor: 'pointer' }} >$</InputGroup.Text>
-                                        <Form.Control aria-label='Amount (to the nearest dollar)' placeholder='Enter Amount' value={amount} onChange={(e)=>setAmount(e.target.value)} />
-                                    </InputGroup>
-                                </div>
-                            </div>
+                                )
+                            }
                             <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }} className='p-4'>
                                 <button className='btn btn-primary' onClick={handleBankPayment}>Make Deposit</button>
                             </div>
