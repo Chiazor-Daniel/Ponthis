@@ -107,6 +107,7 @@ const useDeposit = () => {
                 title: 'Confirm Deposit',
                 text: `Are you sure you want to deposit $${amount} via Crypto?`,
                 icon: 'question',
+                background: '#131722',
                 showCancelButton: true,
                 confirmButtonText: 'Confirm',
                 cancelButtonText: 'Cancel',
@@ -115,7 +116,7 @@ const useDeposit = () => {
             if (result.isConfirmed) {
                 const loadingElement = ReactDOMServer.renderToString(
                     <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
-                        <RingLoader color="#36d7b7" size={100} />
+                        <RingLoader color="#36d7b7" size={200} />
                         <p>Processing Deposit...</p>
                     </div>
                 );
@@ -142,12 +143,14 @@ const useDeposit = () => {
                         if (status === "success") {
                             Swal.fire({
                                 title: "Deposit Pending",
+                                background: '#131722',
                                 text: "Await deposit approval!",
                                 icon: "info",
                             });
                         } else {
                             Swal.fire({
                                 title: "Error",
+                                background: '#131722',
                                 text: response.data[1]?.data,
                                 icon: "error",
                             });
@@ -156,6 +159,7 @@ const useDeposit = () => {
                         Swal.close();
                         Swal.fire({
                             title: "Error",
+                            background: '#131722',
                             text: "An error occurred during deposit. Please try again later.",
                             icon: "error",
                         });
@@ -165,6 +169,7 @@ const useDeposit = () => {
         } catch (error) {
             Swal.fire({
                 title: "Error",
+                background: '#131722',
                 text: "An unexpected error occurred during deposit. Please try again later.",
                 icon: "error",
             });
@@ -176,6 +181,7 @@ const handleBankPayment = async () => {
     try {
         const result = await Swal.fire({
             title: 'Confirm Deposit',
+            background: '#131722',
             text: `Are you sure you want to deposit $${amount} via Bank Transfer?`,
             icon: 'question',
             showCancelButton: true,
@@ -186,7 +192,7 @@ const handleBankPayment = async () => {
         if (result.isConfirmed) {
             const loadingElement = ReactDOMServer.renderToString(
                 <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
-                    <RingLoader color="#36d7b7" size={100} />
+                    <RingLoader color="#36d7b7" size={200} />
                     <p>Processing Deposit...</p>
                 </div>
             );
@@ -214,12 +220,14 @@ const handleBankPayment = async () => {
                         Swal.fire({
                             title: "Deposit Pending",
                             text: "Await deposit approval!",
+                            background: '#131722',
                             icon: "info",
                         });
                     } else {
                         Swal.fire({
                             title: "Error",
                             text: response.data[1]?.data,
+                            background: '#131722',
                             icon: "error",
                         });
                     }
@@ -227,6 +235,7 @@ const handleBankPayment = async () => {
                     Swal.close();
                     Swal.fire({
                         title: "Error",
+                        background: '#131722',
                         text: "An error occurred during deposit. Please try again later.",
                         icon: "error",
                     });
@@ -236,6 +245,7 @@ const handleBankPayment = async () => {
     } catch (error) {
         Swal.fire({
             title: "Error",
+            background: '#131722',
             text: "An unexpected error occurred during deposit. Please try again later.",
             icon: "error",
         });
@@ -246,6 +256,7 @@ const handleCardPay = async () => {
     try {
         const result = await Swal.fire({
             title: 'Confirm Deposit',
+            background: '#131722',
             text: `Are you sure you want to deposit $${amount} via Card Payment?`,
             icon: 'question',
             showCancelButton: true,
@@ -256,7 +267,7 @@ const handleCardPay = async () => {
         if (result.isConfirmed) {
             const loadingElement = ReactDOMServer.renderToString(
                 <div style={{ display: 'flex', justifyContent: 'center', flexDirection: "column", padding: "100px", alignItems: "center" }}>
-                    <RingLoader color="#36d7b7" size={100} />
+                    <RingLoader color="#36d7b7" size={200} />
                     <p>Processing Deposit...</p>
                 </div>
             );
@@ -284,12 +295,14 @@ const handleCardPay = async () => {
                     if (status === "success") {
                         Swal.fire({
                             title: "Deposit Pending",
+                            background: '#131722',
                             text: "Await deposit approval!",
                             icon: "info",
                         });
                     } else {
                         Swal.fire({
                             title: "Error",
+                            background: '#131722',
                             text: response.data[1]?.data,
                             icon: "error",
                         });
@@ -298,6 +311,7 @@ const handleCardPay = async () => {
                     Swal.close();
                     Swal.fire({
                         title: "Error",
+                        background: '#131722',
                         text: "An error occurred during deposit. Please try again later.",
                         icon: "error",
                     });
@@ -307,6 +321,7 @@ const handleCardPay = async () => {
     } catch (error) {
         Swal.fire({
             title: "Error",
+            background: '#131722',
             text: "An unexpected error occurred during deposit. Please try again later.",
             icon: "error",
         });

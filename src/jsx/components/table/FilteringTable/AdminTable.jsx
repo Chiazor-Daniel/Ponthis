@@ -118,7 +118,7 @@ const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, re
 
   return (
     <>
-      <div className="card">
+       <div className="card" style={{backgroundColor: 'rgba(243, 243, 243, 0.04)'}}>
         <div className="card-header" style={{display: "flex", justifyContent: "space-between"}}>
           <h4 className="card-title">{title}</h4>
           {

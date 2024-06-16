@@ -37,7 +37,20 @@ export const profileApi = createApi({
         params: { old_password: oldPassword ,new_password: newPassword },
       }),
     }),
+    verfiyID: builder.mutation({
+      query: ({ token , images}) => {
+        console.log(images)
+        return{
+        url: '/user/verify-documentupload-verification-document', 
+        method: 'POST',
+        body: images, 
+        headers: {
+          // 'Content-Type': 'multipart/form-data',
+          "x-token": token
+        },
+      }}
+    })
   }),
 });
 
-export const { useGetProfileQuery, useUpdateProfileMutation, useChangePasswordMutation } = profileApi;
+export const { useGetProfileQuery, useUpdateProfileMutation, useChangePasswordMutation, useVerfiyIDMutation } = profileApi;

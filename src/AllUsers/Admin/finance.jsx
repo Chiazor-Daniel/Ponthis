@@ -253,7 +253,7 @@ const Finance = ({ paymentDetails, token, refetch }) => {
         </Button> */}
       </div>
       <div className='mt-4'>
-        <Card className='shadow'>
+        <Card className='shadow' style={{backgroundColor: 'rgba(243, 243, 243, 0.04)'}}>
           <Card.Body>
             {selectedButton === 'Bank' && bankDetails.length > 0 ? (
                <ul className='list-unstyled' style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>

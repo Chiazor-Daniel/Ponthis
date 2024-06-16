@@ -227,7 +227,7 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
   );
 
   return (
-    <>
+    <div style={{padding: '20px'}}>
        <CreateAdminModal show={showCreateAdminModal} onHide={() => setShowCreateAdminModal(false)} onCreateAdmin={handleCreateAdmin} />
     <div style={{display: "flex", justifyContent:"space-between", alignItems: "center", padding: "10px"}}>
       {
@@ -247,7 +247,7 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
     {!isLoading && paymentDetails && superAdmin && data && <Finance paymentDetails={paymentDetails?.data} token={adminToken} refetch={handleRefetch} />}
     {isUsersLoading && <div>Loading users...</div>}
     {isPaymentLoading && <div>Loading payment details...</div>}
-  </>
+  </div>
   
   );
 };

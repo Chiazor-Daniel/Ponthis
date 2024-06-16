@@ -23,6 +23,12 @@ import { Tab, Nav } from 'react-bootstrap';
 import { useCreateCustomProfitMutation } from '../../redux-contexts/redux/services/admin';
 import FutureTable from '../../jsx/components/Trading/futuretable';
 import { FaLongArrowAltRight } from "react-icons/fa";
+import { useViewUserDocumentQuery } from '../../redux-contexts/redux/services/admin';
+import { useGetUserDocumentsQuery } from '../../redux-contexts/redux/services/admin';
+import { useVerifyStatusMutation } from '../../redux-contexts/redux/services/admin';
+import { FaCircleCheck } from "react-icons/fa6";
+
+import { Modal } from 'react-bootstrap';
 import { useUpdateAccountTypeMutation } from '../../redux-contexts/redux/services/admin';
 const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
     const { id } = useParams();
@@ -36,7 +42,10 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
     const [resetUserPassword, { isLoading: resetLoading, error: reseError }] = useResetUserPasswordMutation()
     const [loginUser, { isLoading: loginLoading, error: loginError }] = useLoginUserMutation()
     const [shouldRefetch, setShouldRefetch] = useState(false);
+    const { data: documents, isLoading: documentLoading } = useGetUserDocumentsQuery({ token: adminToken, user_id: id })
     const [fills, setFills] = useState("all")
+    const [verifyStatus] = useVerifyStatusMutation()
+
     const [userAccountType, setUserAccountType] = useState('')
     const handleSubmit = async (formData) => {
         Swal.fire({
@@ -235,6 +244,127 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
 
     const transactionDataAvailable = userData[2]?.transaction_activities;
 
+    const handleStatus = async (stats) => {
+        Swal.fire({
+            title: `Update Status to ${stats}`,
+            icon: 'question',
+            showCancelButton: true,
+            background: '#131722',
+            confirmButtonText: 'Confirm',
+            cancelButtonText: 'Cancel',
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                const res = await verifyStatus({
+                    token: adminToken,
+                    user_id: id,
+                    status: stats
+                })
+                console.log(res)
+                if (res?.data.status === 'success') {
+                    refetch()
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Updated Succefully'
+                    })
+                }
+            }
+        })
+    }
+
+    const DocumentDetails = ({ data }) => {
+        const [show, setShow] = useState(false);
+        const [fileId, setFileId] = useState(null);
+        const [myDoc, setMyDoc] = useState(null);
+        const [docLoading, setDocLoading] = useState(false);
+
+        const handleClose = () => setShow(false);
+        const handleShow = () => setShow(true);
+
+        function base64ToArrayBuffer(base64) {
+            var binaryString = window.atob(base64);
+            var len = binaryString.length;
+            var bytes = new Uint8Array(len);
+            for (var i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        function arrayBufferToBlob(buffer, type) {
+            return new Blob([buffer], { type: type });
+        }
+
+        function createObjectURL(blob) {
+            return URL.createObjectURL(blob);
+        }
+
+        const viewDocument = async () => {
+            setFileId(data.id);
+            setDocLoading(true);
+            try {
+                const res = await axios.get(
+                    `https://recover.finnetexh.tech/admin/user/view-verification-document/2/?file_id=${data.id}`,
+                    {
+                        headers: {
+                            "x-token": adminToken
+                        },
+                        responseType: 'blob'
+                    }
+                );
+                console.log(res.data)
+                const blob = res.data; // Blob received directly
+                const url = URL.createObjectURL(blob); // Creat
+
+                setMyDoc(url);
+            } catch (err) {
+                console.log(err);
+            }
+            setDocLoading(false);
+            handleShow();
+        };
+
+        return (
+            <>
+                <div style={{ padding: '20px', backgroundColor: 'rgba(243, 243, 243, 0.04)', margin: '10px', borderRadius: '5px' }}>
+                    <div>
+                        <strong>Front Document Path:</strong> {data.front_document_path}
+                    </div>
+                    <div>
+                        <strong>Back Document Path:</strong> {data.back_document_path || 'Not Available'}
+                    </div>
+                    <div>
+                        <strong>Created At:</strong> {new Date(data.created_at).toLocaleString()}
+                    </div>
+                    <Button className='mt-3' onClick={viewDocument}>
+                        View Document
+                    </Button>
+                </div>
+
+                <Modal show={show} onHide={handleClose} centered size='xl'>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Document Details</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        {
+                            docLoading ? (
+                                <p>Loading Document</p>
+                            ) : (
+                                myDoc ? (
+                                    <img src={myDoc} alt="Document" style={{ width: '100%', height: '500px' }} />
+                                ) : <p>Not Found</p>
+                            )
+                        }
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={handleClose}>
+                            Close
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            </>
+        );
+    }
+    console.log(userData[0].user.id_verified)
     return (
         <>
             <ToastContainer />
@@ -243,7 +373,7 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                     <h1>User Details</h1>
                 </div>
                 <div className='row' style={{ gap: "50px", display: "flex", justifyContent: "center" }}>
-                    <div className='card col-5' style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "20px", fontSize: "1.3rem" }}>
+                    <div className='card col-5' style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "20px", fontSize: "1.3rem", backgroundColor: 'rgba(243, 243, 243, 0.04)' }}>
                         <Dropdown style={{ position: "absolute", right: 20 }}>
                             <Dropdown.Toggle style={{ backgroundColor: "transparent", border: "none", fontSize: "1.5rem", color: "#6c757d", padding: "0" }}>
                                 <BiSolidBoltCircle />
@@ -257,10 +387,23 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                         </Dropdown>
                         <div className="d-flex align-items-center mb-3" style={{ position: "relative", flexDirection: 'column' }}>
                             <Avatar name={`${user.first_name} ${user.last_name}`} size="150" round />
-                            <div style={{ position: "absolute", top: "20px", right: "90px", width: "20px", height: "20px", borderRadius: "50%", backgroundColor: user.is_active ? "green" : "gray" }}></div>
+                            <Dropdown
+                                style={{ position: "absolute", top: "0px", right: "0px" }}
+                            >
+                                <Dropdown.Toggle style={{ backgroundColor: "transparent", border: "none", fontSize: "1.5rem", color: "#6c757d", padding: "0" }}>
+                                    <FaCircleCheck color={userData[0].user.id_verified === "verified" ? 'green' : "gray"} size={35} />
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    <Dropdown.Item eventKey="verifying" onClick={() => handleStatus('verifying')}>Verifying</Dropdown.Item>
+                                    <Dropdown.Item eventKey="verified" onClick={() => handleStatus('verified')}>Verified</Dropdown.Item>
+                                    <Dropdown.Item eventKey="unverified" onClick={() => handleStatus('unverified')}>Unverified</Dropdown.Item>
+                                </Dropdown.Menu>
+                            </Dropdown>
+                            <div style={{ position: "relative", width: "20px", height: "20px" }}>
+                            </div>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
                                 <p>User Account Type: <span style={{ fontWeight: 'bold', fontSize: '1rem', textTransform: 'uppercase' }}>{userData[3]?.accounts[0].account_type}</span> <FaLongArrowAltRight style={{ margin: 'auto' }} /></p>
-                                <div style={{ display: 'grid', alignItems: 'center', gap: '10px' }}>
+                                <div style={{ display: 'grid', alignItems: 'center', gap: '10px', }}>
                                     <Form.Select size='sm' onChange={(e) => setUserAccountType(e.target.value)}>
                                         <option value='basic'>BASIC</option>
                                         <option value='premium'>PREMIUM</option>
@@ -285,7 +428,7 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                                                         account_types: userAccountType
                                                     });
                                                     console.log(res);
-                                                    if(res.data.status === 'success'){
+                                                    if (res.data.status === 'success') {
                                                         refetch()
                                                         Swal.fire({
                                                             icon: 'success',
@@ -326,7 +469,7 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                             <h1>Edit User Details</h1>
                             <UserForm user={user} onSubmit={handleSubmit} userResetPassword={userResetPassword} />
                         </div>
-                        <div className='card' style={{ maxHeight: "400px", padding: '20px' }}>
+                        <div className='card' style={{ maxHeight: "400px", padding: '20px', backgroundColor: 'rgba(243, 243, 243, 0.04)' }}>
                             <h3>User Account</h3>
                             <p style={{ fontSize: '2rem' }}>Main Balance : $<span style={{ fontWeight: 'bold' }}>{userData[3]?.accounts[0].main_balance}</span></p>
                             <p style={{ fontSize: '1.5rem' }}>Referral Balance : $<span style={{ fontWeight: 'bold' }}>{userData[3]?.accounts[0].referral_balance}</span></p>
@@ -336,10 +479,26 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                     </div>
                 </div>
                 <div>
+                    <h1 style={{ marginLeft: '50px' }}>User Documents</h1>
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(3, 1fr)',
+                        gap: '20px',
+                        paddingLeft: '50px',
+                        alignItems: 'center',
+                        backgroundColor: ''
+                    }}>
+                        {
+                            documents?.message.map((doc, index) => <DocumentDetails key={index} data={doc} />)
+                        }
+                    </div>
+
+                </div>
+                <div style={{ padding: '20px' }}>
                     {userData[2]?.transaction_activities && (
                         <FilteringTable user="admin" data={userData[2].transaction_activities} userId={id} refetchUser={reUser} superAdmin={superAdmin} />
                     )}
-                    <div className="card" style={{ padding: "20px" }}>
+                    <div className="card" style={{ padding: "20px", backgroundColor: 'rgba(243, 243, 243, 0.04)' }}>
                         <h4>User trading activities</h4>
                         <Tab.Container defaultActiveKey="All">
 

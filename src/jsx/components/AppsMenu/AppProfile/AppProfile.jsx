@@ -9,11 +9,18 @@ import Spinner from 'react-bootstrap/Spinner';
 import { toast, ToastContainer } from "react-toastify";
 import { FaMedal, FaEdit } from "react-icons/fa";
 import Avatar from 'react-avatar';
+import Swal from 'sweetalert2';
+import ReactDOMServer from 'react-dom/server';
+import { BASE_URL } from "../../../../api";
+import { useVerfiyIDMutation } from "../../../../redux-contexts/redux/services/profile";
+import RingLoader from 'react-spinners/RingLoader';
+import axios from "axios";
 
-const AppProfile = ({ userType }) => {
+const AppProfile = ({ userType, fetchDataAndDispatch }) => {
     const { userInfo, userToken } = useSelector(state => state.auth);
     const { adminInfo, adminToken } = useSelector(state => state.adminAuth);
     const { account_type } = useSelector(state => state.userAccount);
+    const [verifyID] = useVerfiyIDMutation()
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [data, setData] = useState(false);
@@ -95,14 +102,120 @@ const AppProfile = ({ userType }) => {
         if (file) {
             setFile(file);
             setPreview(URL.createObjectURL(file));
-
+    
             const reader = new FileReader();
             reader.onloadend = () => {
-                setBinary(reader.result);
+                const base64String = reader.result.split(',')[1]; // Strip the prefix
+                setBinary(base64String);
             };
-            reader.readAsBinaryString(file);
+            reader.readAsDataURL(file);
         }
     };
+    
+    function base64ToArrayBuffer(base64) {
+        const binaryString = window.atob(base64);
+        const len = binaryString.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+        return bytes.buffer;
+    }
+    
+    const handleDocument = async () => {
+        try {
+            const frontImageBinary2 = base64ToArrayBuffer(frontImageBinary);
+            const backImageBinary2 = base64ToArrayBuffer(backImageBinary);
+            fetchDataAndDispatch()
+            const result = await Swal.fire({
+                title: 'Confirm Upload',
+                text: 'Upload These documents for verification',
+                icon: 'question',
+                background: '#131722',
+                showCancelButton: true,
+                confirmButtonText: 'Confirm',
+                cancelButtonText: 'Cancel',
+            });
+    
+            if (result.isConfirmed) {
+                const loadingElement = ReactDOMServer.renderToString(
+                    <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', padding: '100px', alignItems: 'center' }}>
+                        <RingLoader color="#36d7b7" size={200} />
+                        <p>Uploading Document...</p>
+                    </div>
+                );
+    
+                Swal.fire({
+                    html: loadingElement,
+                    showConfirmButton: false,
+                    background: '#131722',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                });
+    
+                setTimeout(async () => {
+                    const formData = new FormData();
+                    formData.append('front', new Blob([frontImageBinary2], { type: 'application/octet-stream' }));
+                    formData.append('back', new Blob([backImageBinary2], { type: 'application/octet-stream' }));
+    
+                    try {
+                        const response = await axios.post(`${BASE_URL}/user/verify-documentupload-verification-document`, formData, {
+                            headers: {
+                                'x-token': userToken,
+                                'Content-Type': 'multipart/form-data',
+                            },
+                        });
+    
+                        Swal.close();
+                        console.log(response);
+    
+                        const status = response.data?.status;
+                        if (status === 'success') {
+                            setFrontImagePreview(null)
+                            setBackImagePreview(null)
+                            fetchDataAndDispatch()
+                            Swal.fire({
+                                title: 'Documents uploaded successfully',
+                                background: '#131722',
+                                text: 'Await Approval',
+                                icon: 'info',
+                            });
+                        } else {
+                            setFrontImagePreview(null)
+                            setBackImagePreview(null)
+                            fetchDataAndDispatch()
+                            Swal.fire({
+                                title: 'Ooops...',
+                                background: '#131722',
+                                text: response.data?.message,
+                                icon: 'error',
+                            });
+                        }
+                    } catch (error) {
+                        Swal.close();
+                        fetchDataAndDispatch()
+                        Swal.fire({
+                            title: 'Error',
+                            background: '#131722',
+                            text: 'An error occurred. Please try again later.',
+                            icon: 'error',
+                        });
+                    }
+                }, 3000);
+            }
+        } catch (error) {
+            fetchDataAndDispatch()
+            Swal.fire({
+                title: 'Error',
+                background: '#131722',
+                text: 'An unexpected error occurred. Please try again later.',
+                icon: 'error',
+            });
+        }
+    };
+    
+    
+    
 
     return (
         <div>
@@ -141,9 +254,13 @@ const AppProfile = ({ userType }) => {
                                                     <Nav.Item as='li' className="nav-item">
                                                         <Nav.Link eventKey='password'>Change Password</Nav.Link>
                                                     </Nav.Item>
-                                                    <Nav.Item as='li' className="nav-item">
-                                                        <Nav.Link eventKey='verification'>Account Verification</Nav.Link>
-                                                    </Nav.Item>
+                                                    {
+                                                        userType  == 'user' && (
+                                                        <Nav.Item as='li' className="nav-item">
+                                                            <Nav.Link eventKey='verification'>Account Verification</Nav.Link>
+                                                        </Nav.Item>
+                                                        )
+                                                    }
                                                 </Nav>
                                                 <Tab.Content>
                                                     <Tab.Pane eventKey='Setting'>
@@ -214,60 +331,66 @@ const AppProfile = ({ userType }) => {
                                                         </div>
                                                     </Tab.Pane>
                                                     <Tab.Pane eventKey='verification'>
-                                                        <div className="pt-3">
-                                                            <div className="settings-form">
-                                                                <Tab.Container defaultActiveKey='frontImage'>
-                                                                    <Nav as='ul' className="nav justify-content-center pt-3">
-                                                                        <Nav.Item as='li' className="nav-item">
-                                                                            <Nav.Link eventKey='frontImage'>Upload Front Only</Nav.Link>
-                                                                        </Nav.Item>
-                                                                        <Nav.Item as='li' className="nav-item">
-                                                                            <Nav.Link eventKey='bothImages'>Upload Front & Back</Nav.Link>
-                                                                        </Nav.Item>
-                                                                    </Nav>
+                                                        {
+                                                            userInfo.verified_id === "verifying" ? (<p style={{textAlign: 'center', fontSize: '1.5rem'}}>Awaiting Verification</p>
+                                                            ) : (
+                                                            <div className="pt-3">
+                                                                <div className="settings-form">
+                                                                    <Tab.Container defaultActiveKey='frontImage'>
+                                                                        <Nav as='ul' className="nav justify-content-center pt-3">
+                                                                            <Nav.Item as='li' className="nav-item">
+                                                                                <Nav.Link eventKey='frontImage'>Upload Front Only</Nav.Link>
+                                                                            </Nav.Item>
+                                                                            <Nav.Item as='li' className="nav-item">
+                                                                                <Nav.Link eventKey='bothImages'>Upload Front & Back</Nav.Link>
+                                                                            </Nav.Item>
+                                                                        </Nav>
 
-                                                                    <Tab.Content className="pt-3">
-                                                                        <p className="text-center">Provide verification documents either Driver's License, National Identity or Passport</p>
-                                                                        <Tab.Pane eventKey='frontImage'>
-                                                                        <div className="row d-flex" style={{gap: '10px', justifyContent: 'center'}}>
-                                                                                <div className="col-md-6">
-                                                                                    <label className="form-label">Front Image</label>
-                                                                                    <input type="file" className="form-control"  style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', border: 'none'}} accept="image/*" onChange={(e) => handleFileChange(e, setFrontImage, setFrontImagePreview, setFrontImageBinary)} />
-                                                                                    {frontImagePreview && (
-                                                                                        <div className="mt-2">
-                                                                                            <img src={frontImagePreview} alt="Front Image Preview" className="img-fluid" />
-                                                                                        </div>
-                                                                                    )}
-                                                                                </div>
-                                                                            </div>
-                                                                        </Tab.Pane>
-                                                                        <Tab.Pane eventKey='bothImages'>
+                                                                        <Tab.Content className="pt-3">
+                                                                            <p className="text-center">Provide verification documents either Driver's License, National Identity or Passport</p>
+                                                                            <Tab.Pane eventKey='frontImage'>
                                                                             <div className="row d-flex" style={{gap: '10px', justifyContent: 'center'}}>
-                                                                                <div className="col-md-5">
-                                                                                    <label className="form-label">Front Document</label>
-                                                                                    <input type="file" className="form-control"  style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', border: 'none'}} accept="image/*" onChange={(e) => handleFileChange(e, setFrontImage, setFrontImagePreview, setFrontImageBinary)} />
-                                                                                    {frontImagePreview && (
-                                                                                        <div className="mt-2">
-                                                                                            <img src={frontImagePreview} alt="Front Image Preview" className="img-fluid" />
-                                                                                        </div>
-                                                                                    )}
+                                                                                    <div className="col-md-6">
+                                                                                        <label className="form-label">Front Image</label>
+                                                                                        <input type="file" className="form-control"  style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', border: 'none'}} accept="image/*" onChange={(e) => handleFileChange(e, setFrontImage, setFrontImagePreview, setFrontImageBinary)} />
+                                                                                        {frontImagePreview && (
+                                                                                            <div className="mt-2">
+                                                                                                <img src={frontImagePreview} alt="Front Image Preview" className="img-fluid" />
+                                                                                            </div>
+                                                                                        )}
+                                                                                    </div>
                                                                                 </div>
-                                                                                <div className="col-md-5">
-                                                                                    <label className="form-label">Back Doucument</label>
-                                                                                    <input type="file" className="form-control"  style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', border: 'none'}} accept="image/*" onChange={(e) => handleFileChange(e, setBackImage, setBackImagePreview, setBackImageBinary)} />
-                                                                                    {backImagePreview && (
-                                                                                        <div className="mt-2">
-                                                                                            <img src={backImagePreview} alt="Back Image Preview" className="img-fluid" />
-                                                                                        </div>
-                                                                                    )}
+                                                                            </Tab.Pane>
+                                                                            <Tab.Pane eventKey='bothImages'>
+                                                                                <div className="row d-flex" style={{gap: '10px', justifyContent: 'center'}}>
+                                                                                    <div className="col-md-5">
+                                                                                        <label className="form-label">Front Document</label>
+                                                                                        <input type="file" className="form-control"  style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', border: 'none'}} accept="image/*" onChange={(e) => handleFileChange(e, setFrontImage, setFrontImagePreview, setFrontImageBinary)} />
+                                                                                        {frontImagePreview && (
+                                                                                            <div className="mt-2">
+                                                                                                <img src={frontImagePreview} alt="Front Image Preview" className="img-fluid" />
+                                                                                            </div>
+                                                                                        )}
+                                                                                    </div>
+                                                                                    <div className="col-md-5">
+                                                                                        <label className="form-label">Back Doucument</label>
+                                                                                        <input type="file" className="form-control"  style={{backgroundColor: 'rgba(243, 243, 243, 0.04)', border: 'none'}} accept="image/*" onChange={(e) => handleFileChange(e, setBackImage, setBackImagePreview, setBackImageBinary)} />
+                                                                                        {backImagePreview && (
+                                                                                            <div className="mt-2">
+                                                                                                <img src={backImagePreview} alt="Back Image Preview" className="img-fluid" />
+                                                                                            </div>
+                                                                                        )}
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                        </Tab.Pane>
-                                                                    </Tab.Content>
-                                                                </Tab.Container>
+                                                                            </Tab.Pane>
+                                                                        </Tab.Content>
+                                                                    </Tab.Container>
+                                                                </div>
+                                                                <Button className="mt-4" onClick={handleDocument}>Submit</Button>
                                                             </div>
-                                                            <Button className="mt-4">Submit</Button>
-                                                        </div>
+
+                                                            )
+                                                        }
                                                     </Tab.Pane>
                                                 </Tab.Content>
                                             </Tab.Container>
