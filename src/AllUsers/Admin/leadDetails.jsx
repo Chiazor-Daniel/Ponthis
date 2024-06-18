@@ -323,7 +323,7 @@ const ViewLead = ({superAdmin}) => {
       );
     if (!isLoading && data?.message)
         return (
-            <div>
+            <div style={{padding: '20px'}}>
                 <h1>Lead Detail</h1>
                 {
                     (superAdmin && allAdmins) && (

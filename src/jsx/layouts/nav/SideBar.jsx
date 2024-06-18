@@ -5,6 +5,7 @@ import { Link, NavLink } from "react-router-dom";
 import { AdminMenuList, AdminMenuList2, MenuList } from './Menu';
 import { useScrollPosition } from "@n8tb1t/use-scroll-position";
 import { ThemeContext } from "../../../redux-contexts/context/ThemeContext";
+import { useResponsive } from "../../../redux-contexts/context/responsive";
 import { Collapse } from "react-bootstrap";
 const reducer = (previousState, updatedState) => ({
   ...previousState,
@@ -17,6 +18,7 @@ const initialState = {
 }
 
 const SideBar = ({ userType, superAdmin }) => {
+  const {isMobile} = useResponsive();
   const {
     iconHover,
     sidebarposition,
@@ -65,7 +67,7 @@ const SideBar = ({ userType, superAdmin }) => {
 
   return (
     <div
-      style={{backgroundColor: 'rgba(243, 243, 243, 0.04)'}}
+      style={{backgroundColor: isMobile ? '#131722' : 'rgba(243, 243, 243, 0.04)'}}
       className={`deznav ${iconHover} ${sidebarposition.value === "fixed" &&
         sidebarLayout.value === "horizontal" &&
         headerposition.value === "static"
@@ -77,8 +79,7 @@ const SideBar = ({ userType, superAdmin }) => {
     >
       <PerfectScrollbar className="deznav-scroll">
         <ul className="metismenu" id="menu">
-          {
-            userType == "user" &&
+          {userType == "user" &&
             MenuList.map((data, index) => {
               let menuClass = data.classsChange;
               if (menuClass === "menu-title") {

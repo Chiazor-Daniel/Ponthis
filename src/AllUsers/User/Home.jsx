@@ -143,10 +143,8 @@ const Home = ({ theme, fetchDataAndDispatch }) => {
                                                         <FaEthereum size={30} style={{ color: '#627eea' }} /> {tradePair.slice(0,3) + "/" + tradePair.slice(3)}
                                                     </span>
                                                     <span style={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
-                                                        <span>
-                                                            Today
-                                                        </span>
-                                                        <span style={{ color: '#06D001', marginLeft: '10px' }}>+2.5%</span>
+                                                        
+                                                        {/* <span style={{ color: '#06D001', marginLeft: '10px' }}>+2.5%</span> */}
                                                     </span>
                                                 </div>
                                                 <div style={{ height: '100px' }}>

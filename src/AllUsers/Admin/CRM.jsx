@@ -17,14 +17,14 @@
     const handleCloseModal = () => setShowModal(false);
     const handleShowModal = () => setShowModal(true);
     const [formData, setFormData] = useState({
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john.doe@example.com',
-      phoneNumber: 1234567890,
-      status: 'Call back',
-      country: 'United States',
-      address: '123 Main Street',
-      dateOfBirth: '2002-05-04',
+      firstName: '',
+      lastName: '',
+      email: '',
+      phoneNumber: '',
+      status: '',
+      country: '',
+      address: '',
+      dateOfBirth: '',
       activated: true,
     });
     const handleChange = (e) => {
@@ -207,7 +207,10 @@
         if (isLoading) {
           return <Spinner animation="border" />;
     } else if (Array.isArray(allLeads?.message)) {
-      return <AdminTable columns={crmLeads} data={allLeads?.message} title={"All Leads"} leads={true} createNewLead={handleSubmit} refetch={refetch} superAdmin={superAdmin}/>;
+      return<div style={{padding: '20px'}}>
+        <AdminTable columns={crmLeads} data={allLeads?.message} title={"All Leads"} leads={true} createNewLead={handleSubmit} refetch={refetch} superAdmin={superAdmin}/>;
+
+      </div>
     } else {
       return <div>No data available {superAdmin && <Button onClick={handleShowModal}>Create Lead</Button>}
         <Modal show={showModal} onHide={handleCloseModal} size="lg">
