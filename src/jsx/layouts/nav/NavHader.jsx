@@ -33,9 +33,10 @@ const NavHader = () => {
     <div className="nav-header">
       <Link to="/dashboard" className="brand-logo">
         {
-          !isMobile && (
-            <SetLogo w={!toggle? 150: 100} h={120}/>
-          )
+            <div style={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+              <SetLogo w={!toggle? 60: 60} h={60}/>
+
+            </div>
         }
         {/* <img src={logotext1} className="brand-title" alt=""/>
 		<img src={logoColor} className="logo-color" alt="" />

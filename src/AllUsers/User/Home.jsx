@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Nav, Tab, Form, Button, Spinner } from 'react-bootstrap';
+import { Nav, Tab, Form, Button, Spinner, Dropdown, InputGroup } from 'react-bootstrap';
 import BalanceCardSlider from './dashboard-components/BalanceCardSlider';
 import OrderForm from './dashboard-components/OrderForm';
 import { LtcIcon, BtcIcon, XtzIcon, EthIcon } from './SvgIcon';
@@ -47,9 +47,15 @@ const Home = ({ theme, fetchDataAndDispatch }) => {
     const { userInfo, userToken } = useSelector(state=>state.auth)
     const [convertCrypto] = useConvertCryptoMutation()
     const [amount, setAmount] = useState('')
-    const [usd, setUsd] = useState('')
+    const [usd, setUsd] = useState(null)
     const {data: recoveryTransactions, isLoading} = useGetRecoveryTransactionsQuery(userToken)
     const {data, refetchAccount} = useTrade(userToken)
+    const [selectedCurrency, setSelectedCurrency] = useState('BTC');
+
+  const handleSelect = (eventKey) => {
+    setSelectedCurrency(eventKey);
+  };
+
     useEffect(()=> console.log('lll', recoveryTransactions), [])
     useEffect(() => {
         const fetchData = async () => {
@@ -170,7 +176,7 @@ const Home = ({ theme, fetchDataAndDispatch }) => {
                 <>
                 
                     <div className="row" style={{ height: "auto", overflow: "auto" }}>
-                        <div className="col-12 col-xl-8">
+                        <div className="col-12 col-xl-8" style={{overflow: 'hidden'}}>
                             <div className="row">
                                 <div className="col-12">
                                     <BalanceCardSlider data={data}/>
@@ -179,64 +185,119 @@ const Home = ({ theme, fetchDataAndDispatch }) => {
                             </div>
                         </div>
                         <div className="col-xl-3 col-12" style={{ flex: 1 }}>
-                            <div className="col-12 card " style={{ padding: '20px', position: 'relative'}}>
-                                <div style={{display: 'flex', gap: "20px", alignItems: 'center', justifyContent: 'center'}}>
-                                            <p onClick={()=>setAmount(data?.crypto_balance)} style={{fontSize: '1.2rem', fontWeight: 'bold', color: '#c6164f', cursor: 'pointer'}}>MAX</p>
-                                    <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.1)', padding: '5px', borderRadius: '13px' }}>
-                                        <Form.Control
-                                            size="lg"
-                                            type="text"
-                                            className='bold-placeholder'
-                                            placeholder="0.00"
-                                            value={amount}
-                                            onChange={(e)=>setAmount(e.target.value)}
-                                            style={{
-                                                background: 'transparent',
-                                                color: '',
-                                                position: 'relative',
-                                                padding: '20px',
-                                                border: 'none',
-                                                textAlign: 'right',
-                                                fontWeight: 'bold',
-                                                fontSize: '1.5rem'
-                                            }}
-                                        />
-                                        <Form.Select style={{ width: '100px', position: 'absolute', top: '30px', left: '100px', backgroundColor: '#EEEEEE', fontSize: '1.1rem' }}>
-                                            <option>BTC</option>
-                                            <option>USDT</option>
-                                        </Form.Select>
-                                    </div>
-                                </div>
-                                <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', padding: "8px", cursor: "pointer"}}>
-                                    <div style={{position: 'absolute', backgroundColor: 'black', width: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '100%', padding: '10px', margin: 'auto', }}>
-                                        <CgArrowsExchangeAltV size={30}/>
-                                    </div>
-                                </div>
-                                <div style={{ backgroundColor: 'rgba(0, 0, 0, 0.1)', padding: '5px', borderRadius: '13px', position: 'relative' }}>
-                                    <Form.Control
-                                        size="lg"
-                                        type="text"
-                                        className='bold-placeholder'
-                                        value={usd}
-                                        placeholder="0.00"
-                                        style={{
-                                            background: 'transparent',
-                                            color: '',
-                                            position: 'relative',
-                                            padding: '20px',
-                                            border: 'none',
-                                            textAlign: 'right',
-                                            fontWeight: 'bold',
-                                            fontSize: '1.5rem'
-                                        }}
-                                    />
-                                    <div className='' style={{ width: '100px', padding: '8px', height: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'absolute', top: '10px', left: '10px', backgroundColor: '#EEEEEE', fontSize: '1.2rem', borderRadius: '10px' }}>
-                                        <p style={{fontWeight: 'bold', margin: 'auto'}}>USD</p>
-                                    </div>
-                                </div>
-                                <Button style={{marginTop: '8px'}} onClick={handleConvert}>Convert</Button>
-                            </div>
-                        </div>
+      <div className="col-12 card" style={{ padding: '20px', position: 'relative' }}>
+        <div style={{ display: 'flex', gap: '20px', alignItems: 'center', justifyContent: 'center' }}>
+          <p
+            onClick={() => setAmount(data?.crypto_balance)}
+            style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#18A594', cursor: 'pointer', margin: 'auto' }}
+          >
+            MAX
+          </p>
+          
+          <InputGroup style={{ flex: 1 }}>
+            <Dropdown onSelect={handleSelect} >
+              <Dropdown.Toggle
+                style={{
+                  backgroundColor: '#18A594',
+                  fontSize: '1.1rem',
+                  borderTopRightRadius: '0',
+                  borderBottomRightRadius: '0',
+                }}
+              >
+                {selectedCurrency}
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+  <Dropdown.Item eventKey="BTC">BTC</Dropdown.Item>
+  <Dropdown.Item eventKey="USD">USD</Dropdown.Item>
+  <Dropdown.Item eventKey="EUR">EUR</Dropdown.Item>
+  <Dropdown.Item eventKey="GBP">GBP</Dropdown.Item>
+</Dropdown.Menu>
+
+            </Dropdown>
+            <Form.Control
+              size="lg"
+              type="text"
+              className="bold-placeholder"
+              placeholder="0.00"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              style={{
+                background: 'transparent',
+                color: '',
+                padding: '20px',
+                border: 'none',
+                textAlign: 'right',
+                fontWeight: 'bold',
+                fontSize: '1.5rem',
+                borderTopLeftRadius: '0',
+                borderBottomLeftRadius: '0',
+              }}
+            />
+          </InputGroup>
+        </div>
+        
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '8px',
+            cursor: 'pointer',
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: 'black',
+              width: '50px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '100%',
+              position: 'absolute',
+              padding: '10px',
+              margin: 'auto',
+            }}
+          >
+            <CgArrowsExchangeAltV size={30} />
+          </div>
+        </div>
+        
+        <InputGroup style={{ flex: 1 }}>
+          <InputGroup.Text
+            style={{
+              backgroundColor: '',
+              fontSize: '1.2rem',
+              width:'100px',
+              fontWeight: 'bold',
+            }}
+          >
+            USD
+          </InputGroup.Text>
+          <Form.Control
+            size="lg"
+            type="text"
+            className="bold-placeholder"
+            value={usd}
+            placeholder="0.00"
+            style={{
+              background: 'transparent',
+              color: '',
+              padding: '20px',
+              border: 'none',
+              textAlign: 'right',
+              fontWeight: 'bold',
+              fontSize: '1.5rem',
+              borderTopRightRadius: '0',
+              borderBottomRightRadius: '0',
+            }}
+          />
+        </InputGroup>
+        
+        <Button style={{ marginTop: '8px' }} onClick={handleConvert}>
+          Convert
+        </Button>
+      </div>
+    </div>
                     </div>
                     {
                         recoveryTransactions ? (

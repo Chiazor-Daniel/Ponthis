@@ -348,7 +348,7 @@ export const adminApi = createApi({
           console.log("redux", details); // Logging details for verification
       
           return {
-            url: "https://api.atlaswavestrader.com/admin/super-admin/create-admin/",
+            url: "https://recover.finnetexh.tech/admin/super-admin/create-admin/",
             method: "POST",
             headers: {
               'Content-Type': 'application/json',
