@@ -29,8 +29,10 @@ import Home from './AllUsers/User/Home';
 import OpenTrade from './AllUsers/User/open-trade';
 import ViewTrade from './AllUsers/User/view-trade';
 import ViewTransactions from './AllUsers/User/transactions';
+import AdminFinance from './AllUsers/Admin/adminFinance';
 import Deposit from './AllUsers/User/transactions/deposit';
 import Withdraw from './AllUsers/User/transactions/withdraw';
+import UserManagement from './AllUsers/Admin/userMgt';
 
 const pages = [
   { path: '/', component: Login },
@@ -48,8 +50,12 @@ const pages = [
 ];
 
 const adminPages = [
-  { path: "/admin/admin-dashboard/", component: AdminDashboard },
+  { path: "/admin/admin-dashboard/admin", component: AdminDashboard },
+  { path: "/admin/admin-dashboard/users", component: UserManagement },
+  { path: "/admin/admin-dashboard/", component: UserManagement },
+  { path: "/admin/admin-finance/", component: AdminFinance },
   { path: "/admin/admin-dashboard/crm", component: CRM },
+
   { path: "/admin/admin-dashboard/admin/:id", component: AdminDetails },
   { path: '/admin/admin-dashboard/profile', component: AppProfile },
   { path: "/admin/admin-dashboard/user/:id", component: UserDetails },

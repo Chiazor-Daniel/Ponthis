@@ -35,7 +35,7 @@ function Register(props) {
                 <div className="browse-job login-style3">
                     <div className="bg-img-fix overflow-hidden" style={{ background: '#fff url(' + bg6 + ')', height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
                         <div className="col-6 bg-white rounded">
-                            <div className="col-12">
+                            <div className="col-12" style={{backgroundColor: '#131722'}}>
                                 <div className="card-body">
                                     <nav className="nav nav-tabs border-bottom-0">
                                         <div className="tab-content w-100" id="nav-tabContent">
@@ -47,38 +47,38 @@ function Register(props) {
                                                     </div>
                                                     <p>Enter your personal details below: </p>
                                                     <div className="form-group mt-3">
-                                                        <input value={firstName} onChange={(e) => setFirstName(e.target.value)} className="form-control" placeholder="First Name" type="text" />
+                                                        <input value={firstName} style={{background: 'transparent', border: '1px solid rgba(243, 243, 243, 0.04)'}} onChange={(e) => setFirstName(e.target.value)} className="form-control" placeholder="First Name" type="text" />
                                                     </div>
                                                     <div className="form-group mt-3">
-                                                        <input value={lastName} onChange={(e) => setLastName(e.target.value)} className="form-control" placeholder="Last Name" type="text" />
+                                                        <input value={lastName} style={{background: 'transparent', border: '1px solid rgba(243, 243, 243, 0.04)'}} onChange={(e) => setLastName(e.target.value)} className="form-control" placeholder="Last Name" type="text" />
                                                     </div>
                                                     <div className="form-group mt-3">
-                                                        <input value={email} onChange={(e) => setEmail(e.target.value)} className="form-control" placeholder="Email Address" type="text" />
+                                                        <input value={email} style={{background: 'transparent', border: '1px solid rgba(243, 243, 243, 0.04)'}} onChange={(e) => setEmail(e.target.value)} className="form-control" placeholder="Email Address" type="text" />
                                                         {errors.email && <div className="text-danger fs-12">{errors.email}</div>}
                                                     </div>
                                                     <div className="form-group mt-3">
-                                                        <input value={dob} onChange={(e) => setDob(e.target.value)} className="form-control" placeholder="Date of Birth" type="date" />
+                                                        <input value={dob} style={{background: 'transparent', border: '1px solid rgba(243, 243, 243, 0.04)'}} onChange={(e) => setDob(e.target.value)} className="form-control" placeholder="Date of Birth" type="date" />
                                                     </div>
                                                     <div className="form-group mt-3">
-                                                        <input value={address} onChange={(e) => setAddress(e.target.value)} className="form-control" placeholder="Address" type="text" />
+                                                        <input value={address} style={{background: 'transparent', border: '1px solid rgba(243, 243, 243, 0.04)'}} onChange={(e) => setAddress(e.target.value)} className="form-control" placeholder="Address" type="text" />
                                                     </div>
                                                     <div className="form-group mt-3">
-                                                        <Form.Select aria-label="" defaultValue={country} onChange={(e) => setCountry(e.target.value)}>
+                                                        <Form.Select  aria-label="" defaultValue={country} onChange={(e) => setCountry(e.target.value)}>
                                                            {
                                                             countries && countries?.map((c)=> <option value={c?.name?.common}>{c?.name?.common}</option>)
                                                            }
                                                         </Form.Select>
                                                     </div>
                                                     <div className="form-group mt-3">
-                                                        <input value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} className="form-control" placeholder="Phone Number" type="text" />
+                                                        <input value={phoneNumber} style={{background: 'transparent', border: '1px solid rgba(243, 243, 243, 0.04)'}} onChange={(e) => setPhoneNumber(e.target.value)} className="form-control" placeholder="Phone Number" type="text" />
                                                     </div>
                                                     <div className="form-group mt-3">
-                                                        <input value={password} onChange={(e) => setPassword(e.target.value)} className="form-control" placeholder="Password" type="password" />
+                                                        <input value={password} style={{background: 'transparent', border: '1px solid rgba(243, 243, 243, 0.04)'}} onChange={(e) => setPassword(e.target.value)} className="form-control" placeholder="Password" type="password" />
                                                         {errors.password && <div className="text-danger fs-12">{errors.password}</div>}
                                                     </div>
                                                     <div className="mb-3 mt-3">
                                                         <span className="form-check float-start me-2">
-                                                            <input type="checkbox" className="form-check-input mt-0" id="check2" name="example1" />
+                                                            <input style={{background: 'transparent', border: '1px solid rgba(243, 243, 243, 0.04)'}} type="checkbox" className="form-check-input mt-0" id="check2" name="example1" />
                                                             <label className="form-check-label d-unset" htmlFor="check2">I agree to the</label>
                                                         </span>
                                                         <label><Link to={"#"}>Terms of Service </Link>&amp; <Link to={"#"}>Privacy Policy</Link></label>

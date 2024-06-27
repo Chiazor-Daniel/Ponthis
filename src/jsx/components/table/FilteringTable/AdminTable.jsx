@@ -9,21 +9,40 @@ import Swal from 'sweetalert2';
 import { useCreateLeadMutation } from '../../../../redux-contexts/redux/services/admin';
 import { useSelector } from 'react-redux';
 
-const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, refetch, showFilter  }) => {
+const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, refetch, showFilter, crmFilter }) => {
   const navigate = useNavigate();
   const { adminToken } = useSelector(state => state.adminAuth);
-  const [createLead] = useCreateLeadMutation()
+  const [createLead] = useCreateLeadMutation();
 
   const [showModal, setShowModal] = useState(false);
 
   const handleCloseModal = () => setShowModal(false);
   const handleShowModal = () => setShowModal(true);
 
+  // Custom filter function
+  const customFilterFunction = (rows, id, filterValue) => {
+    if (!filterValue || filterValue.length <= 1) {
+      return rows;
+    }
+  
+    const lowerCaseFilter = filterValue.toLowerCase();
+  
+    return rows.filter(row => {
+      return (
+        (row.original.first_name && row.original.first_name.toLowerCase().includes(lowerCaseFilter)) ||
+        (row.original.last_name && row.original.last_name.toLowerCase().includes(lowerCaseFilter)) ||
+        Object.values(row.original).some(value => value && value.toString().toLowerCase().includes(lowerCaseFilter))
+      );
+    });
+  };
+  
+
   const tableInstance = useTable(
     {
       columns,
       data,
-      initialState: { pageIndex: 0 }
+      initialState: { pageIndex: 0 },
+      globalFilter: customFilterFunction,
     },
     useFilters,
     useGlobalFilter,
@@ -48,18 +67,15 @@ const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, re
   } = tableInstance;
 
   const [formData, setFormData] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@example.com',
-    phoneNumber: parseInt(1234567890),
-    status: 'Not Called',
-    country: 'United States',
-    address: '123 Main Street',
-    dateOfBirth: '1990-01-01',
-    activated: true,
-    createdAt: '2024-05-06'
+    firstName: '',
+    lastName: '',
+    email: '',
+    phoneNumber: '',
+    status: '',
+    country: '',
+    address: '',
+    dateOfBirth: '',
   });
-  
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -70,7 +86,7 @@ const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, re
       dateOfBirth: name === 'dateOfBirth' ? value || '' : prevState.dateOfBirth
     }));
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     Swal.fire({
@@ -84,14 +100,12 @@ const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, re
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          console.log("formData", formData)
           const res = await createLead({
             token: adminToken,
             formData: formData
           });
-          console.log(res)
           if (res.data.status === "success") {
-            refetch()
+            refetch();
             Swal.fire({
               title: 'Lead created successfully',
               icon: 'success',
@@ -99,11 +113,11 @@ const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, re
             });
             handleCloseModal();
           } else {
-            refetch()
+            refetch();
             throw new Error('An error occurred while creating the lead.');
           }
         } catch (error) {
-          refetch()
+          refetch();
           Swal.fire({
             title: 'Error',
             text: `An error occurred while creating the lead`,
@@ -115,11 +129,14 @@ const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, re
     });
   };
 
+  const handleCrmFilter = (eventKey) => {
+    setGlobalFilter(eventKey === 'All' ? '' : eventKey);
+  };
 
   return (
     <>
-      <div className="card">
-        <div className="card-header" style={{display: "flex", justifyContent: "space-between"}}>
+      <div className="card" style={{ backgroundColor: 'rgba(243, 243, 243, 0.04)' }}>
+        <div className="card-header" style={{ display: "flex", justifyContent: "space-between" }}>
           <h4 className="card-title">{title}</h4>
           {
             leads && (
@@ -134,17 +151,38 @@ const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, re
               <div>
                 {
                   showFilter && (
-                  <Nav as="ul" className="order nav-tabs" id="pills-tab" role="tablist">
-                    <Nav.Item as="li" className=" my-1" role="presentation">
-                      <Nav.Link as="button" eventKey="All" type="button" >All</Nav.Link>
-                    </Nav.Item>
-                    <Nav.Item as="li" className=" my-1" role="presentation">
-                      <Nav.Link as="button" eventKey="Spot" type="button">Activated</Nav.Link>
-                    </Nav.Item>
-                    <Nav.Item as="li" className=" my-1" role="presentation">
-                      <Nav.Link as="button" className="me-0" eventKey="Listing" type="button">Deactivated</Nav.Link>
-                    </Nav.Item>
-                  </Nav>
+                    <Nav as="ul" className="order nav-tabs" id="pills-tab" role="tablist">
+                      <Nav.Item as="li" className=" my-1" role="presentation">
+                        <Nav.Link as="button" eventKey="All" type="button" >All</Nav.Link>
+                      </Nav.Item>
+                      <Nav.Item as="li" className=" my-1" role="presentation">
+                        <Nav.Link as="button" eventKey="Spot" type="button">Activated</Nav.Link>
+                      </Nav.Item>
+                      <Nav.Item as="li" className=" my-1" role="presentation">
+                        <Nav.Link as="button" className="me-0" eventKey="Listing" type="button">Deactivated</Nav.Link>
+                      </Nav.Item>
+                    </Nav>
+                  )
+                }
+                {
+                  crmFilter && (
+                    <Nav as="ul" className="order nav-tabs" id="pills-tab" role="tablist">
+                      <Nav.Item as="li" className=" my-1" role="presentation">
+                        <Nav.Link as="button" eventKey="All" type="button" onClick={() => handleCrmFilter('All')}>All</Nav.Link>
+                      </Nav.Item>
+                      <Nav.Item as="li" className=" my-1" role="presentation">
+                        <Nav.Link as="button" eventKey="Not Called" type="button" onClick={() => handleCrmFilter('Not Called')}>Not Called</Nav.Link>
+                      </Nav.Item>
+                      <Nav.Item as="li" className=" my-1" role="presentation">
+                        <Nav.Link as="button" eventKey="Unavailable" type="button" onClick={() => handleCrmFilter('Unavailable')}>Unavailable</Nav.Link>
+                      </Nav.Item>
+                      <Nav.Item as="li" className=" my-1" role="presentation">
+                        <Nav.Link as="button" eventKey="Call back" type="button" onClick={() => handleCrmFilter('Call back')}>Call back</Nav.Link>
+                      </Nav.Item>
+                      <Nav.Item as="li" className=" my-1" role="presentation">
+                        <Nav.Link as="button" className="me-0" eventKey="Not Interested" type="button" onClick={() => handleCrmFilter('Not Interested')}>Not Interested</Nav.Link>
+                      </Nav.Item>
+                    </Nav>
                   )
                 }
               </div>
@@ -202,61 +240,55 @@ const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, re
       </div>
 
       <Modal show={showModal} onHide={handleCloseModal} size="lg">
-  <Modal.Header closeButton>
-    <Modal.Title>Create New Lead</Modal.Title>
-  </Modal.Header>
-  <Modal.Body>
-    <Form onSubmit={handleSubmit}>
-      <Form.Group controlId="formFirstName">
-        <Form.Label>First Name</Form.Label>
-        <Form.Control type="text" name="firstName" value={formData.firstName} onChange={handleChange} />
-      </Form.Group>
-      <Form.Group controlId="formLastName">
-        <Form.Label>Last Name</Form.Label>
-        <Form.Control type="text" name="lastName" value={formData.lastName} onChange={handleChange} />
-      </Form.Group>
-      <Form.Group controlId="formEmail">
-        <Form.Label>Email</Form.Label>
-        <Form.Control type="email" name="email" value={formData.email} onChange={handleChange} />
-      </Form.Group>
-      <Form.Group controlId="formPhoneNumber">
-        <Form.Label>Phone Number</Form.Label>
-        <Form.Control type="text" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} />
-      </Form.Group>
-      <Form.Group controlId="formStatus">
-        <Form.Label>Status</Form.Label>
-        <Form.Select name="status" defaultValue={formData.status} onChange={handleChange}>
-                  <option value="Call back">Call back</option>
-                  <option value="Unavailable">Unavailable</option>
-                  <option value="Not Interested">Not Interested</option>
-                  <option value="Not Called">Not Called</option>
-                </Form.Select>
-      </Form.Group>
-      <Form.Group controlId="formCountry">
-        <Form.Label>Country</Form.Label>
-        <Form.Control type="text" name="country" value={formData.country} onChange={handleChange} />
-      </Form.Group>
-      <Form.Group controlId="formAddress">
-        <Form.Label>Address</Form.Label>
-        <Form.Control type="text" name="address" value={formData.address} onChange={handleChange} />
-      </Form.Group>
-      <Form.Group controlId="formDateOfBirth">
-        <Form.Label>Date of Birth</Form.Label>
-        <Form.Control type="text" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} />
-      </Form.Group>
-      <Form.Group controlId="formActivated">
-        <Form.Check type="checkbox" label="Activated" name="activated" checked={formData.activated} onChange={handleChange} />
-      </Form.Group>
-      <Form.Group controlId="formCreatedAt">
-        <Form.Label>Created At</Form.Label>
-        <Form.Control type="text" name="createdAt" value={formData.createdAt} onChange={handleChange} />
-      </Form.Group>
-      <Button variant="primary" type="submit">
-        Submit
-      </Button>
-    </Form>
-  </Modal.Body>
-</Modal>
+        <Modal.Header closeButton>
+          <Modal.Title>Create New Lead</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleSubmit}>
+            <Form.Group controlId="formFirstName">
+              <Form.Label>First Name</Form.Label>
+              <Form.Control type="text" name="firstName" value={formData.firstName} onChange={handleChange} />
+            </Form.Group>
+            <Form.Group controlId="formLastName">
+              <Form.Label>Last Name</Form.Label>
+              <Form.Control type="text" name="lastName" value={formData.lastName} onChange={handleChange} />
+            </Form.Group>
+            <Form.Group controlId="formEmail">
+              <Form.Label>Email</Form.Label>
+              <Form.Control type="email" name="email" value={formData.email} onChange={handleChange} />
+            </Form.Group>
+            <Form.Group controlId="formPhoneNumber">
+              <Form.Label>Phone Number</Form.Label>
+              <Form.Control type="text" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} />
+            </Form.Group>
+            <Form.Group controlId="formStatus">
+              <Form.Label>Status</Form.Label>
+              <Form.Select name="status" defaultValue={formData.status} onChange={handleChange}>
+                <option value="Call back">Call back</option>
+                <option value="Unavailable">Unavailable</option>
+                <option value="Not Interested">Not Interested</option>
+                <option value="Not Called">Not Called</option>
+              </Form.Select>
+            </Form.Group>
+            <Form.Group controlId="formCountry">
+              <Form.Label>Country</Form.Label>
+              <Form.Control type="text" name="country" value={formData.country} onChange={handleChange} />
+            </Form.Group>
+            <Form.Group controlId="formAddress">
+              <Form.Label>Address</Form.Label>
+              <Form.Control type="text" name="address" value={formData.address} onChange={handleChange} />
+            </Form.Group>
+            <Form.Group controlId="formDateOfBirth">
+              <Form.Label>Date of Birth</Form.Label>
+              <Form.Control type="text" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} />
+            </Form.Group>
+          
+            <Button variant="primary" type="submit">
+              Submit
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
 
     </>
   );

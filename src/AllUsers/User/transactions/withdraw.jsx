@@ -63,11 +63,12 @@ const Withdraw = ({ fetchDataAndDispatch }) => {
         handleBankChange,
         handleBankSubmit
     } = useWithdraw(fetchDataAndDispatch);
+    console.log(userInfo)
 
     return (
         <>
         {
-            userInfo.verified ? (
+            userInfo.id_verified === "verified" ? (
             <div className='row p-4' style={{ display: 'flex', gap: '30px', height: 'auto', justifyContent: 'center' }}>
                     {buttons.map((button, index) => (
                         <button

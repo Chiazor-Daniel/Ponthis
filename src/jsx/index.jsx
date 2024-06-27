@@ -9,6 +9,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useMainLayoutFunctions } from '../customHooks/layout/useLayoutFunctions';
 import ViewStats from './components/viewStats';
+import GoBackArrow from './components/goBack';
 
 export function MainLayout({ children, userType, superAdmin, asAdmin, setAsAdmin, setUserType }) {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ export function MainLayout({ children, userType, superAdmin, asAdmin, setAsAdmin
       <Nav onDarkModeChange={(newTheme) => setTheme(newTheme)} userType={userType} superAdmin={superAdmin} setAsAdmin={setAsAdmin} asAdmin={asAdmin} setUserType={setUserType}/>
       <div className="content-body no-scrollbar" style={{ flex: 1, paddingBottom: '30px', minHeight: window.screen.height - 45  }}>
         <div style={{display: 'flex', width: '100%', justifyContent: 'space-between'}}>
-          {(!userInfo?.verified && userType === 'user' && location.pathname !== "/dashboard/withdraw") && (
+          {/* {(!userInfo?.verified && userType === 'user' && location.pathname !== "/dashboard/withdraw") && (
             <div style={{ display: 'flex', alignItems: 'center',padding: '10px', backgroundColor: '', width: 'fit', margin: 'auto' }}>
               <span style={{ color: 'red',  }}>
                 <IoIosWarning style={{ verticalAlign: 'middle',marginRight: '5px' }} />
@@ -50,16 +51,20 @@ export function MainLayout({ children, userType, superAdmin, asAdmin, setAsAdmin
                   style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
                   onClick={handleVerify}
                 >
-                  Click to verify
+                Click to verify
                 </span>
               </span>
               {' '}
               {yes && (<p>.You may want to login again.</p>)}
-            </div>
-          )}
+              </div>
+            )} */}
           {/* {location.pathname === '/dashboard' && <ViewStats />} */}
         </div>
+        <div>
+
+            <GoBackArrow />
         {childrenWithProps}
+        </div>
       </div>
       <Footer />
     </div>

@@ -249,7 +249,7 @@ export const adminApi = createApi({
           country: formData.country,
           address: formData.address,
           date_of_birth: formData.dateOfBirth,
-          activated: formData.activated,
+          activated: true,
           created_at: formData.createdAt
         });
 
@@ -336,7 +336,7 @@ export const adminApi = createApi({
           console.log("redux", details); // Logging details for verification
       
           return {
-            url: "https://api.atlaswavestrader.com/admin/super-admin/create-admin/",
+            url: "https://finno-api.finnovent.com/admin/super-admin/create-admin/",
             method: "POST",
             headers: {
               'Content-Type': 'application/json',
@@ -381,14 +381,53 @@ export const adminApi = createApi({
 
           }
         }
+      }), 
+      getUserDocuments: builder.query({
+        query: ({token, user_id}) => {
+          return{
+            url: `/admin/user/get-verification-document/${user_id}`, 
+            method: 'GET', 
+            headers: {
+              'Content-Type': 'application/json',
+              "x-token": token
+            },
+          }
+        }
+      }), 
+      viewUserDocument: builder.query({
+        query: ({token, user_id, file_id}) => {
+          return{
+            url: `/admin/user/view-verification-document/${user_id}`, 
+            method: 'GET', 
+            headers: {
+              'Content-Type': 'application/json',
+              "x-token": token
+            },
+          }
+        }
+      }), 
+      verifyStatus: builder.mutation({
+        query: ({token, user_id, status}) => {
+          return{
+            url: `/admin/user/change-verification-status/${user_id}?status_=${status}`, 
+            method: 'PUT', 
+            headers: {
+              'Content-Type': 'application/json',
+              "x-token": token
+            },
+          }
+        }
       })
   }),
 });
 
 export const {
   useGetAllAdminsQuery,
+  useViewUserDocumentQuery,
+  useGetUserDocumentsQuery,
   useGetSingleAdminQuery,
   useGetAllUsersQuery,
+  useVerifyStatusMutation,
   useGetSingleUserQuery, useUpdateAccountTypeMutation,
   useUpdateUserTransactionMutation,useCreateAdminMutation,useEditBankDetailsMutation,useCreateCustomProfitMutation,
   useAssignUserToAdminMutation, useMakeNewTransactionMutation, useEditUseretailsMutation, useResetUserPasswordMutation, useCreateBankDetailsMutation, useLoginUserMutation,

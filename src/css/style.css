@@ -24585,7 +24585,7 @@ button {
     border-color: transparent;
     color: #fff; }
   .light.btn-primary:hover {
-    background-color: var(--primary);
+    background-color: var(--prim);
     border-color: var(--primary);
     color: #fff; }
     .light.btn-primary:hover g [fill] {
