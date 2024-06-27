@@ -65,36 +65,49 @@ export const MenuList = [
 
 export const AdminMenuList = [
     {
-        title: 'Admin Management',	
+        title: 'User Management',
         classsChange: 'mm-collapse',
-        to: "/admin/admin-dashboard",		
-        iconStyle:  <i class="material-icons">supervised_user_circle</i>,
-    }, 
-        {
-            title: 'CRM Management',	
-            classsChange: 'mm-collapse',
-            to: "/admin/admin-dashboard/crm",		
-            iconStyle:  <i class="material-icons">admin_panel_settings</i>,
-        },
+        to: "/admin/admin-dashboard/users",
+        iconStyle: <i className="material-icons">supervised_user_circle</i>,
+    },
     {
-        title: 'Profile',
+        title: 'Admin Management',
         classsChange: 'mm-collapse',
-        to: "", 
-        iconStyle: <i className="material-icons">person</i>, 
-        content: [
-            {
-                title: 'View Profile',
-                to: '/admin/admin-dashboard/profile',
-                p: "view"
-            },
-            {
-                title: 'Edit Profile',
-                to: '/admin/admin-dashboard/profile',
-                p: "edit"
-            },
-        ]
-    } 
-]
+        to: "/admin/admin-dashboard/admin",
+        iconStyle: <i className="material-icons">admin_panel_settings</i>,
+    },
+    {
+        title: 'Finance',
+        classsChange: 'mm-collapse',
+        to: "/admin/admin-finance/",
+        iconStyle: <i className="material-icons">attach_money</i>,
+    },
+    {
+        title: 'CRM Management',
+        classsChange: 'mm-collapse',
+        to: "/admin/admin-dashboard/crm",
+        iconStyle: <i className="material-icons">contacts</i>,
+    },
+    // {
+    //     title: 'Profile',
+    //     classsChange: 'mm-collapse',
+    //     to: "",
+    //     iconStyle: <i className="material-icons">person</i>,
+    //     content: [
+    //         {
+    //             title: 'View Profile',
+    //             to: '/admin/admin-dashboard/profile',
+    //             p: "view"
+    //         },
+    //         {
+    //             title: 'Edit Profile',
+    //             to: '/admin/admin-dashboard/profile',
+    //             p: "edit"
+    //         },
+    //     ]
+    // }
+];
+
 
 export const AdminMenuList2 = [
     {
@@ -103,6 +116,7 @@ export const AdminMenuList2 = [
         to: "/admin/admin-dashboard",		
         iconStyle:  <i class="material-icons">supervised_user_circle</i>,
     }, 
+   
         {
             title: 'CRM Management',	
             classsChange: 'mm-collapse',

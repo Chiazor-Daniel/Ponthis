@@ -21,7 +21,7 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
   const [createAdmin, { isLoading: isCreatingAdmin }] = useCreateAdminMutation();
   const [showCreateAdminModal, setShowCreateAdminModal] = useState(false);
   const { data: admin, isLoading: isAdminLoading, error: isAdminError, refetch } = useGetSingleAdminQuery({ id: adminInfo.id, adminToken: adminToken });
-  const { data: paymentDetails, isLoading: isPaymentLoading, error: isPaymentError, refetch: refetchPaymentDetails } = useGetPaymentDetailsQuery(adminToken);
+  
 
   const handleRefetch = () => {
     console.log("yuep")
@@ -244,9 +244,7 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
     {!isLoading && allUsers && !superAdmin &&  <AdminTable columns={user_columns} data={allUsers} title={'Users'} />}
     {!isLoading && allUsers && superAdmin && <AdminTable columns={user_columns} data={allUsers} title={'Users'} superAdmin={superAdmin} />}
     {!isLoading && !superAdmin && admin && <AdminTable columns={user_columns} data={admin.users_assigned} title={"Assigned users"} />}
-    {!isLoading && paymentDetails && superAdmin && data && <Finance paymentDetails={paymentDetails?.data} token={adminToken} refetch={handleRefetch} />}
     {isUsersLoading && <div>Loading users...</div>}
-    {isPaymentLoading && <div>Loading payment details...</div>}
   </div>
   
   );

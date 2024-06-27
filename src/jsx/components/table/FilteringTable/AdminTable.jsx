@@ -9,21 +9,40 @@ import Swal from 'sweetalert2';
 import { useCreateLeadMutation } from '../../../../redux-contexts/redux/services/admin';
 import { useSelector } from 'react-redux';
 
-const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, refetch, showFilter }) => {
+const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, refetch, showFilter, crmFilter }) => {
   const navigate = useNavigate();
   const { adminToken } = useSelector(state => state.adminAuth);
-  const [createLead] = useCreateLeadMutation()
+  const [createLead] = useCreateLeadMutation();
 
   const [showModal, setShowModal] = useState(false);
 
   const handleCloseModal = () => setShowModal(false);
   const handleShowModal = () => setShowModal(true);
 
+  // Custom filter function
+  const customFilterFunction = (rows, id, filterValue) => {
+    if (!filterValue || filterValue.length <= 1) {
+      return rows;
+    }
+  
+    const lowerCaseFilter = filterValue.toLowerCase();
+  
+    return rows.filter(row => {
+      return (
+        (row.original.first_name && row.original.first_name.toLowerCase().includes(lowerCaseFilter)) ||
+        (row.original.last_name && row.original.last_name.toLowerCase().includes(lowerCaseFilter)) ||
+        Object.values(row.original).some(value => value && value.toString().toLowerCase().includes(lowerCaseFilter))
+      );
+    });
+  };
+  
+
   const tableInstance = useTable(
     {
       columns,
       data,
-      initialState: { pageIndex: 0 }
+      initialState: { pageIndex: 0 },
+      globalFilter: customFilterFunction,
     },
     useFilters,
     useGlobalFilter,
@@ -58,7 +77,6 @@ const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, re
     dateOfBirth: '',
   });
 
-
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prevState => ({
@@ -82,14 +100,12 @@ const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, re
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          console.log("formData", formData)
           const res = await createLead({
             token: adminToken,
             formData: formData
           });
-          console.log(res)
           if (res.data.status === "success") {
-            refetch()
+            refetch();
             Swal.fire({
               title: 'Lead created successfully',
               icon: 'success',
@@ -97,11 +113,11 @@ const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, re
             });
             handleCloseModal();
           } else {
-            refetch()
+            refetch();
             throw new Error('An error occurred while creating the lead.');
           }
         } catch (error) {
-          refetch()
+          refetch();
           Swal.fire({
             title: 'Error',
             text: `An error occurred while creating the lead`,
@@ -113,6 +129,9 @@ const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, re
     });
   };
 
+  const handleCrmFilter = (eventKey) => {
+    setGlobalFilter(eventKey === 'All' ? '' : eventKey);
+  };
 
   return (
     <>
@@ -141,6 +160,27 @@ const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, re
                       </Nav.Item>
                       <Nav.Item as="li" className=" my-1" role="presentation">
                         <Nav.Link as="button" className="me-0" eventKey="Listing" type="button">Deactivated</Nav.Link>
+                      </Nav.Item>
+                    </Nav>
+                  )
+                }
+                {
+                  crmFilter && (
+                    <Nav as="ul" className="order nav-tabs" id="pills-tab" role="tablist">
+                      <Nav.Item as="li" className=" my-1" role="presentation">
+                        <Nav.Link as="button" eventKey="All" type="button" onClick={() => handleCrmFilter('All')}>All</Nav.Link>
+                      </Nav.Item>
+                      <Nav.Item as="li" className=" my-1" role="presentation">
+                        <Nav.Link as="button" eventKey="Not Called" type="button" onClick={() => handleCrmFilter('Not Called')}>Not Called</Nav.Link>
+                      </Nav.Item>
+                      <Nav.Item as="li" className=" my-1" role="presentation">
+                        <Nav.Link as="button" eventKey="Unavailable" type="button" onClick={() => handleCrmFilter('Unavailable')}>Unavailable</Nav.Link>
+                      </Nav.Item>
+                      <Nav.Item as="li" className=" my-1" role="presentation">
+                        <Nav.Link as="button" eventKey="Call back" type="button" onClick={() => handleCrmFilter('Call back')}>Call back</Nav.Link>
+                      </Nav.Item>
+                      <Nav.Item as="li" className=" my-1" role="presentation">
+                        <Nav.Link as="button" className="me-0" eventKey="Not Interested" type="button" onClick={() => handleCrmFilter('Not Interested')}>Not Interested</Nav.Link>
                       </Nav.Item>
                     </Nav>
                   )

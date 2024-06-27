@@ -9,6 +9,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useMainLayoutFunctions } from '../customHooks/layout/useLayoutFunctions';
 import ViewStats from './components/viewStats';
+import GoBackArrow from './components/goBack';
 
 export function MainLayout({ children, userType, superAdmin, asAdmin, setAsAdmin, setUserType }) {
   const navigate = useNavigate();
@@ -50,16 +51,20 @@ export function MainLayout({ children, userType, superAdmin, asAdmin, setAsAdmin
                   style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
                   onClick={handleVerify}
                 >
-                  Click to verify
+                Click to verify
                 </span>
               </span>
               {' '}
               {yes && (<p>.You may want to login again.</p>)}
-            </div>
-          )} */}
+              </div>
+            )} */}
           {/* {location.pathname === '/dashboard' && <ViewStats />} */}
         </div>
+        <div>
+
+            <GoBackArrow />
         {childrenWithProps}
+        </div>
       </div>
       <Footer />
     </div>
