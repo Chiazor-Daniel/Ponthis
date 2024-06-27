@@ -98,11 +98,9 @@ function AdminLogin(props) {
           <div className="row col-6 rounded bg-white">
             <div className="col-12">
               <div className="card-body">
-              <div className="logo-header" style={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                    <Link to={"#"} className="logo">
-                                        <img src='/logo3.png'  style={{width:'400px', margin: 'auto'}}/>
-                                    </Link>
-                                </div>
+                <div className="logo-header">
+                  <Link to={"#"} className="logo"><SetLogo /></Link>
+                </div>
                 <div className="nav nav-tabs border-bottom-0" >
                   <div className="tab-content w-100" id="nav-tabContent">
                     <div className="tab-pane fade active show" id="nav-personal">

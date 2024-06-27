@@ -253,14 +253,14 @@ export const adminApi = createApi({
     createLead: builder.mutation({
       query: ({ token, formData }) => {
         const queryParams = new URLSearchParams({
-          first_name: formData.firstName,
-          last_name: formData.lastName,
+          first_name: formData.first_name,
+          last_name: formData.last_name,
           email: formData.email,
-          phone_number: parseInt(formData.phoneNumber),
+          phone_number: parseInt(formData.phone_number),
           status: formData.status,
           country: formData.country,
           address: formData.address,
-          date_of_birth: formData.dateOfBirth,
+          date_of_birth: formData.date_of_birth,
           activated: formData.activated,
           created_at: formData.createdAt
         });
