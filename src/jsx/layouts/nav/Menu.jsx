@@ -59,11 +59,31 @@ export const AdminMenuList = [
         to: "/admin/admin-dashboard/admin",
         iconStyle: <i className="material-icons">admin_panel_settings</i>,
     },
+    // {
+    //     title: 'Finance',
+    //     classsChange: 'mm-collapse',
+    //     to: "/admin/admin-finance/",
+    //     iconStyle: <i className="material-icons">attach_money</i>,
+    // },
     {
-        title: 'Finance',
+        title: 'Website',
         classsChange: 'mm-collapse',
         to: "/admin/admin-finance/",
-        iconStyle: <i className="material-icons">attach_money</i>,
+        iconStyle: <i className="material-icons">web</i>,
+    },  
+    {
+        title: 'Web Management',
+        classsChange: 'mm-collapse',
+        to: "/admin/admin-website/",
+        iconStyle: <i className="material-icons">language</i>,
+        
+    },  
+    {
+        title: 'Testimonials',
+        classsChange: 'mm-collapse',
+        to: "/admin/admin-testimonials/",
+        iconStyle: <i className="material-icons">book</i>,
+        
     },
     {
         title: 'CRM Management',

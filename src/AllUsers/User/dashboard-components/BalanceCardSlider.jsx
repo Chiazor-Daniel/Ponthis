@@ -21,7 +21,7 @@ const BalanceCardSlider = ({ data }) => {
             chartComponent: <TotalBalanceArea />
         },
         {
-            countNum: `$ ${fiat_balance || "0.00"}`,
+            countNum: ` ${fiat_balance || "0.00"} USD`,
             title: "USD(Fiat)",
             convert: '$365',
             info: "0",
@@ -66,8 +66,10 @@ const BalanceCardSlider = ({ data }) => {
                                     <div className="card-wiget-info">
                                         <h4 className="count-num" style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
                                             {
-                                                index === 0 && (
-                                                    <FaBitcoin size={30} color='#F7931A' />
+                                                index === 0 ? (
+                                                    <FaBitcoin size={40} color='#F7931A' />
+                                                ) : (
+                                                    <img src='dollar.png' style={{width: '40px'}}/>
                                                 )
                                             }
                                             <span>

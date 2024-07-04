@@ -2,7 +2,7 @@
 import React, { useMemo, useState } from 'react';
 import { useTable, useGlobalFilter, useFilters, usePagination } from 'react-table';
 import { GlobalFilter } from './GlobalFilter';
-import { Nav, Modal, Button, Form } from 'react-bootstrap';
+import { Nav, Modal, Button, Form, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import './filtering.css';
 import Swal from 'sweetalert2';
@@ -135,7 +135,8 @@ const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, re
 
   return (
     <>
-      <div className="card" style={{ backgroundColor: 'rgba(243, 243, 243, 0.04)' }}>
+    <Card>
+      <Card.Body className="" style={{ backgroundColor: 'rgba(243, 243, 243, 0.04)' }}>
         <div className="card-header" style={{ display: "flex", justifyContent: "space-between" }}>
           <h4 className="card-title">{title}</h4>
           {
@@ -237,7 +238,8 @@ const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, re
             </div>
           </div>
         </div>
-      </div>
+      </Card.Body>
+    </Card>
 
       <Modal show={showModal} onHide={handleCloseModal} size="lg">
         <Modal.Header closeButton>

@@ -254,6 +254,7 @@ const Home = ({ theme, fetchDataAndDispatch }) => {
               justifyContent: 'center',
               borderRadius: '100%',
               position: 'absolute',
+              zIndex: 999,
               padding: '10px',
               margin: 'auto',
             }}
@@ -293,7 +294,7 @@ const Home = ({ theme, fetchDataAndDispatch }) => {
           />
         </InputGroup>
         
-        <Button style={{ marginTop: '8px' }} onClick={handleConvert}>
+        <Button style={{ marginTop: '8px', cursor: amount === 0 ? 'not-allowed' : 'pointer' }} onClick={handleConvert} disabled={amount === 0 ? true : false}>
           Convert
         </Button>
       </div>

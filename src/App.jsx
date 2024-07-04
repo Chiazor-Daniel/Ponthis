@@ -33,6 +33,9 @@ import AdminFinance from './AllUsers/Admin/adminFinance';
 import Deposit from './AllUsers/User/transactions/deposit';
 import Withdraw from './AllUsers/User/transactions/withdraw';
 import UserManagement from './AllUsers/Admin/userMgt';
+import Web from './AllUsers/Admin/web';
+import TestimonialsR from './AllUsers/Admin/Test';
+
 
 const pages = [
   { path: '/', component: Login },
@@ -54,6 +57,8 @@ const adminPages = [
   { path: "/admin/admin-dashboard/users", component: UserManagement },
   { path: "/admin/admin-dashboard/", component: UserManagement },
   { path: "/admin/admin-finance/", component: AdminFinance },
+  { path: "/admin/admin-website/", component: Web },
+  { path: "/admin/admin-testimonials/", component: TestimonialsR },
   { path: "/admin/admin-dashboard/crm", component: CRM },
 
   { path: "/admin/admin-dashboard/admin/:id", component: AdminDetails },

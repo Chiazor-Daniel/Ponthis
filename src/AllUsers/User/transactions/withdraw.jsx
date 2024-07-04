@@ -248,7 +248,7 @@ const Withdraw = ({ fetchDataAndDispatch }) => {
             ): (
                 <div style={{height: '500px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column'}}>
                     <p style={{fontSize: '2.5rem', fontWeight: ''}}><CgUnavailable /> Withdrawal Unavailable</p>
-                    <p   style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}>Click to verify your account for withdrawal</p>
+                    <p   style={{ color: '', textDecoration: '', cursor: 'pointer' }}>Verify your account to enable withdrawal</p>
                 </div>
             )
         }
