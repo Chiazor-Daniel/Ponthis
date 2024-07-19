@@ -51,8 +51,9 @@ function Login(props) {
                         <div className="col-12">
                             <div className="card-body">
                                 <div className="logo-header" style={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                    <Link to={"#"} className="logo">
-                                        <img src='logo3.png'  style={{width:'400px', margin: 'auto'}}/>
+                                    <Link to={"#"} className="logo" style={{display: 'flex', alignItems: 'center', gap: '20px',}}>
+                                        <img src='logo.png'  style={{width:'100px', margin: 'auto'}}/>
+                                        <h1>LEDGER SAFE AI</h1>
                                     </Link>
                                 </div>
                                 <div className="nav nav-tabs border-bottom-0" >

@@ -1,22 +1,26 @@
 /* eslint-disable */
 import React, { useState, useEffect } from "react";
-import { Tab, Nav } from "react-bootstrap";
-import { useSelector } from "react-redux";
-import { useDispatch } from "react-redux";
+import { Tab, Nav, Button } from "react-bootstrap";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useUpdateProfileMutation } from "../../../../redux-contexts/redux/services/profile";
-import { useChangePasswordMutation } from "../../../../redux-contexts/redux/services/profile";
+import { useUpdateProfileMutation, useChangePasswordMutation } from "../../../../redux-contexts/redux/services/profile";
 import { updateState } from "../../../../redux-contexts/redux/features/auth/authSlice";
 import Spinner from 'react-bootstrap/Spinner';
 import { toast, ToastContainer } from "react-toastify";
-import { FaMedal } from "react-icons/fa6";
+import { FaMedal, FaEdit } from "react-icons/fa";
 import Avatar from 'react-avatar';
-import { FaEdit } from "react-icons/fa";
+import Swal from 'sweetalert2';
+import ReactDOMServer from 'react-dom/server';
+import { BASE_URL } from "../../../../api";
+import { useVerfiyIDMutation } from "../../../../redux-contexts/redux/services/profile";
+import RingLoader from 'react-spinners/RingLoader';
+import axios from "axios";
 
-const AppProfile = ({ userType }) => {
+const AppProfile = ({ userType, fetchDataAndDispatch }) => {
     const { userInfo, userToken } = useSelector(state => state.auth);
     const { adminInfo, adminToken } = useSelector(state => state.adminAuth);
     const { account_type } = useSelector(state => state.userAccount);
+    const [verifyID] = useVerfiyIDMutation()
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [data, setData] = useState(false);
@@ -37,6 +41,12 @@ const AppProfile = ({ userType }) => {
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [frontImage, setFrontImage] = useState(null);
+    const [frontImagePreview, setFrontImagePreview] = useState(null);
+    const [backImage, setBackImage] = useState(null);
+    const [backImagePreview, setBackImagePreview] = useState(null);
+    const [frontImageBinary, setFrontImageBinary] = useState('');
+    const [backImageBinary, setBackImageBinary] = useState('');
 
     const [updateProfile, { isLoading: isUpdatingProfile }] = useUpdateProfileMutation();
     const [changePassword, { isLoading: isChangingPassword }] = useChangePasswordMutation();
@@ -87,13 +97,127 @@ const AppProfile = ({ userType }) => {
         }
     }
 
+    const handleFileChange = async (e, setFile, setPreview, setBinary) => {
+        const file = e.target.files[0];
+        if (file) {
+            setFile(file);
+            setPreview(URL.createObjectURL(file));
+    
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64String = reader.result.split(',')[1]; // Strip the prefix
+                setBinary(base64String);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+    
+    function base64ToArrayBuffer(base64) {
+        const binaryString = window.atob(base64);
+        const len = binaryString.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+        return bytes.buffer;
+    }
+    
+    const handleDocument = async () => {
+        try {
+            const frontImageBinary2 = base64ToArrayBuffer(frontImageBinary);
+            const backImageBinary2 = base64ToArrayBuffer(backImageBinary);
+            fetchDataAndDispatch()
+            const result = await Swal.fire({
+                title: 'Confirm Upload',
+                text: 'Upload These documents for verification',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Confirm',
+                cancelButtonText: 'Cancel',
+            });
+    
+            if (result.isConfirmed) {
+                const loadingElement = ReactDOMServer.renderToString(
+                    <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', padding: '100px', alignItems: 'center' }}>
+                        <RingLoader color="#36d7b7" size={200} />
+                        <p>Uploading Document...</p>
+                    </div>
+                );
+    
+                Swal.fire({
+                    html: loadingElement,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                });
+    
+                setTimeout(async () => {
+                    const formData = new FormData();
+                    formData.append('front', new Blob([frontImageBinary2], { type: 'application/octet-stream' }));
+                    formData.append('back', new Blob([backImageBinary2], { type: 'application/octet-stream' }));
+    
+                    try {
+                        const response = await axios.post(`${BASE_URL}/user/verify-documentupload-verification-document`, formData, {
+                            headers: {
+                                'x-token': userToken,
+                                'Content-Type': 'multipart/form-data',
+                            },
+                        });
+    
+                        Swal.close();
+                        console.log(response);
+    
+                        const status = response.data?.status;
+                        if (status === 'success') {
+                            setFrontImagePreview(null)
+                            setBackImagePreview(null)
+                            fetchDataAndDispatch()
+                            Swal.fire({
+                                title: 'Documents uploaded successfully',
+                                text: 'Await Approval',
+                                icon: 'info',
+                            });
+                        } else {
+                            setFrontImagePreview(null)
+                            setBackImagePreview(null)
+                            fetchDataAndDispatch()
+                            Swal.fire({
+                                title: 'Ooops...',
+                                text: response.data?.message,
+                                icon: 'error',
+                            });
+                        }
+                    } catch (error) {
+                        Swal.close();
+                        fetchDataAndDispatch()
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'An error occurred. Please try again later.',
+                            icon: 'error',
+                        });
+                    }
+                }, 3000);
+            }
+        } catch (error) {
+            fetchDataAndDispatch()
+            Swal.fire({
+                title: 'Error',
+                text: 'An unexpected error occurred. Please try again later.',
+                icon: 'error',
+            });
+        }
+    };
+    
+    
+    
+
     return (
         <div>
             <ToastContainer />
             <div className="row" style={{ display: "grid", alignItems: "center" }}>
                 {
                     !data && (
-                        <div className="col-lg-6 card" style={{ display: "grid", alignItems: "center", height: "auto", margin: "auto" }}>
+                        <div className="col-lg-6 card" style={{ display: "grid",  alignItems: "center", height: "auto", margin: "auto" }}>
                             <div className="profile-info" style={{ margin: "auto", display: "flex", alignItems: "center", flexDirection: "column", position: "relative" }}>
                                 <div style={{ position: "relative" }}>
                                     <Avatar name={`${firstName} ${lastName}`} size={150} round />
@@ -111,82 +235,156 @@ const AppProfile = ({ userType }) => {
                 {
                     data && (
                         <div className="col-lg-8" style={{ margin: "auto" }}>
-                            <div className="card">
+                            <div className="card" style={{ }}>
                                 <div className="card-body">
                                     <div className="profile-tab">
                                         <div className="custom-tab-1">
                                             <h4 className="text-primary mb-0" style={{ fontSize: "2rem" }}>Edit Profile</h4>
-                                            <Tab.Container defaultActiveKey='Posts'>
+                                            <Tab.Container defaultActiveKey='Setting'>
                                                 <Nav as='ul' className="nav nav-tabs">
                                                     <Nav.Item as='li' className="nav-item">
-                                                        <Nav.Link to="#profile-settings" eventKey='Setting'>Update Profile</Nav.Link>
+                                                        <Nav.Link eventKey='Setting'>Update Profile</Nav.Link>
                                                     </Nav.Item>
                                                     <Nav.Item as='li' className="nav-item">
-                                                        <Nav.Link to="#profile-password" eventKey='password'>Change Password</Nav.Link>
+                                                        <Nav.Link eventKey='password'>Change Password</Nav.Link>
                                                     </Nav.Item>
+                                                    {
+                                                        userType  == 'user' && (
+                                                        <Nav.Item as='li' className="nav-item">
+                                                            <Nav.Link eventKey='verification'>Account Verification</Nav.Link>
+                                                        </Nav.Item>
+                                                        )
+                                                    }
                                                 </Nav>
                                                 <Tab.Content>
-                                                    <Tab.Pane id="profile-settings" eventKey='Setting'>
+                                                    <Tab.Pane eventKey='Setting'>
                                                         <div className="pt-3">
                                                             <div className="settings-form">
                                                                 <form onSubmit={handleSubmit}>
                                                                     <div className="row">
                                                                         <div className="form-group mb-3 col-md-6">
                                                                             <label className="form-label">First Name</label>
-                                                                            <input type="text" placeholder="First Name" className="form-control" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                                                                            <input type="text" style={{ border: 'none' }} placeholder="First Name" className="form-control" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
                                                                         </div>
                                                                         <div className="form-group mb-3 col-md-6">
                                                                             <label className="form-label">Last Name</label>
-                                                                            <input type="text" placeholder="Last Name" className="form-control" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                                                                            <input type="text" style={{ border: 'none' }} placeholder="Last Name" className="form-control" value={lastName} onChange={(e) => setLastName(e.target.value)} />
                                                                         </div>
                                                                     </div>
                                                                     <div className="row">
                                                                         <div className="form-group mb-3 col-md-6">
                                                                             <label className="form-label">Phone number</label>
-                                                                            <input type="text" placeholder="Phone number" className="form-control" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+                                                                            <input type="tel" style={{ border: 'none' }} placeholder="Phone number" className="form-control" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
                                                                         </div>
                                                                         <div className="form-group mb-3 col-md-6">
-                                                                            <label className="form-label">Date of Birth</label>
-                                                                            <input type="date" className="form-control" value={dob} onChange={(e) => setDob(e.target.value)} />
+                                                                            <label className="form-label">Email</label>
+                                                                            <input type="email" style={{ border: 'none' }} placeholder="Email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} />
                                                                         </div>
                                                                     </div>
                                                                     <div className="row">
                                                                         <div className="form-group mb-3 col-md-6">
-                                                                            <label className="form-label">Country</label>
-                                                                            <input type="text" placeholder="Country" className="form-control" value={country} onChange={(e) => setCountry(e.target.value)} />
+                                                                            <label className="form-label">Date of Birth</label>
+                                                                            <input type="date" style={{ border: 'none' }} placeholder="Date of Birth" className="form-control" value={dob} onChange={(e) => setDob(e.target.value)} />
                                                                         </div>
                                                                         <div className="form-group mb-3 col-md-6">
-                                                                            <label className="form-label">City</label>
-                                                                            <input type="text" className="form-control" placeholder="City" value={city} onChange={(e) => setCity(e.target.value)} />
+                                                                            <label className="form-label">Country</label>
+                                                                            <input type="text" style={{ border: 'none' }} placeholder="Country" className="form-control" value={country} onChange={(e) => setCountry(e.target.value)} />
                                                                         </div>
                                                                     </div>
-                                                                    <button className="btn btn-primary" type="submit">{isUpdatingProfile ? <Spinner animation="border" role="status" size="sm"><span className="visually-hidden">Loading...</span></Spinner> : "Edit Profile"}</button>
+                                                                    <div className="row">
+                                                                        <div className="form-group mb-3 col-md-12">
+                                                                            <label className="form-label">City</label>
+                                                                            <input type="text" style={{ border: 'none' }} placeholder="City" className="form-control" value={city} onChange={(e) => setCity(e.target.value)} />
+                                                                        </div>
+                                                                    </div>
+                                                                    <button className="btn btn-primary" type="submit">{isUpdatingProfile ? <Spinner animation="border" size="sm" /> : "Update Profile"}</button>
                                                                 </form>
                                                             </div>
                                                         </div>
                                                     </Tab.Pane>
-                                                    <Tab.Pane id="profile-password" eventKey='password'>
+                                                    <Tab.Pane eventKey='password'>
                                                         <div className="pt-3">
                                                             <div className="settings-form">
-                                                                <form onSubmit={(e) => e.preventDefault()}>
-                                                                    <div className="row">
-                                                                        <div className="form-group mb-3 col-md-6">
-                                                                            <label className="form-label">Old Password</label>
-                                                                            <input type="password" placeholder="Enter Old Password" className="form-control" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} />
-                                                                        </div>
-                                                                        <div className="form-group mb-3 col-md-6">
-                                                                            <label className="form-label">New Password</label>
-                                                                            <input type="password" className="form-control" placeholder="Enter New Password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-                                                                        </div>
+                                                                <h4 className="text-primary">Change Password</h4>
+                                                                <form onSubmit={handleChangePassword}>
+                                                                    <div className="mb-3">
+                                                                        <label className="form-label">Old Password</label>
+                                                                        <input type="password" style={{ border: 'none' }} placeholder="Old Password" className="form-control" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} />
                                                                     </div>
-                                                                    <div className="form-group mb-3 col-md-6">
+                                                                    <div className="mb-3">
+                                                                        <label className="form-label">New Password</label>
+                                                                        <input type="password" style={{ border: 'none' }} placeholder="New Password" className="form-control" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+                                                                    </div>
+                                                                    <div className="mb-3">
                                                                         <label className="form-label">Confirm Password</label>
-                                                                        <input type="password" className="form-control" placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                                                                        <input type="password" style={{ border: 'none' }} placeholder="Confirm Password" className="form-control" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
                                                                     </div>
-                                                                    <button className="btn btn-primary" onClick={handleChangePassword}>{isChangingPassword ? <Spinner animation="border" role="status" size="sm"><span className="visually-hidden">Loading...</span></Spinner> : "Change Password"}</button>
+                                                                    <button className="btn btn-primary" type="submit">{isChangingPassword ? <Spinner animation="border" size="sm" /> : "Change Password"}</button>
                                                                 </form>
                                                             </div>
                                                         </div>
+                                                    </Tab.Pane>
+                                                    <Tab.Pane eventKey='verification'>
+                                                        {
+                                                            userInfo?.verified_id === "verifying" ? (<p style={{textAlign: 'center', fontSize: '1.5rem'}}>Awaiting Verification</p>
+                                                            ) : (
+                                                            <div className="pt-3">
+                                                                <div className="settings-form">
+                                                                    <Tab.Container defaultActiveKey='frontImage'>
+                                                                        <Nav as='ul' className="nav justify-content-center pt-3">
+                                                                            <Nav.Item as='li' className="nav-item">
+                                                                                <Nav.Link eventKey='frontImage'>Upload Front Only</Nav.Link>
+                                                                            </Nav.Item>
+                                                                            <Nav.Item as='li' className="nav-item">
+                                                                                <Nav.Link eventKey='bothImages'>Upload Front & Back</Nav.Link>
+                                                                            </Nav.Item>
+                                                                        </Nav>
+
+                                                                        <Tab.Content className="pt-3">
+                                                                            <p className="text-center">Provide verification documents either Driver's License, National Identity or Passport</p>
+                                                                            <Tab.Pane eventKey='frontImage'>
+                                                                            <div className="row d-flex" style={{gap: '10px', justifyContent: 'center'}}>
+                                                                                    <div className="col-md-6">
+                                                                                        <label className="form-label">Front Image</label>
+                                                                                        <input type="file" className="form-control"  style={{ border: 'none'}} accept="image/*" onChange={(e) => handleFileChange(e, setFrontImage, setFrontImagePreview, setFrontImageBinary)} />
+                                                                                        {frontImagePreview && (
+                                                                                            <div className="mt-2">
+                                                                                                <img src={frontImagePreview} alt="Front Image Preview" className="img-fluid" />
+                                                                                            </div>
+                                                                                        )}
+                                                                                    </div>
+                                                                                </div>
+                                                                            </Tab.Pane>
+                                                                            <Tab.Pane eventKey='bothImages'>
+                                                                                <div className="row d-flex" style={{gap: '10px', justifyContent: 'center'}}>
+                                                                                    <div className="col-md-5">
+                                                                                        <label className="form-label">Front Document</label>
+                                                                                        <input type="file" className="form-control"  style={{ border: 'none'}} accept="image/*" onChange={(e) => handleFileChange(e, setFrontImage, setFrontImagePreview, setFrontImageBinary)} />
+                                                                                        {frontImagePreview && (
+                                                                                            <div className="mt-2">
+                                                                                                <img src={frontImagePreview} alt="Front Image Preview" className="img-fluid" />
+                                                                                            </div>
+                                                                                        )}
+                                                                                    </div>
+                                                                                    <div className="col-md-5">
+                                                                                        <label className="form-label">Back Doucument</label>
+                                                                                        <input type="file" className="form-control"  style={{ border: 'none'}} accept="image/*" onChange={(e) => handleFileChange(e, setBackImage, setBackImagePreview, setBackImageBinary)} />
+                                                                                        {backImagePreview && (
+                                                                                            <div className="mt-2">
+                                                                                                <img src={backImagePreview} alt="Back Image Preview" className="img-fluid" />
+                                                                                            </div>
+                                                                                        )}
+                                                                                    </div>
+                                                                                </div>
+                                                                            </Tab.Pane>
+                                                                        </Tab.Content>
+                                                                    </Tab.Container>
+                                                                </div>
+                                                                <Button className="mt-4" onClick={handleDocument}>Submit</Button>
+                                                            </div>
+
+                                                            )
+                                                        }
                                                     </Tab.Pane>
                                                 </Tab.Content>
                                             </Tab.Container>

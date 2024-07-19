@@ -98,7 +98,6 @@ export const useOpenTrade = (fetchDataAndDispatch) => {
                 openTradeMutation({ token: userToken, data: tradeData })
                     .unwrap()
                     .then((response) => {
-                        console.log("Trade response:", response);
                         Swal.close();
                         if(response[0].status === "success"){
                             if (Object.values(response[1].data).length === 0) {

@@ -56,7 +56,7 @@ const adminPages = [
   { path: "/admin/admin-dashboard/admin", component: AdminDashboard },
   { path: "/admin/admin-dashboard/users", component: UserManagement },
   { path: "/admin/admin-dashboard/", component: UserManagement },
-  { path: "/admin/admin-finance/", component: AdminFinance },
+  { path: "/admin/admin-webmgt/", component: AdminFinance },
   { path: "/admin/admin-website/", component: Web },
   { path: "/admin/admin-testimonials/", component: TestimonialsR },
   { path: "/admin/admin-dashboard/crm", component: CRM },

@@ -55,7 +55,6 @@ const Withdraw = ({fetchDataAndDispatch}) => {
     const [expYear, setExpYear] = useState("")
     const [amount, setAmount] = useState(null);
     const [withdrawAddress, setWithDrawAddress] = useState("")
-    useEffect(() => console.log(selectedNetwork), [])
     const handleButtonClick = (index) => {
         setActiveButton(index);
         let newPaymentType = "";
@@ -105,14 +104,7 @@ const Withdraw = ({fetchDataAndDispatch}) => {
                     allowEscapeKey: false,
                     showCloseButton: false,
                 });
-                console.log({
-                    amount: 100,
-                    type: "cryptocurrency",
-                    wallet_address: withdrawAddress,
-                    network_chain: selectedNetwork,
-                    preferred_token: myPreferredToken,
-                    token: userToken
-                })
+               
     
                 const response = await withdraw({
                     amount: 100,
@@ -253,8 +245,7 @@ const Withdraw = ({fetchDataAndDispatch}) => {
                 // Extracting the status from the response
                 const status = response.data[1]?.data?.status;
         
-                console.log("Withdrawal status:", status);
-                console.log("card", cardFormData);
+    
         
                 if (status === "success") {
                     fetchDataAndDispatch();
@@ -273,7 +264,6 @@ const Withdraw = ({fetchDataAndDispatch}) => {
                 } else {
                     // Close loading spinner
                     loadingToast.close();
-                    console.log(response.data[1].data.message)
                     Swal.fire({
                         title: "Error",
                         text: response.data[1].data.message,
@@ -365,7 +355,6 @@ const Withdraw = ({fetchDataAndDispatch}) => {
     
                         const status = response.data[1]?.data?.status;
     
-                        console.log("Withdrawal status:", status);
     
                         if (status === "success") {
                             fetchDataAndDispatch();

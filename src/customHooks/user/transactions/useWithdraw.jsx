@@ -41,7 +41,6 @@ const useWithdraw = (fetchDataAndDispatch) => {
         amount: ''
     });
 
-    useEffect(() => console.log(selectedNetwork), [selectedNetwork]);
 
     const handleButtonClick = (index) => {
         setActiveButton(index);
@@ -228,8 +227,7 @@ const useWithdraw = (fetchDataAndDispatch) => {
 
                 const status = response.data?.status;
 
-                console.log("Withdrawal status:", status);
-                console.log("card", cardFormData);
+               
                 if (status === "success") {
                     fetchDataAndDispatch();
                     setTimeout(() => {

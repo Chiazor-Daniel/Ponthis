@@ -35,7 +35,6 @@ const ViewTransactions = () => {
     };
   }, []);
 
-  useEffect(() => console.log("dtrans", transactionsData), [transactionsData]);
 
   return (
     <div>

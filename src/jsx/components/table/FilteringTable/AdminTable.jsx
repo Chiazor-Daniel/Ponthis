@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 import { useCreateLeadMutation } from '../../../../redux-contexts/redux/services/admin';
 import { useSelector } from 'react-redux';
 
-const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, refetch, showFilter, crmFilter }) => {
+const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, refetch, showFilter, crmFilter, makeRec, makeRecovery }) => {
   const navigate = useNavigate();
   const { adminToken } = useSelector(state => state.adminAuth);
   const [createLead] = useCreateLeadMutation();
@@ -142,6 +142,11 @@ const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, re
           {
             leads && (
               <button className='btn btn-primary' onClick={handleShowModal}>Create new lead</button>
+            )
+          }
+          {
+            makeRec && (
+              <button className='btn btn-primary' onClick={()=>makeRecovery()}>Create Recovery Transaction</button>
             )
           }
         </div>

@@ -20,7 +20,6 @@ function AdminLogin(props) {
 
   const loginUser = (email, password) => {
     setLoad(true);
-    console.log("Login Start...");
     axios.post(`${BASE_URL}/user/auth/login/`, {
       email,
       password
@@ -34,10 +33,8 @@ function AdminLogin(props) {
       }
     })
       .then(response => {
-        console.log(response.data);
         if (response.status === 200) {
           const accessToken = response.data.access_token;
-          console.log(accessToken);
           sessionStorage.setItem("adminToken", accessToken);
 
           axios.get(`${BASE_URL}/user/profile/users/`, {
@@ -46,10 +43,8 @@ function AdminLogin(props) {
             }
           })
             .then(user => {
-              console.log("user", user)
               sessionStorage.setItem("adminInfo", JSON.stringify(user.data));
               dispatch(adminLoginSuccess({ adminInfo: user.data, adminToken: accessToken }));
-			        console.log([user, accessToken])
               setLoad(false);
               toast.success("Login successful!", {
                 autoClose: 1000,
@@ -64,7 +59,6 @@ function AdminLogin(props) {
                   }
                 }
               });
-              console.log("from state",  props.superAdmin)
             })
             .catch(error => {
               console.error("Error fetching user data:", error);
@@ -99,8 +93,9 @@ function AdminLogin(props) {
             <div className="col-12">
               <div className="card-body">
               <div className="logo-header" style={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                    <Link to={"#"} className="logo">
-                                        <img src='../../../public/logo3.png'  style={{width:'400px', margin: 'auto'}}/>
+              <Link to={"#"} className="logo" style={{display: 'flex', alignItems: 'center', gap: '20px',}}>
+                                        <img src='../../../public/logo.png'  style={{width:'100px', margin: 'auto'}}/>
+                                        <h1>LEDGER SAFE AI</h1>
                                     </Link>
                                 </div>
                 <div className="nav nav-tabs border-bottom-0" >

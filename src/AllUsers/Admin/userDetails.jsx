@@ -68,7 +68,6 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                 });
                 try {
                     const editRes = await editUserDetails({ user_id: id, userDetails: formData, token: adminToken });
-                    console.log(editRes);
                     if (editRes.data.status === "success") {
                         refetch()
                         Swal.fire({
@@ -79,7 +78,6 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                         });
                     }
                 } catch (error) {
-                    console.log(error);
                     Swal.fire({
                         icon: 'error',
                         title: 'Failed to update user details! No changes were made',
@@ -111,7 +109,6 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                 });
                 try {
                     const resetRes = await resetUserPassword({ user_id: id, token: adminToken });
-                    console.log(resetRes)
                     if (resetRes.data.status === "success") {
                         refetch()
                         Swal.fire({
@@ -129,7 +126,6 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                         });
                     }
                 } catch (error) {
-                    console.log(error);
                     Swal.fire({
                         icon: 'error',
                         title: 'Failed to reset!',
@@ -159,8 +155,6 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
             });
 
             const loginRes = await loginUser({ user_id: id, token: adminToken });
-            console.log(loginRes);
-            console.log("user token", loginRes?.data["access-token"]);
 
             if (loginRes.data.status === 'success') {
                 const userToken = loginRes?.data["access-token"];
@@ -188,7 +182,6 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                     position: 'top-center',
                     onClose: () => {
                         navigate("/dashboard");
-                        console.log("hey", userInfo.data)
                         setUserType("user");
                         setAsAdmin(true)
                     }
@@ -322,7 +315,6 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                                                         token: adminToken,
                                                         // account_types: userAccountType
                                                     });
-                                                    console.log(res);
                                                     if (res.data.status === 'success') {
                                                         refetch()
                                                         Swal.fire({
@@ -401,7 +393,7 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                             >
                                 <Modal.Header closeButton>
                                     <Modal.Title id="contained-modal-title-vcenter">
-                                        Create New RecoveryTransaction
+                                        Create New Recovery Transaction
                                     </Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
@@ -475,7 +467,6 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                                                 created_at: createdAt,
                                                 token: adminToken
                                             });
-                                            console.log("myRes", res);
                                             if (res.data?.status === 'success') {
                                                 refetch();
                                                 Swal.fire({

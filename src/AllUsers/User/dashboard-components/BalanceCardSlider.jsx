@@ -1,31 +1,25 @@
 import React from 'react';
 import "swiper/css";
-import TotalBalanceArea from './TotalBalanceArea';
-import ProfitLossArea from './ProfitLossArea';
-import { Swiper, SwiperSlide, } from "swiper/react";
-import TotaldipositChart from './TotaldipositChart';
-import { useSelector } from 'react-redux';
+import TotalBalanceArea from './TotalBalanceArea'; // Placeholder component for the chart
+import ProfitLossArea from './ProfitLossArea'; // Placeholder component for the chart
+import { Swiper, SwiperSlide } from "swiper/react";
 import { useResponsive } from '../../../redux-contexts/context/responsive';
-import { FaBitcoin } from "react-icons/fa6";
+import { FaDollarSign, FaMoneyBillWave } from "react-icons/fa";
 
-const BalanceCardSlider = ({ data }) => {
-    const { isMobile, isTablet } = useResponsive();
-    const { crypto_balance, fiat_balance } = data || {}
+const BalanceCardSlider = () => {
+    const { isMobile } = useResponsive();
 
+    // Dummy data for total income and total spending
     const slidesData = [
         {
-            countNum: ` ${crypto_balance || "0.00"} BTC`,
-            title: "Balance",
-            convert: '$365',
-            info: "0",
-            chartComponent: <TotalBalanceArea />
+            countNum: ' $15,000.00',
+            title: 'Total Income',
+            chartComponent: <TotalBalanceArea /> // Replace with the appropriate chart component
         },
         {
-            countNum: ` ${fiat_balance || "0.00"} USD`,
-            title: "USD(Fiat)",
-            convert: '$365',
-            info: "0",
-            chartComponent: <TotaldipositChart />
+            countNum: ' $7,500.00',
+            title: 'Total Spending',
+            chartComponent: <ProfitLossArea /> // Replace with the appropriate chart component
         },
     ];
 
@@ -64,20 +58,19 @@ const BalanceCardSlider = ({ data }) => {
                             <div className="card card-wiget">
                                 <div className="card-body">
                                     <div className="card-wiget-info">
-                                        <h4 className="count-num" style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+                                        <h4 className="count-num" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                             {
                                                 index === 0 ? (
-                                                    <FaBitcoin size={40} color='#F7931A' />
+                                                    <FaDollarSign size={40} color='#28a745' />
                                                 ) : (
-                                                    <img src='dollar.png' style={{width: '40px'}}/>
+                                                    <FaMoneyBillWave size={40} color='#dc3545' />
                                                 )
                                             }
                                             <span>
-                                            {slide.countNum}
-                                        </span>
+                                                {slide.countNum}
+                                            </span>
                                         </h4>
-                                        {/* <p>{slide.convert}</p> */}
-                                        <p style={{fontSize: '1.2rem'}}>{slide.title}</p>
+                                        <p style={{ fontSize: '1.2rem' }}>{slide.title}</p>
                                     </div>
                                     {slide.chartComponent}
                                 </div>
@@ -90,4 +83,5 @@ const BalanceCardSlider = ({ data }) => {
         </div>
     );
 }
+
 export default BalanceCardSlider;

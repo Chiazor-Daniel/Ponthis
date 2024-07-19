@@ -68,10 +68,8 @@ const CreateCompanyDetail = ({ admin }) => {
           } else {
             Swal.fire('Error!', 'Unexpected response from server.', 'error');
           }
-          console.log(response.data);
         } catch (error) {
           Swal.fire('Error!', 'There was an error creating the company detail.', 'error');
-          console.log(error);
         }
       }
     });

@@ -1,0 +1,30 @@
+/* Add this CSS in your styles file or within a <style> tag in your component */
+.swiper-container {
+    position: relative;
+    width: 100%;
+    padding-top: 20px;
+  }
+  
+  .swiper-button-prev,
+  .swiper-button-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+    cursor: pointer;
+    color: gray;
+  }
+  
+  .swiper-button-prev {
+    left: 10px;
+  }
+  
+  .swiper-button-next {
+    right: 10px;
+  }
+  
+  img {
+    height: auto;
+    margin: auto;
+  }
+  

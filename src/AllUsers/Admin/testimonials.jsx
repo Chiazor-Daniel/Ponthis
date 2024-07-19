@@ -130,8 +130,8 @@ const TestimonialList = ({ admin }) => {
             </Card.Text>
             {testimonial.imageUrl && <Card.Img src={testimonial.imageUrl} alt="Testimonial Image" style={{ width: '200px', marginBottom: '10px' }} />}
             <Card.Footer className="text-muted">Created at: {new Date(testimonial.created_at).toLocaleString()}</Card.Footer>
-            <Button variant="primary" onClick={() => handleEdit(testimonial)} className="me-2">Edit</Button>
-            <Button variant="danger" onClick={() => handleDelete(testimonial.id)}>Delete</Button>
+            {/* <Button variant="primary" onClick={() => handleEdit(testimonial)} className="me-2">Edit</Button>
+            <Button variant="danger" onClick={() => handleDelete(testimonial.id)}>Delete</Button> */}
           </Card.Body>
         </Card>
       ))}

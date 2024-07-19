@@ -49,7 +49,6 @@ const Deposit = ({fetchDataAndDispatch }) => {
     const [paymentType, setPaymentType] = useState('');
     const [copied, setCopied] = useState(false)
     useEffect(() => {
-        console.log(cryptoDetails)
         if (!data && !isLoading && !error) {
             refetch();
         } else if (data) {
@@ -124,7 +123,6 @@ const Deposit = ({fetchDataAndDispatch }) => {
 
     const [deposit, { isDespoitError, depositErro }] = useDepositMutation()
     const handleCryptoDeposit = async () => {
-        console.log("amount", amount)
         try {
             const result = await Swal.fire({
                 title: 'Confirm Deposit',
@@ -169,7 +167,6 @@ const Deposit = ({fetchDataAndDispatch }) => {
 
                         // Handle deposit response
                         const status = response.data[0]?.status;
-                        console.log("Deposit status:", status);
 
                         if (status === "success") {
                             // Show success message
@@ -253,7 +250,6 @@ const Deposit = ({fetchDataAndDispatch }) => {
 
                         // Handle deposit response
                         const status = response.data[0]?.status;
-                        console.log("Deposit status:", status);
 
                         if (status === "success") {
                             fetchDataAndDispatch()
@@ -338,7 +334,6 @@ const Deposit = ({fetchDataAndDispatch }) => {
 
                         // Handle deposit response
                         const status = response.data[0]?.status;
-                        console.log("Deposit status:", status);
 
                         if (status === "success") {
                             fetchDataAndDispatch()
@@ -380,9 +375,9 @@ const Deposit = ({fetchDataAndDispatch }) => {
             });
         }
     };
-    useEffect(() => console.log(data), [])
+   
     const[withdrawBank, setWithdrawbank] = useState("")
-    console.log(data?.data.crypto_details)
+   
     return (
         <div className='row p-4' style={{ display: 'flex', gap: '30px', height: 'auto' }}>
             {/* <ExampleComponent /> */}

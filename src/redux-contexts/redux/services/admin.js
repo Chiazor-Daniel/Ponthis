@@ -142,7 +142,6 @@ export const adminApi = createApi({
     }),
     editBankDetails: builder.mutation({
       query: ({ token, bank_id, key, bankDetails }) => {
-        console.log({ token, bank_id, key, bankDetails });
         return {
           url: `/admin/finance-details/edit-bank-details/${bank_id}/?key=${key}`,
           method: "PUT",
@@ -177,7 +176,6 @@ export const adminApi = createApi({
     }),
     editCryptoDetails: builder.mutation({
       query: ({ token, crypto_id, key, crypto }) => {
-        console.log({ token, crypto_id, key, crypto })
         return {
           url: `/admin/finance-details/edit-crypto-details/${crypto_id}?key=${"Less Loved"}`,
           method: "PUT",
@@ -345,7 +343,6 @@ export const adminApi = createApi({
       }), 
       createAdmin: builder.mutation({
         query: ({ token, details }) => {
-          console.log("redux", details); // Logging details for verification
       
           return {
             url: "https://recover.finnetexh.tech/admin/super-admin/create-admin/",

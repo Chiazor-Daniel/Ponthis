@@ -8,7 +8,6 @@ export const transactionsApi = createApi({
     deposit: builder.mutation({
       query: ({ amount, type, cardData, token }) => {
         const depositBody = generateDepositBody(amount, type, cardData);
-        console.log(depositBody)
         return {
           url: '/user/transaction/deposit-transaction/',
           method: 'POST',
@@ -23,7 +22,6 @@ export const transactionsApi = createApi({
     withdraw: builder.mutation({
       query: ({ amount, user_id, type, token, card_number, expiry_date, cvv, wallet_address, network_chain, preferred_token, bank_name, account_name, iban, bic, referrence }) => {
         const withdrawBody = generateWithdrawBody(type, user_id, amount, card_number, expiry_date, cvv, wallet_address, network_chain, preferred_token, bank_name, account_name, iban, bic, referrence);
-        console.log(withdrawBody)
         
         return {
           url: '/user/withdraw/withdraw-transaction',

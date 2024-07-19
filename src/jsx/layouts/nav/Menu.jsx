@@ -68,7 +68,7 @@ export const AdminMenuList = [
     {
         title: 'Website',
         classsChange: 'mm-collapse',
-        to: "/admin/admin-finance/",
+        to: "/admin/admin-webmgt/",
         iconStyle: <i className="material-icons">web</i>,
     },  
     {

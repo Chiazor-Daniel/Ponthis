@@ -62,7 +62,6 @@ export function useMainLayoutFunctions() {
           }
         })
         .then(response => {
-          console.log(response)
           if (response.data.status === "success") {
             showVerificationEmailSent();
             setYes(true);

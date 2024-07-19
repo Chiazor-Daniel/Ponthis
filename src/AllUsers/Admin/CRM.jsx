@@ -56,7 +56,6 @@ const CRM = ({ superAdmin }) => {
 
   const handleAddComment = () => {
     // Implement your logic to add the comment for the lead with id = currentLeadId
-    console.log('Adding comment:', comment, 'to lead:', currentLeadId);
     handleCommentClose();
   };
 
@@ -73,7 +72,6 @@ const CRM = ({ superAdmin }) => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          console.log("formData", formData);
           const res = await createLead({
             token: adminToken,
             formData: {
@@ -89,7 +87,6 @@ const CRM = ({ superAdmin }) => {
               created_at: formData.createdAt
             }
           });
-          console.log(res);
           if (res.data.status === "success") {
             refetch();
             Swal.fire({
@@ -126,18 +123,13 @@ const CRM = ({ superAdmin }) => {
       confirmButtonText: 'Yes, delete it!',
     }).then(async (result) => {
       if (result.isConfirmed) {
-        console.log({
-          token: adminToken,
-          lead_id: id,
-          admin_id: adminInfo.id
-        });
+       
         try {
           const res = await deleteLead({
             token: adminToken,
             lead_id: id,
             admin_id: adminInfo.id
           });
-          console.log("this res", res);
           if (res.data.status === "success") {
             refetch();
             Swal.fire({
@@ -227,9 +219,7 @@ const CRM = ({ superAdmin }) => {
     [handleEditLead]
   );
 
-  useEffect(() => {
-    console.log("allLeads:", allLeads);
-  }, [allLeads]);
+ 
 
   if (isLoading) {
     return <Spinner animation="border" />;

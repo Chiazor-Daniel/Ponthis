@@ -128,8 +128,8 @@ const BlogList = ({ admin }) => {
               {blog.article}
             </Card.Text>
             {blog.imageUrl && <Card.Img src={blog.imageUrl} alt="Blog Image" style={{ width: '200px', marginBottom: '10px' }} />}
-            <Button variant="primary" onClick={() => handleEdit(blog)} className="me-2">Edit</Button>
-            <Button variant="danger" onClick={() => handleDelete(blog.id)}>Delete</Button>
+            {/* <Button variant="primary" onClick={() => handleEdit(blog)} className="me-2">Edit</Button>
+            <Button variant="danger" onClick={() => handleDelete(blog.id)}>Delete</Button> */}
           </Card.Body>
         </Card>
       ))}

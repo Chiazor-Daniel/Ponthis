@@ -91,7 +91,6 @@ const AdminDetails = ({superAdmin}) => {
                           admin_id: id,
                           assign_task: "unassigned"
                       });
-                      console.log(res);
                       if(res.data.status === "success"){
                         refetchLeads();
                           Swal.fire({
@@ -307,7 +306,6 @@ const AdminDetails = ({superAdmin}) => {
               adminToken: adminToken,
               assign: assign
             });
-            console.log('Mutation result:', mutationResult);
             if (mutationResult?.data.status === "success") {
               refetch();
               Swal.fire(
@@ -339,7 +337,6 @@ const AdminDetails = ({superAdmin}) => {
               adminToken: adminToken,
               assign: assign
             });
-            console.log('Mutation result:', mutationResult);
             if (mutationResult?.data.status === "success") {
               refetch();
               Swal.fire(

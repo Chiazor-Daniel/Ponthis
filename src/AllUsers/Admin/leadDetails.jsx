@@ -144,7 +144,6 @@ const ViewLead = ({superAdmin}) => {
         setLoadingActivate(true); 
         try {
             const res = await activateLead({ lead_id: id, token: adminToken, admin_id: adminInfo.id });
-            console.log(res)
             if (res.data.status === "success") {
                 refetch();
                 Swal.fire({
@@ -194,18 +193,13 @@ const ViewLead = ({superAdmin}) => {
             confirmButtonText: 'Yes, delete it!',
         }).then(async (result) => {
             if (result.isConfirmed) {
-                console.log({
-                    token: adminToken,
-                    lead_id: id,
-                    admin_id: adminInfo.id
-                })
+               
                 try {
                     const res = await deleteLead({
                         token: adminToken,
                         lead_id: id,
                         admin_id: adminInfo.id
                     });
-                    console.log("this res", res)
                     if (res.data.status === "success") {
                         refetch()
                         Swal.fire({
@@ -285,7 +279,6 @@ const ViewLead = ({superAdmin}) => {
                                         admin_id: parseInt(row.values.id),
                                         assign_task: "assign"
                                     });
-                                    console.log(res);
                                     if(res.data.status === "success"){
                                         Swal.fire({
                                             icon: "success", 
@@ -352,8 +345,7 @@ const ViewLead = ({superAdmin}) => {
                                         if(result.isConfirmed){
                                             try{
                                                 const res = await addComments({token: adminToken, lead_id: parseInt(id), admin_id: parseInt(adminInfo.id), comment: comment})
-                                                console.log({token: adminToken, lead_id: id, admin_id: parseInt(adminInfo.id), comment: comment})
-                                                console.log(res)
+                                                
                                                 if(res.data.comment){
                                                     refetchComments()
                                                     Swal.fire({
@@ -363,7 +355,6 @@ const ViewLead = ({superAdmin}) => {
                                                     })
                                                 }
                                             }catch(err){
-                                                console.log(err)
                                                 Swal.fire({
                                                     icon: "error", 
                                                     title: "An error occured. Try again", 

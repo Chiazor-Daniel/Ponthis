@@ -24,7 +24,6 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
   
 
   const handleRefetch = () => {
-    console.log("yuep")
     refetchPaymentDetails();
   };
 
@@ -50,12 +49,9 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.isConfirmed) {
-        console.log({ token: adminToken, details: adminDetails })
         createAdmin({ token: adminToken, details: adminDetails })
           .unwrap()
           .then((response) => {
-            console.log(response)
-            console.log('Admin created successfully:', response);
             if(response.status){
               refetchAdmins()
               Swal.fire({
@@ -179,9 +175,7 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
     ],
     [navigate, admin]
   );
-  useEffect(() => {
-  console.log(adminInfo)
-  }, []);
+
 
   const columns = React.useMemo(
     () => [

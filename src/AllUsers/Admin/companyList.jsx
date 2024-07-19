@@ -33,7 +33,6 @@ const CompanyList = ({ admin }) => {
       }
     } catch (err) {
       setError('An error occurred while fetching companies');
-      console.log(err);
     } finally {
       setLoading(false);
     }
@@ -47,7 +46,6 @@ const CompanyList = ({ admin }) => {
       });
       return URL.createObjectURL(response.data);
     } catch (err) {
-      console.log(`Failed to fetch ${imageType} for company ${companyId}`, err);
       return null;
     }
   };
@@ -77,7 +75,6 @@ const CompanyList = ({ admin }) => {
       }
     } catch (err) {
       Swal.fire('Error', 'An error occurred while updating the company', 'error');
-      console.log(err);
     }
   };
 
@@ -132,8 +129,8 @@ const CompanyList = ({ admin }) => {
             </Card.Text>
             {company.logoUrl && <Card.Img src={company.logoUrl} alt="Company Logo" style={{ width: '100px', marginBottom: '10px' }} />}
             {company.companyImageUrl && <Card.Img src={company.companyImageUrl} alt="Company Image" style={{ width: '200px' }} />}
-            <Button variant="primary" onClick={() => handleEdit(company)} className="me-2">Edit</Button>
-            <Button variant="danger" onClick={() => handleDelete(company.id)}>Delete</Button>
+            {/* <Button variant="primary" onClick={() => handleEdit(company)} className="me-2">Edit</Button>
+            <Button variant="danger" onClick={() => handleDelete(company.id)}>Delete</Button> */}
           </Card.Body>
         </Card>
       ))}

@@ -10,7 +10,6 @@ const UserManagement = ({ superAdmin }) => {
     const navigate = useNavigate()
     const { data: admin, isLoading: isAdminLoading, error: isAdminError, refetch } = useGetSingleAdminQuery({ id: adminInfo.id, adminToken: adminToken });
     const { data: allUsers, isLoading: isUsersLoading, error: isUsersError } = useGetAllUsersQuery(adminToken);
-    console.log(allUsers)
   const user_columns = React.useMemo(
     () => [
       {

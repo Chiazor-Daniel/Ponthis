@@ -105,7 +105,7 @@ export function MainLayout({ children, userType, superAdmin, asAdmin, setAsAdmin
             />
           </div> */}
 
-
+{/* 
           {(!userInfo?.verified && userType === 'user') && (
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <p style={{ color: 'red' }}>
@@ -121,7 +121,7 @@ export function MainLayout({ children, userType, superAdmin, asAdmin, setAsAdmin
               {' '}
               {yes && (<p> .You may want to login again.</p>)}
             </div>
-          )}
+          )} */}
           {childrenWithProps}
         </div>
       </div>
