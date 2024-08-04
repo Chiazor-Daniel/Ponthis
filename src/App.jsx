@@ -35,6 +35,13 @@ import Withdraw from './AllUsers/User/transactions/withdraw';
 import UserManagement from './AllUsers/Admin/userMgt';
 import Web from './AllUsers/Admin/web';
 import TestimonialsR from './AllUsers/Admin/Test';
+import DepositCp from './AllUsers/User/DepositCp';
+import DepositAsset from './AllUsers/User/DepositAsset';
+import WithdrawAsset from './AllUsers/User/WithdrawAsset';
+import UserCards from './AllUsers/User/usercards';
+import SettingsPage from './AllUsers/User/settings';
+import Assets from './AllUsers/Admin/assets';
+import LogoutPage from './jsx/layouts/nav/logOutuser';
 
 
 const pages = [
@@ -49,7 +56,15 @@ const pages = [
   { path: '/dashboard/trading/open', component: OpenTrade },
   { path: '/dashboard/view-transactions', component: ViewTransactions },
   { path: '/dashboard/recovered', component: Deposit },
-  { path: "/dashboard/withdraw", component: Withdraw },
+  // { path: "/dashboard/withdraw", component: Withdraw },
+  {path: 'dashboard/assets/:asset?', component: DepositCp},
+  {path: '/dashboard/assets', component: DepositCp},
+  {path: '/dashboard/deposit', component: DepositAsset},
+  {path: '/dashboard/deposit/:asset?', component: DepositAsset}, 
+  {path: '/dashboard/withdraw', component: WithdrawAsset}, 
+  {path: '/dashboard/cards', component: UserCards}, 
+  {path: '/dashboard/settings', component: SettingsPage}, 
+  {path: '/logout', component: LogoutPage}
 ];
 
 const adminPages = [
@@ -60,7 +75,8 @@ const adminPages = [
   { path: "/admin/admin-website/", component: Web },
   { path: "/admin/admin-testimonials/", component: TestimonialsR },
   { path: "/admin/admin-dashboard/crm", component: CRM },
-
+  { path: "/admin/admin-dashboard/assets", component: Assets },
+  
   { path: "/admin/admin-dashboard/admin/:id", component: AdminDetails },
   { path: '/admin/admin-dashboard/profile', component: AppProfile },
   { path: "/admin/admin-dashboard/user/:id", component: UserDetails },

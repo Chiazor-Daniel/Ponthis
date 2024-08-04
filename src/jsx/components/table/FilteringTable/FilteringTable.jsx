@@ -337,12 +337,12 @@ export const FilteringTable = ({ data, isLoading, user, userId, refetchUser, sup
             </Modal>
             <div className="card">
                 <div className="card-header">
-                    <div style={{ display: "flex", justifyContent: 'space-between', width: "100%" }}>
+                    {/* <div style={{ display: "flex", justifyContent: 'space-between', width: "100%" }}>
                         <h4 className="card-title">{user === "admin" ? "User" : "View"} Transactions</h4>
                         {(user === "admin" && superAdmin) && (
                             <Button onClick={() => setModalShow(true)}>Make New Transaction</Button>
                         )}
-                    </div>
+                    </div> */}
                 </div>
                 {
                     isLoading ? (

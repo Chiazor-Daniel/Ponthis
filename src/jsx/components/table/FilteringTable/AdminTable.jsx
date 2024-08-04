@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 import { useCreateLeadMutation } from '../../../../redux-contexts/redux/services/admin';
 import { useSelector } from 'react-redux';
 
-const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, refetch, showFilter, crmFilter, makeRec, makeRecovery }) => {
+const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, refetch, showFilter, crmFilter, makeRec, makeRecovery, pag, search }) => {
   const navigate = useNavigate();
   const { adminToken } = useSelector(state => state.adminAuth);
   const [createLead] = useCreateLeadMutation();
@@ -41,7 +41,7 @@ const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, re
     {
       columns,
       data,
-      initialState: { pageIndex: 0 },
+      initialState: { pageIndex: 0, pageSize: 10 }, // Set initial page size to 10
       globalFilter: customFilterFunction,
     },
     useFilters,
@@ -62,8 +62,9 @@ const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, re
     gotoPage,
     nextPage,
     previousPage,
+    setPageSize,
     setGlobalFilter,
-    state: { pageIndex, globalFilter }
+    state: { pageIndex, pageSize, globalFilter }
   } = tableInstance;
 
   const [formData, setFormData] = useState({
@@ -136,24 +137,30 @@ const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, re
   return (
     <>
     <Card>
-      <Card.Body className="" style={{ backgroundColor: 'rgba(243, 243, 243, 0.04)' }}>
-        <div className="card-header" style={{ display: "flex", justifyContent: "space-between" }}>
-          <h4 className="card-title">{title}</h4>
-          {
-            leads && (
-              <button className='btn btn-primary' onClick={handleShowModal}>Create new lead</button>
-            )
-          }
-          {
-            makeRec && (
-              <button className='btn btn-primary' onClick={()=>makeRecovery()}>Create Recovery Transaction</button>
-            )
-          }
-        </div>
-        <div className="card-body">
-          <div className="table-responsive">
+        {
+          title && (
+          <div className="card-header" style={{ display: "flex", justifyContent: "space-between" }}>
+            <h4 className="card-title">{title}</h4>
+            {
+              leads && (
+                <button className='btn btn-primary' onClick={handleShowModal}>Create new lead</button>
+              )
+            }
+            {
+              makeRec && (
+                <button className='btn btn-primary' onClick={()=>makeRecovery()}>Create Recovery Transaction</button>
+              )
+            }
+          </div>
+          )
+        }
+      <Card.Body className="" style={{ backgroundColor: 'rgba(243, 243, 243, 0.04)', overflow: 'auto' }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} w={true} />
+              {
+                search && (
+                  <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} w={true} />
+                )
+              }
               <div>
                 {
                   showFilter && (
@@ -193,7 +200,8 @@ const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, re
                 }
               </div>
             </div>
-            <table {...getTableProps()} className="table dataTable display">
+          <div className="table-responsive">
+            <table {...getTableProps()} className="table dataTable display" >
               <thead>
                 {headerGroups.map(headerGroup => (
                   <tr {...headerGroup.getHeaderGroupProps()}>
@@ -222,27 +230,63 @@ const AdminTable = ({ data, columns, title, leads, superAdmin, createNewLead, re
                 })}
               </tbody>
             </table>
-            <div className="d-flex justify-content-between">
-              <span>
-                Page{' '}
-                <strong>
-                  {pageIndex + 1} of {pageOptions.length}
-                </strong>{''}
-              </span>
-              <span className="table-index">
-                Go to page : {' '}
-                <input type="number"
-                  className="ml-2"
-                  defaultValue={pageIndex + 1}
+            {
+              !pag && (
+                <div className="d-flex justify-content-between align-items-center mt-3">
+                <div>
+                  <button
+                    className="btn btn-primary me-2"
+                    onClick={() => gotoPage(0)}
+                    disabled={!canPreviousPage}
+                  >
+                    {'<<'}
+                  </button>
+                  <button
+                    className="btn btn-primary me-2"
+                    onClick={() => previousPage()}
+                    disabled={!canPreviousPage}
+                  >
+                    {'<'}
+                  </button>
+                  <button
+                    className="btn btn-primary me-2"
+                    onClick={() => nextPage()}
+                    disabled={!canNextPage}
+                  >
+                    {'>'}
+                  </button>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => gotoPage(pageCount - 1)}
+                    disabled={!canNextPage}
+                  >
+                    {'>>'}
+                  </button>
+                </div>
+                <span>
+                  Page{' '}
+                  <strong>
+                    {pageIndex + 1} of {pageOptions.length}
+                  </strong>{' '}
+                </span>
+                <select
+                  value={pageSize}
                   onChange={e => {
-                    const pageNumber = e.target.value ? Number(e.target.value) - 1 : 0
-                    gotoPage(pageNumber)
+                    setPageSize(Number(e.target.value))
                   }}
-                />
-              </span>
-            </div>
+                  className="form-select" 
+                  style={{ width: 'auto' }}
+                >
+                  {[10, 20, 30, 40, 50].map(pageSize => (
+                    <option key={pageSize} value={pageSize}>
+                      Show {pageSize}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              )
+            }
           </div>
-        </div>
       </Card.Body>
     </Card>
 

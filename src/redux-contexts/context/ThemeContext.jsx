@@ -190,6 +190,7 @@ const ThemeContextProvider = (props) => {
 
   const setDemoTheme = (theme, direction) => {
     const themeSettings = dezThemeSet[2];
+    //5
     const setAttr = {};
 
     body.setAttribute("data-typography", "poppins");

@@ -10,10 +10,12 @@ import { FaCircle, FaEye, FaEyeSlash } from "react-icons/fa6";
 import Avatar from "react-avatar";
 // import ToggleTheme from "../../components/toggleTheme/index."; // Ensure this import is correct
 import avatar from "../../../assets/images/avatar/1.jpg";
+import { useResponsive } from "../../../redux-contexts/context/responsive";
 import { CiBellOn } from "react-icons/ci";
 
 const Header = ({ onNote, onThemeChange, userType, superAdmin, asAdmin, setAsAdmin, setUserType }) => {
   const navigate = useNavigate();
+  const {isMobile} = useResponsive();
   const [rightSelect, setRightSelect] = useState('Eng');
   const { loading, userInfo, userToken, error, success } = useSelector(state => state.auth);
   const [isDark, setDark] = useState(true);
@@ -50,12 +52,19 @@ const Header = ({ onNote, onThemeChange, userType, superAdmin, asAdmin, setAsAdm
           <nav className="navbar navbar-expand">
             <div className="collapse navbar-collapse justify-content-between">
               <div className="header-left">
-                <div
-                  className="dashboard_bar"
-                  style={{ textTransform: "capitalize", display: "flex", alignItems: "center", gap: "20px" }}
-                >
-                  {userInfo.first_name + " " + userInfo.last_name}
-                </div>
+                {
+                  !isMobile && (
+                  <div
+                    className="dashboard_bar"
+                    style={{ textTransform: "capitalize", display: "flex", alignItems: "center", gap: "20px" }}
+                  >
+                  <span style={{fontWeight: 'normal'}}>
+                    Welcome, 
+                  </span>
+                  {userInfo.first_name + " " + userInfo.last_name}!
+                  </div>
+                  ) 
+                }
               </div>
             </div>
           </nav>
@@ -73,8 +82,8 @@ const Header = ({ onNote, onThemeChange, userType, superAdmin, asAdmin, setAsAdm
               <TbDoorEnter size={25} color="white" /><span>Admin Dashboard</span>
             </Button>
           )}
-          <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', width:'200px' }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            {/* <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', width: '200px' }}>
               <div>Total Balance</div>
               <div style={{ fontSize: '1.3rem', fontWeight: '400', color: 'gray', fontFamily: 'monospace', display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'center' }}>
                 <span>{seeBal ? "$8000" : "******"}</span>
@@ -82,10 +91,26 @@ const Header = ({ onNote, onThemeChange, userType, superAdmin, asAdmin, setAsAdm
                   {seeBal ? <FaEyeSlash onClick={() => setSeeBal(!seeBal)} /> : <FaEye style={{ margin: 'auto', cursor: 'pointer' }} onClick={() => setSeeBal(!seeBal)} />}
                 </div>
               </div>
+            </div> */}
+            {
+              isMobile && (
+              <div
+                      className="dashboard_bar"
+                      style={{ textTransform: "capitalize", display: "flex", alignItems: "center", gap: "20px", color: 'black' }}
+                    >
+                    <span style={{fontWeight: 'normal', fontSize: '1.2rem'}}>
+                      Welcome, 
+                    </span>
+                    <span  style={{fontWeight: 'bold', fontSize: '1.2rem'}}>
+                    {userInfo.first_name + " " + userInfo.last_name}!
+
+                    </span>
+                    </div>
+              )
+            }
+            <div>
+              {/* <CiBellOn size={40} /> */}
             </div>
-			<div>
-											<CiBellOn size={30} />
-										</div>
             <Dropdown as="li" className="nav-item dropdown header-profile">
               <Dropdown.Toggle variant="" as="a" className="nav-link i-false c-pointer">
                 <div className="position-absolute" style={{ top: -8, right: 0 }}>

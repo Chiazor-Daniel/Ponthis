@@ -214,12 +214,68 @@ export const adminApi = createApi({
         }
       }
     }),
+    getAllAssets: builder.query({
+      query: (token) => {
+        return {
+          url: `/admin/user/get-all-assets/`,
+          headers: {
+            'Content-Type': 'application/json',
+            'x-token': token,
+          }
+        }
+      }
+    }),
+    getAllCards: builder.query({
+      query: ({token, user_id}) => {
+        return {
+          url: `/admin/user/get-card-requests/${user_id}`,
+          headers: {
+            'Content-Type': 'application/json',
+            'x-token': token,
+          }
+        }
+      }
+    }),
+    getAllDeposits: builder.query({
+      query: ({token, user_id}) => {
+        return {
+          url: `/admin/user/get-user-deposits/?user_id=${user_id}`,
+          headers: {
+            'Content-Type': 'application/json',
+            'x-token': token,
+          }
+        }
+      }
+    }),
+    createUser: builder.mutation({
+      query: ({token, firstName, lastName, email, phoneNumber,  country, address, dateOfBirth, password }) => {
+        const queryParams = new URLSearchParams({
+          email,
+          phone_number: phoneNumber,
+          first_name: firstName, 
+          last_name: lastName,
+          country: country, 
+          address: address, 
+          date_of_birth: dateOfBirth, 
+          password
+        })
+        return {
+          url: `/admin/user/create-new-user/?${queryParams.toString()}`, 
+          method: 'POST', 
+          headers: {
+            'Content-Type': 'application/json',
+            'x-token': token,
+          }
+        }
+      }
+    }), 
     getSingleLead: builder.query({
       query: ({ token, lead_id, admin_id }) => {
         return {
           url: `/admin/crm/view-lead/${lead_id}?admin_id=${admin_id}`,
           headers: {
-            "x-token": token
+            "x-token": token, 
+            
           }
         }
       }
@@ -396,6 +452,10 @@ export const adminApi = createApi({
 
 export const {
   useGetAllAdminsQuery,
+  useGetAllAssetsQuery,
+  useGetAllDepositsQuery,
+  useCreateUserMutation,
+  useGetAllCardsQuery, 
   useGetSingleAdminQuery,
   useGetAllUsersQuery,useMakeNewRecoveryTransactionMutation,
   useGetSingleUserQuery, useUpdateAccountTypeMutation,

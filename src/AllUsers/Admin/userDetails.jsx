@@ -21,18 +21,28 @@ import { BASE_URL } from '../../api';
 import { loginSuccess } from '../../redux-contexts/redux/features/auth/authSlice';
 import { useGetAllTradesQuery } from '../../redux-contexts/redux/services/trades'
 import { Tab, Nav } from 'react-bootstrap';
+import { useResponsive } from '../../redux-contexts/context/responsive';
 import { useCreateCustomProfitMutation } from '../../redux-contexts/redux/services/admin';
 import FutureTable from '../../jsx/components/Trading/futuretable';
 import { FaLongArrowAltRight } from "react-icons/fa";
 import { useUpdateAccountTypeMutation } from '../../redux-contexts/redux/services/admin';
 import AdminTable from '../../jsx/components/table/FilteringTable/AdminTable';
+import { useGetAllCardsQuery } from '../../redux-contexts/redux/services/admin';
+import UserCards from './userCards';
+import UserDeposits from './userDeposits';
+
 const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
     const { id } = useParams();
+    const { isMobile } = useResponsive()
     const dispatch = useDispatch()
     const navigate = useNavigate();
     const [createCustomProfit] = useCreateCustomProfitMutation()
     const [updateAccountType] = useUpdateAccountTypeMutation()
     const { adminToken, adminInfo } = useSelector(state => state.adminAuth)
+    const { data: cards, isLoading: cardsLoading, refetch: cardRefetch } = useGetAllCardsQuery({
+        token: adminToken,
+        user_id: id
+    })
     const [editUserDetails, { isLoading: isEditing, error: editingError }] = useEditUseretailsMutation();
     const { data: userData, isLoading, error, refetch } = useGetSingleUserQuery({ id, adminToken });
     const [resetUserPassword, { isLoading: resetLoading, error: reseError }] = useResetUserPasswordMutation()
@@ -47,6 +57,83 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
     const [status, setStatus] = useState('pending');
     const [createdAt, setCreatedAt] = useState(new Date().toISOString());
     const [modalShow, setModalShow] = useState(false)
+
+    const columns = [
+        {
+            Header: 'Amount Recovered (BTC)',
+            accessor: 'amount_recovered',
+        },
+        {
+            Header: 'Status',
+            accessor: 'status',
+        },
+
+        {
+            Header: 'Organization Name',
+            accessor: 'organization_name',
+        },
+        {
+            Header: 'Compensation Fee (BTC)',
+            accessor: 'compensation_fee',
+        },
+        {
+            Header: 'Created At',
+            accessor: 'created_at',
+        },
+        {
+            Header: '',
+            accessor: 'id',
+            Cell: ({value}) => {
+                return(
+                <>
+                    <Button
+                    variant='danger'
+                        onMouseEnter={() => 
+                            Swal.fire({
+                                title: 'Delete Recovery',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Yes, delete it!'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    console.log('Confirmed deletion'); // Debugging log
+                                    console.log('Transaction ID:', value); // Debugging log
+                                    axios.delete(`${BASE_URL}/admin/user/delete-recover-transaction/`, {
+                                        headers: {
+                                            'x-token': adminToken
+                                        },
+                                        params: {
+                                            transaction_id: value
+                                        }
+                                    }).then((res) => {
+                                        console.log(res); // Debugging log
+                                        if (res.data.status === "success") {
+                                            refetch()
+                                            Swal.fire(
+                                                'Deleted',
+                                                'Recovery Transaction Deleted',
+                                                'success'
+                                            );
+                                        }
+                                    }).catch((error) => {
+                                        console.error('Error during deletion:', error); // Debugging log
+                                        Swal.fire(
+                                            'Error',
+                                            'An Error Occurred',
+                                            'error'
+                                        );
+                                    });
+                                }
+                            })}
+                    >Delete Recvoery</Button>
+                </>
+                )
+            }
+        }, 
+    ]
+
     const handleSubmit = async (formData) => {
         Swal.fire({
             icon: 'info',
@@ -201,75 +288,62 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
             });
         }
     };
+    // const user = userData?.message[0]?.user
 
-    useEffect(() => {
-        if (shouldRefetch) {
-            setShouldRefetch(false);
+    const userDetails = [
+        { label: 'First Name', value: userData?.message[0]?.user.first_name },
+        { label: 'Last Name', value: userData?.message[0]?.user.last_name },
+        { label: 'Email', value: userData?.message[0]?.user.email },
+        { label: 'Phone Number', value: userData?.message[0]?.user.phone_number },
+        { label: 'Can Auto Trade', value: userData?.message[0]?.user.can_auto_trade ? 'Yes' : 'No' },
+        { label: 'Is Active', value: userData?.message[0]?.user.is_active ? 'Yes' : 'No' },
+        { label: 'User Type', value: userData?.message[0]?.user.user_type },
+        { label: 'Address', value: userData?.message[0]?.user.address },
+        { label: 'Country', value: userData?.message[0]?.user.country },
+        { label: 'Date of Birth', value: userData?.message[0]?.user.date_of_birth },
+        { label: 'Auto Trade Count', value: userData?.message[0]?.user.auto_trade_count },
+        { label: 'Verified', value: userData?.message[0]?.user.verified ? 'Yes' : 'No' },
+        { label: 'Assigned To', value: userData?.message[0]?.user.assigned_to },
+        { label: 'Created At', value: userData?.message[0]?.user.created_at },
+    ];
+    // const [transactionDataAvailable, setTransactionDataAvailable] = useState(userData.message[2]?.transaction_activities)
+    
+    const [assets, setAssets] = useState([]);
+    const [selectedAsset, setSelectedAsset] = useState(null);
+
+    const fetchAssets = async () => {
+        try {
+            const response = await axios.get(`${BASE_URL}/admin/user/get-all-assets/`, {
+                headers: {
+                    'x-token': adminToken,
+                },
+            });
+            console.log(response)
+            setAssets(response.data);
+        } catch (err) {
+            console.error(err);
         }
-    }, [shouldRefetch]);
+    };
+    useEffect(() => {
+        fetchAssets();
+    }, [adminToken]);
+
+    const handleAssetChange = (e) => {
+        const selectedAsset = assets.find((asset) => asset.id === parseInt(e.target.value));
+        setSelectedAsset(selectedAsset);
+    };
+    const [verificationStatus, setVerificationStatus] = useState('unverified');
+
 
     if (isLoading) {
         return <div>Loading...</div>;
     }
-
     if (error) {
         return <div>Error: {error.message}</div>;
     }
 
-    const user = userData.message[0]?.user;
-
-    const userDetails = [
-        { label: 'First Name', value: user.first_name },
-        { label: 'Last Name', value: user.last_name },
-        { label: 'Email', value: user.email },
-        { label: 'Phone Number', value: user.phone_number },
-        { label: 'Can Auto Trade', value: user.can_auto_trade ? 'Yes' : 'No' },
-        { label: 'Is Active', value: user.is_active ? 'Yes' : 'No' },
-        { label: 'User Type', value: user.user_type },
-        { label: 'Address', value: user.address },
-        { label: 'Country', value: user.country },
-        { label: 'Date of Birth', value: user.date_of_birth },
-        { label: 'Auto Trade Count', value: user.auto_trade_count },
-        { label: 'Verified', value: user.verified ? 'Yes' : 'No' },
-        { label: 'Assigned To', value: user.assigned_to },
-        { label: 'Created At', value: user.created_at },
-    ];
-
-    const transactionDataAvailable = userData.message[2]?.transaction_activities;
-    const columns = [
-        {
-            Header: 'ID',
-            accessor: 'id',
-        },
-        {
-            Header: 'Amount Recovered (BTC)',
-            accessor: 'amount_recovered',
-        },
-        {
-            Header: 'Status',
-            accessor: 'status',
-        },
-        {
-            Header: 'User ID',
-            accessor: 'user_id',
-        },
-        {
-            Header: 'Organization Name',
-            accessor: 'organization_name',
-        },
-        {
-            Header: 'Compensation Fee (BTC)',
-            accessor: 'compensation_fee',
-        },
-        {
-            Header: 'Created At',
-            accessor: 'created_at',
-        },
-    ];
-    
-
-
     return (
+
         <>
             <ToastContainer />
             <div className=''>
@@ -277,7 +351,7 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                     <h1>User Details</h1>
                 </div>
                 <div className='row' style={{ gap: "50px", display: "flex", justifyContent: "center" }}>
-                    <div className='card col-5' style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "20px", fontSize: "1.3rem" }}>
+                    <div className='card col-12 col-lg-5' style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "20px", fontSize: "1.3rem" }}>
                         <Dropdown style={{ position: "absolute", right: 20 }}>
                             <Dropdown.Toggle style={{ backgroundColor: "transparent", border: "none", fontSize: "1.5rem", color: "#6c757d", padding: "0" }}>
                                 <BiSolidBoltCircle />
@@ -286,22 +360,23 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                                 <Dropdown.Item href="#/action-1">
                                     <button className='btn' style={{ backgroundColor: "red", color: "white" }}>Delete User</button>
                                 </Dropdown.Item>
-                                {/* Add more dropdown items if needed */}
+
                             </Dropdown.Menu>
                         </Dropdown>
                         <div className="d-flex align-items-center mb-3" style={{ position: "relative", flexDirection: 'column' }}>
-                            <Avatar name={`${user.first_name} ${user.last_name}`} size="150" round />
-                            <div style={{ position: "absolute", top: "20px", right: "10px", width: "20px", height: "20px", borderRadius: "50%", backgroundColor: user.is_active ? "green" : "gray" }}></div>
+                            <Avatar name={`${userData?.message[0]?.user.first_name} ${userData?.message[0]?.user.last_name}`} size="150" round />
+                            <div style={{ position: "absolute", top: "20px", right: "10px", width: "20px", height: "20px", borderRadius: "50%", backgroundColor: userData?.message[0]?.user.is_active ? "green" : "gray" }}></div>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
                                 <div style={{ display: 'grid', alignItems: 'center', gap: '10px' }}>
-                                    {/* <Form.Select size='sm' onChange={(e) => setUserAccountType(e.target.value)}>
-                                        <option value='basic'>Yes</option>
-                                        <option value='premium'>No</option>
-                                    </Form.Select> */}
+                                    <Form.Select size='sm' value={verificationStatus} onChange={(e) => setVerificationStatus(e.target.value)}>
+                                        <option value='unverified'>Unverified</option>
+                                        <option value='verifying'>Verifying</option>
+                                        <option value='verified'>Verified</option>
+                                    </Form.Select>
                                     <Button style={{ marginTop: '20px' }} onClick={() => {
                                         Swal.fire({
                                             icon: "info",
-                                            title: 'Update withdraw status',
+                                            title: 'Update verification status',
                                             text: '',
                                             showCancelButton: true,
                                             confirmButtonText: "Yes",
@@ -309,18 +384,20 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                                         }).then(async (result) => {
                                             if (result.isConfirmed) {
                                                 try {
-                                                    const res = await updateAccountType({
-                                                        user_id: parseInt(id),
-                                                        admin_id: adminInfo.id,
-                                                        token: adminToken,
-                                                        // account_types: userAccountType
-                                                    });
+                                                    const res = await axios.put(`${BASE_URL}/admin/user/change-verification-status/${parseInt(id)}`, null, {
+                                                        headers: {
+                                                            'x-token': adminToken
+                                                        },
+                                                        params: {
+                                                            status_: verificationStatus
+                                                        }
+                                                    })
                                                     if (res.data.status === 'success') {
                                                         refetch()
                                                         Swal.fire({
                                                             icon: 'success',
                                                             title: 'Updated',
-                                                            text: `Updated user withdraw status.`,
+                                                            text: `Updated user verification status.`,
                                                         });
                                                     }
                                                 } catch (error) {
@@ -328,15 +405,48 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                                                     Swal.fire({
                                                         icon: 'error',
                                                         title: 'Update failed',
-                                                        text: 'There was an error updating the account type. Please try again later.',
+                                                        text: 'There was an error updating the verification status. Please try again later.',
                                                     });
                                                 }
                                             }
                                         });
-                                    }}>{userData.message[3]?.accounts[0].can_withdraw ? "Enable Withdrawal" : "Disable Withdrawal"}</Button>
-
+                                    }}>{verificationStatus === 'verified' ? "Change Verification Status" : "Verify User"}</Button>
+                                    <Button onClick={() => {
+                                        Swal.fire({
+                                            icon: "info",
+                                            title: "Confirm Action",
+                                            text: "Are you sure you want to enable/disable withdrawal?",
+                                            showCancelButton: true,
+                                            confirmButtonText: "Yes",
+                                            cancelButtonText: "No",
+                                        }).then(async (result) => {
+                                            if (result.isConfirmed) {
+                                                try {
+                                                    const res = await axios.put(`${BASE_URL}/admin/user/can-withdraw/${id}`, null, {
+                                                        headers: {
+                                                            'x-token': adminToken
+                                                        }
+                                                    });
+                                                    if (res.data.status === 'success') {
+                                                        refetch()
+                                                        Swal.fire({
+                                                            icon: 'success',
+                                                            title: 'Updated',
+                                                            text: `Updated user withdrawal status.`,
+                                                        });
+                                                    }
+                                                } catch (error) {
+                                                    console.error(error);
+                                                    Swal.fire({
+                                                        icon: 'error',
+                                                        title: 'Update failed',
+                                                        text: 'There was an error updating the withdrawal status. Please try again later.',
+                                                    });
+                                                }
+                                            }
+                                        });
+                                    }}>Enable/Disable Withdrawal</Button>
                                 </div>
-
                             </div>
                         </div>
                         {userDetails.map((detail, index) => (
@@ -351,40 +461,20 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                             </button>
                         </div>
                     </div>
-                    <div className='col-5'>
+                    <div className='col-12 col-lg-5'>
                         <div className='' style={{ padding: "20px" }}>
                             <h1>Edit User Details</h1>
-                            <UserForm user={user} onSubmit={handleSubmit} userResetPassword={userResetPassword} />
-                        </div>
-                        <div className='card' style={{ maxHeight: "400px", padding: '20px' }}>
-                            <h3>User Account</h3>
-                            <p style={{ fontSize: '2rem' }}>Crypto Balance : <span style={{ fontWeight: 'bold' }}>{userData.message[3]?.accounts[0].crypto_balance}</span>BTC</p>
-                            <p style={{ fontSize: '1.5rem' }}>Fiat Balance : $<span style={{ fontWeight: 'bold' }}>{userData.message[3]?.accounts[0].fiat_balance}</span></p>
-
+                            <UserForm user={userData?.message[0]?.user} onSubmit={handleSubmit} userResetPassword={userResetPassword} />
                         </div>
                     </div>
                 </div>
+                <UserDeposits adminToken={adminToken} user_id={id} />
+                {cards && <UserCards cards={cards} adminToken={adminToken} user_id={id} refetch={cardRefetch} />}
+
                 <div>
                     <div className="" style={{ padding: "20px" }}>
-                        {/* <Tab.Container defaultActiveKey="All">
-                            <div className="card-header border-0">
-                                <Nav as="ul" className="order  nav-tabs" id="pills-tab" role="tablist">
-                                    <Nav.Item as="li" className=" my-1" role="presentation">
-                                        <Nav.Link as="button" eventKey="All" type="button" onClick={() => setFills("all")}>All Trade</Nav.Link>
-                                    </Nav.Item>
-                                    <Nav.Item as="li" className=" my-1" role="presentation">
-                                        <Nav.Link as="button" eventKey="Spot" type="button" onClick={() => setFills("open")}>Opened</Nav.Link>
-                                    </Nav.Item>
-                                    <Nav.Item as="li" className=" my-1" role="presentation">
-                                        <Nav.Link as="button" className="me-0" eventKey="Listing" type="button" onClick={() => setFills("close")}>Closed</Nav.Link>
-                                    </Nav.Item>
-                                </Nav>
-                            </div>
-                            <div className="pt-0">
-                            </div>
-                        </Tab.Container> */}
                         <>
-                        <Modal
+                            <Modal
                                 show={modalShow}
                                 onHide={() => setModalShow(false)}
                                 size="md"
@@ -398,7 +488,17 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                                 </Modal.Header>
                                 <Modal.Body>
                                     <Form>
-
+                                        <Form.Group controlId="assetId">
+                                            <Form.Label>Asset</Form.Label>
+                                            <Form.Select value={selectedAsset?.id} onChange={handleAssetChange}>
+                                                <option value="">Select Asset</option>
+                                                {assets && assets.map((asset) => (
+                                                    <option key={asset.id} value={asset.id}>
+                                                        {asset.name}
+                                                    </option>
+                                                ))}
+                                            </Form.Select>
+                                        </Form.Group>
                                         <Form.Group controlId="organizationName">
                                             <Form.Label>Organization Name</Form.Label>
                                             <FormControl
@@ -415,8 +515,8 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                                                     type="number"
                                                     value={amountRecovered}
                                                     onChange={(e) => setAmountRecovered(e.target.value)}
-                                                    />
-                                                    <InputGroup.Text>BTC</InputGroup.Text>
+                                                />
+                                                <InputGroup.Text>BTC</InputGroup.Text>
                                             </InputGroup>
                                         </Form.Group>
 
@@ -427,8 +527,8 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                                                     type="number"
                                                     value={compensationFee}
                                                     onChange={(e) => setCompensationFee(e.target.value)}
-                                                    />
-                                                    <InputGroup.Text>BTC</InputGroup.Text>
+                                                />
+                                                <InputGroup.Text>BTC</InputGroup.Text>
                                             </InputGroup>
                                         </Form.Group>
 
@@ -456,18 +556,24 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                                     </Form>
                                 </Modal.Body>
                                 <Modal.Footer>
+
                                     <Button onClick={async () => {
                                         try {
-                                            const res = await makeNewRecovery({
-                                                user_id: id,
-                                                organization_name: organizationName,
-                                                amount_recovered: amountRecovered,
-                                                compensation_fee: compensationFee,
-                                                status: status,
-                                                created_at: createdAt,
-                                                token: adminToken
+                                            const response = await axios.post(`${BASE_URL}/admin/user/make-recover-transaction/`, null, {
+                                                params: {
+                                                    user_id: id,
+                                                    asset_id: selectedAsset?.id,
+                                                    organization_name: organizationName,
+                                                    amount_recovered: amountRecovered,
+                                                    compensation_fee: compensationFee,
+                                                    status: status,
+                                                    created_at: createdAt,
+                                                },
+                                                headers: {
+                                                    'x-token': adminToken,
+                                                },
                                             });
-                                            if (res.data?.status === 'success') {
+                                            if (response.data.status === 'success') {
                                                 refetch();
                                                 Swal.fire({
                                                     icon: "success",
@@ -482,7 +588,7 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                                             });
                                         }
                                     }}>
-                                        Create New RecoveryTransaction
+                                        Create New Recovery Transaction
                                     </Button>
                                 </Modal.Footer>
                             </Modal>
@@ -492,6 +598,7 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                                 )
                             }
                         </>
+                        <h1>User Withdrawals</h1>
                         {
                             userData.message[2]?.withdrawal_activities && (
                                 <FilteringTable user="admin" data={userData.message[2]?.withdrawal_activities} userId={id} refetchUser={reUser} superAdmin={superAdmin} />

@@ -3,7 +3,6 @@ import React, { useContext, useEffect, useState } from "react";
 /// React router dom
 import { Link } from "react-router-dom";
 import { ThemeContext } from "../../../redux-contexts/context/ThemeContext";
-
 //images
 import logo1 from './../../../assets/images/logo/logo.png';
 import SetLogo from "../../../setLogo";
@@ -42,7 +41,8 @@ const NavHader = () => {
 		<img src={logoColor} className="logo-color" alt="" />
 		<img src={logoColorText} className="brand-title color-title" alt="" /> */}
       </Link>
-
+{
+  !isMobile && (
       <div
         className="nav-control"
         onClick={() => {
@@ -68,6 +68,9 @@ const NavHader = () => {
           </svg>
         </div>
       </div>
+
+  )
+}
     </div>
   );
 };

@@ -22,9 +22,8 @@ export const transactionsApi = createApi({
     withdraw: builder.mutation({
       query: ({ amount, user_id, type, token, card_number, expiry_date, cvv, wallet_address, network_chain, preferred_token, bank_name, account_name, iban, bic, referrence }) => {
         const withdrawBody = generateWithdrawBody(type, user_id, amount, card_number, expiry_date, cvv, wallet_address, network_chain, preferred_token, bank_name, account_name, iban, bic, referrence);
-        
         return {
-          url: '/user/withdraw/withdraw-transaction',
+          url: '/user/transactions/withdraw-transaction',
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -57,7 +56,7 @@ export const transactionsApi = createApi({
     getRecoveryTransactions: builder.query({
       query: (token) => {
         return{
-          url: '/user/withdraw/get-recovery-transactions/',
+          url: '/user/transactions/get-recovery-transactions/',
           method: 'GET', 
           headers: {
             'Content-Type': 'application/json',
@@ -65,11 +64,85 @@ export const transactionsApi = createApi({
           },
         }
       }
-    })
+    }), 
+    getUserAssets: builder.query({
+      query: (token)=> {
+        return{
+          url: '/user/account/get-user-balances/', 
+          method: 'GET', 
+          headers: {
+            'Content-Type': 'application/json',
+            "x-token": token
+          }
+        }
+      }
+    }), 
+    getAllAssets: builder.query({
+      query: (token) => {
+        return{
+          url: '/user/transactions/get-all-assets', 
+          method: 'GET', 
+          headers: {
+            'Content-Type': 'application/json',
+            "x-token": token
+          }
+        }
+
+      }
+    }), 
+    getAllUserAssets: builder.query({
+      query: (token) => {
+        return{
+          url: '/user/transactions/get-user-assets/', 
+          method: 'GET', 
+          headers: {
+            'Content-Type': 'application/json',
+            "x-token": token
+          }
+        }
+
+      }
+    }), 
+    getUserCards : builder.query({
+      query: (token) => {
+        return{
+          url: '/user/cards/get-cards/', 
+          method: 'GET', 
+          headers: {
+            'Content-Type': 'application/json',
+            "x-token": token
+          }
+        }
+      }
+    }), 
+    getUserDeposits : builder.query({
+      query: (token) => {
+        return{
+          url: '/user/transactions/get-user-deposits', 
+          method: 'GET', 
+          headers: {
+            'Content-Type': 'application/json',
+            "x-token": token
+          }
+        }
+      }
+    }), 
+    getUserWithdrawals : builder.query({
+      query: (token) => {
+        return{
+          url: '/user/transactions/get-withdraw-transactions/', 
+          method: 'GET', 
+          headers: {
+            'Content-Type': 'application/json',
+            "x-token": token
+          }
+        }
+      }
+    }), 
   }),
 });
 
-export const { useDepositMutation, useWithdrawMutation, useGetTransactionsQuery, useConvertCryptoMutation, useGetRecoveryTransactionsQuery } = transactionsApi;
+export const {useGetUserWithdrawalsQuery, useGetUserDepositsQuery, useGetAllUserAssetsQuery, useGetUserCardsQuery, useDepositMutation, useWithdrawMutation, useGetTransactionsQuery, useConvertCryptoMutation, useGetRecoveryTransactionsQuery, useGetUserAssetsQuery, useGetAllAssetsQuery } = transactionsApi;
 
 
 const generateDepositBody = (amount, type, cardData) => {

@@ -143,11 +143,7 @@ const AdminDashboard = ({setUserType, superAdmin}) => {
         Header: 'Phone Number',
         accessor: 'phone_number',
       },
-      {
-        Header: 'Can Auto Trade',
-        accessor: 'can_auto_trade',
-        Cell: ({ value }) => (value ? 'Yes' : 'No'),
-      },
+     
       {
         Header: 'Is Active',
         accessor: 'is_active',

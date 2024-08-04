@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
-
+import MyCryptoChart from "./dashboard-components/mycp"
 const ApexChart = () => {
   const [chartData] = useState({
     series: [
@@ -62,11 +62,9 @@ const ApexChart = () => {
   });
 
   return (
-    <div className='card' style={{padding: '20px'}}>
-      <div id="chart">
-        <ReactApexChart options={chartData.options} series={chartData.series} type="line" height={350} />
-      </div>
-      <div id="html-dist"></div>
+    <div className='card' style={{padding: '20px', height: '400px', overflow: 'hidden'}}>
+        {/* <ReactApexChart options={chartData.options} series={chartData.series} type="line" height={350} /> */}
+        <MyCryptoChart />
     </div>
   );
 };

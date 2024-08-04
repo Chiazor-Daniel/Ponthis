@@ -47,7 +47,7 @@ function Login(props) {
             <ToastContainer />
             <div className="browse-job login-style3">
                 <div className="bg-img-fix overflow-hidden" style={{ background: '#fff url(' + bg6 + ')', height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                    <div className="row col-lg-6 col-12 rounded bg-white">
+                    <div className="row col-lg-6 col-11 rounded bg-white" >
                         <div className="col-12">
                             <div className="card-body">
                                 <div className="logo-header" style={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
@@ -114,6 +114,7 @@ function Login(props) {
                                                         </Link> */}
                                                     </div>
                                                 </div>
+                                        
                                             </form>
                                             <div className="text-center">
                                                 <NavLink to="/register" className="btn btn-primary button-md btn-block" >
@@ -121,7 +122,6 @@ function Login(props) {
                                                 </NavLink>
                                             </div>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>

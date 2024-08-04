@@ -10,11 +10,13 @@ import { useSelector } from 'react-redux';
 import chat from "../assets/chat.png"
 import { Form } from 'react-bootstrap';
 import { MdEmojiEmotions } from "react-icons/md";
+import { useResponsive } from '../redux-contexts/context/responsive';
 import close from "../assets/close.png"
 import { IoIosSend } from "react-icons/io";
 import { useMainLayoutFunctions } from '../customHooks/layout/useLayoutFunctions';
 import { TawkToScript } from './components/chat';
 export function MainLayout({ children, userType, superAdmin, asAdmin, setAsAdmin, setUserType }) {
+  const { isMobile } = useResponsive()
   const navigate = useNavigate();
   const { menuToggle } = useContext(ThemeContext);
   const { fetchDataAndDispatch, showVerifyConfirmation } = useMainLayoutFunctions();
@@ -24,13 +26,23 @@ export function MainLayout({ children, userType, superAdmin, asAdmin, setAsAdmin
   const [openChat, setOpenChat] = useState(false)
   const [amount, setAmount] = useState("")
   const [usd, setusd] = useState('')
+  const [currency, setCurrency] = useState({
+    curr: userInfo?.preferred_currency ? userInfo?.preferred_currency?.toUpperCase() : 'USD',
+    symbol: userInfo?.preferred_currency === "usd"
+      ? "$"
+      : userInfo?.preferred_currency === "gbp"
+        ? "£"
+        : userInfo?.preferred_currency === "eur"
+          ? "€"
+          : "$",
+  });
   const handleVerify = () => {
     showVerifyConfirmation();
   };
 
   const childrenWithProps = React.Children.map(children, child => {
     if (React.isValidElement(child)) {
-      return React.cloneElement(child, { fetchDataAndDispatch, userType, superAdmin, asAdmin, setAsAdmin });
+      return React.cloneElement(child, { fetchDataAndDispatch, userType, superAdmin, asAdmin, setAsAdmin, currency });
     }
     return child;
   });
@@ -45,67 +57,19 @@ export function MainLayout({ children, userType, superAdmin, asAdmin, setAsAdmin
 
     }}>
       <Nav onDarkModeChange={(newTheme) => setTheme(newTheme)} userType={userType} superAdmin={superAdmin} setAsAdmin={setAsAdmin} asAdmin={asAdmin} setUserType={setUserType} />
-          <TawkToScript />
-      <div className="content-body" style={{ minHeight: window.screen.height - 45 }}>
+      <div style={{
+        position: 'fixed',
+        top: '0px',
+        right: '20px',
+        zIndex: 1000
+      }}>
+        <TawkToScript />
+      </div>
+      <div className="content-body" style={{ flex: 1, minHeight: window.screen.height - 45, marginLeft: isMobile ? '0px' : '', paddingBottom: isMobile ? '100px' : '' }}>
         <div className="container-fluid">
-          {/* <div
-            onClick={() => setOpenChat(!openChat)}
-            style={{
-              position: 'fixed',
-              bottom: "20px",
-              right: "20px",
-              backgroundColor: 'white',
-              padding: '20px',
-              zIndex: 100000,
-              borderRadius: '50%',
-              cursor: 'pointer',
-              transition: 'transform 0.3s ease' // Add transition for smooth rotation
-            }}
-          >
-            {
-              openChat && (
-                <div
-                  className='card'
-                  style={{
-                    padding: '20px',
-                    position: 'absolute',
-                    bottom: '90px',
-                    right: '0px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    flexDirection: 'column',
-                    width: '400px',
-                    height: '500px',
-                    animation: 'slideInRight 1s ease' // Slide in animation when openChat is true
-                  }}
-                >
-                  <p style={{ fontSize: '1.5rem', textAlign: 'center' }}>Customer Support</p>
-                  <div style={{ alignSelf: '', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <MdEmojiEmotions size={30} />
-                    <Form.Control
-                      type="text"
-                      placeholder="Type your message..."
-                     
-                    />
-                    <div style={{ display: 'flex', alignItems: 'center', padding: '10px', backgroundColor: '#7E8EF1', borderRadius: '50%' }}>
-                      <IoIosSend size={25} color='white' />
-                    </div>
-                  </div>
-                </div>
-              )
-            }
-            <img
-              src={openChat ? close : chat}
-              style={{
-                width: '40px',
-                zIndex: 99999,
-                transform: openChat && 'rotate(360deg)', // Rotate the image when openChat changes
-                transition: openChat ? 'transform 1s ease' : 'transform 0.3s ease' // Animate the rotation when openChat is true
-              }}
-            />
-          </div> */}
 
-{/* 
+
+          {/* 
           {(!userInfo?.verified && userType === 'user') && (
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <p style={{ color: 'red' }}>

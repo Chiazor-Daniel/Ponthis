@@ -115,3 +115,87 @@ backdrop-filter: blur(5px);
 -webkit-backdrop-filter: blur(5px);
 border: 1px solid rgba(255, 255, 255, 0.3);
 }
+
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer, Edge */
+}
+
+.amount-cell {
+  display: flex;
+  align-items: baseline;
+}
+
+.amount-cell .currency {
+  font-size: 0.75em;
+  color: #5f6368;
+  margin-right: 4px;
+}
+
+.amount-cell .value {
+  font-weight: bold;
+}
+
+.status-cell {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 16px;
+  font-size: 0.875em;
+}
+
+.status-cell .status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+.date-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.date-cell .date {
+  font-weight: bold;
+}
+
+.date-cell .time {
+  font-size: 0.875em;
+  color: #5f6368;
+}
+
+.verify-account-popup {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.popup-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.popup-text {
+  font-size: 14px;
+  color: #666;
+}
+
+.popup-confirm-btn {
+  background-color: #4CAF50;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.popup-cancel-btn {
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}

@@ -2,25 +2,28 @@
 .swiper-container {
     position: relative;
     width: 100%;
-    padding-top: 20px;
+    padding-top: 0px;
   }
   
   .swiper-button-prev,
   .swiper-button-next {
     position: absolute;
-    top: 50%;
+    top: 40%;
     transform: translateY(-50%);
     z-index: 10;
     cursor: pointer;
     color: gray;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .swiper-button-prev {
-    left: 10px;
+    left: 20px;
   }
   
   .swiper-button-next {
-    right: 10px;
+    right: 20px;
   }
   
   img {
@@ -28,3 +31,29 @@
     margin: auto;
   }
   
+  .modal-right .modal-dialog {
+    position: fixed;
+    margin: auto;
+    width: 320px;
+    height: 100%;
+    right: 0;
+    top: 0;
+  }
+  
+  .modal-right .modal-content {
+    height: 100%;
+    overflow-y: auto;
+  }
+  
+  .modal-right .modal-body {
+    padding: 15px;
+  }
+  
+  .modal-right.fade .modal-dialog {
+    right: -320px;
+    transition: opacity 0.3s linear, right 0.3s ease-out;
+  }
+  
+  .modal-right.fade.show .modal-dialog {
+    right: 0;
+  }
