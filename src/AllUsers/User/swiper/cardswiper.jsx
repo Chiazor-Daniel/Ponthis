@@ -75,7 +75,7 @@ const ImageSwiper = ({ cards: cardData, toggleCardStatus, userToken }) => {
             ))}
           </Swiper>
           <div  style={{display: 'flex', justifyContent: 'center', marginTop: '10px',}}>
-            <Button onClick={()=>setShowModal(true)} style={{margin:'auto', background: 'black'}}>Request New Card</Button>
+            <Button onClick={()=>setShowModal(true)} style={{margin:'auto', background: ''}}>Request New Card</Button>
           </div>
           {/* {
             cardData.length > 1 && (
@@ -89,7 +89,7 @@ const ImageSwiper = ({ cards: cardData, toggleCardStatus, userToken }) => {
             No cards available
           </p>
           <div  style={{display: 'flex', justifyContent: 'center', marginTop: '10px',}}>
-            <Button onClick={()=>setShowModal(true)} style={{margin:'auto', background: 'black'}}>Request New Card</Button>
+            <Button onClick={()=>setShowModal(true)} style={{margin:'auto'}}>Request New Card</Button>
           </div>
           </div>
       )}

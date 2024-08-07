@@ -33,7 +33,7 @@ const NavHader = () => {
       <Link to="/dashboard" className="brand-logo">
         {
             <div style={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-              <SetLogo w={!toggle? 60: 60} h={60}/>
+              {/* <SetLogo w={!toggle? 60: 60} h={60}/> */}
 
             </div>
         }

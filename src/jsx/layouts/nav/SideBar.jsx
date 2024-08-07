@@ -415,7 +415,7 @@
         <li key={index} className="mt-3">
           {data.content && data.content.length > 0 ? (
             <>
-              <div style={{position: 'relative',display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'center', background: '#18A594', padding: '15px', borderRadius: '50%', color: 'white', width: '40px', height: '40px'}} onClick={() => handleMenuClick(data.title)}>
+              <div style={{position: 'relative',display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'center', background: '#c6164f', padding: '15px', borderRadius: '50%', color: 'white', width: '40px', height: '40px'}} onClick={() => handleMenuClick(data.title)}>
                 <span>
                   {data.iconStyle}
                 </span>
@@ -424,7 +424,7 @@
               {activeMenu === data.title && (
                 <ul className="" style={{position: 'absolute', right: '200px', top: '-140px', height: 'auto', padding: '10px', background: 'white', borderRadius: '20px'}}>
                   {data.content.map((subData, subIndex) => (
-                    <li key={subIndex} style={{marginTop: '10px', padding: '10px', background: '#18A594', color: 'white', borderRadius: '10px'}}>
+                    <li key={subIndex} style={{marginTop: '10px', padding: '10px', background: '#c6164f', color: 'white', borderRadius: '10px'}}>
                       <Link to={subData.to} onClick={toggleMenu} style={{color: 'white'}}>
                         {subData.title}
                       </Link>
@@ -434,7 +434,7 @@
               )}
             </>
           ) : (
-            <Link to={data.to} onClick={toggleMenu}  style={{width: '40px', height: '40px', position: 'relative',display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'center', background: '#18A594', padding: '15px', borderRadius: '50%', color: 'white'}}>
+            <Link to={data.to} onClick={toggleMenu}  style={{width: '40px', height: '40px', position: 'relative',display: 'flex', gap: '10px', alignItems: 'center', justifyContent: 'center', background: '#c6164f', padding: '15px', borderRadius: '50%', color: 'white'}}>
               {data.iconStyle}
               {/* <span>{data.title}</span> */}
             </Link>

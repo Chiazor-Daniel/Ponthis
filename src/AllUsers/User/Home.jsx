@@ -209,8 +209,8 @@ const Home = ({ theme, fetchDataAndDispatch, currency }) => {
               <span>Deposit</span>
               <MdArrowRightAlt size={20} />
             </Button>
-            <div style={{ paddingLeft: '20px', paddingRight: '20px', background: '#D6EFD8', display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => navigate(`/dashboard/assets/${row.original.symbol}`)}>
-              <CiWallet size={30} />
+            <div style={{ paddingLeft: '20px', paddingRight: '20px', background: '#FFAAAA', borderRadius: '10px', display: 'flex', alignItems: 'center', cursor: 'pointer' }} onClick={() => navigate(`/dashboard/assets/${row.original.symbol}`)}>
+              <CiWallet size={30} color='#c6164f'/>
             </div>
           </div>
         ),

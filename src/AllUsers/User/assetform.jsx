@@ -139,7 +139,7 @@ const CryptoPurchaseComponent = ({ userToken, onAssetSelect, asset, refetchUserA
 
   return (
     <div className='col-9 mt-4'>
-      <div style={{ padding: '5px', background: 'black', width: '100px', borderRadius: '50px', color: 'white', textAlign: 'center' }}>
+      <div style={{ padding: '5px', background: '#c6164f', width: '100px', borderRadius: '50px', color: 'white', textAlign: 'center' }}>
         Exchange
       </div>
       <Form.Group className="mb-3 mt-2">
@@ -149,13 +149,13 @@ const CryptoPurchaseComponent = ({ userToken, onAssetSelect, asset, refetchUserA
             <img src='/coin.png' style={{ marginRight: '10px', width: '30px', fontSize: '1.5rem' }} alt="Default coin" />
           ) : (
             <img
-              src={coin ? `https://static.nexo.com/currencies/${coin.toLocaleUpperCase()}.svg` : '/coin.png'}
+              src={coin ? `https://static.nexo.com/currencies/${coin.toLocaleUpperCase()}.svg` : '/coin2.png'}
               alt={coin || "Coin"}
-              style={{ marginRight: '10px', height: '24px', width: '24px' }}
+              style={{ marginRight: '10px', height: '30px', width: '30px' }}
               onError={handleImageError}
             />
           )}
-          <Form.Control value={coin?.toUpperCase()} readOnly style={{ background: '#D6EFD8', fontWeight: 'bold', fontSize: '1.2rem' }} />
+          <Form.Control value={coin?.toUpperCase()} readOnly style={{ background: 'rgba(255, 170, 170, 0.5)', fontWeight: 'bold', fontSize: '1.2rem', color: 'black' }} />
           <DropdownButton title="" id="input-group-dropdown-1">
             {!isLoading && Array.isArray(data) && data.map(asset => (
               <Dropdown.Item key={asset.id} onClick={() => handleAssetSelect(asset)}>
@@ -172,7 +172,7 @@ const CryptoPurchaseComponent = ({ userToken, onAssetSelect, asset, refetchUserA
           <InputGroup>
             <Form.Control
               value={amount}
-              style={{ background: '#D6EFD8', fontWeight: 'bold', fontSize: '1.2rem', textAlign: 'right' }}
+              style={{ background: 'rgba(255, 170, 170, 0.5)', fontWeight: 'bold', fontSize: '1.2rem', textAlign: 'right' }}
               onChange={(e) => setAmount(e.target.value)}
             />
           </InputGroup>
@@ -183,11 +183,11 @@ const CryptoPurchaseComponent = ({ userToken, onAssetSelect, asset, refetchUserA
             <Form.Control
               value={loading ? '' : `${currency?.curr} ${equivalent}`}
               readOnly
-              style={{ background: '#D6EFD8', fontWeight: 'bold', fontSize: '1.2rem', textAlign: 'right', color: '#1A5319' }}
+              style={{ background: 'rgba(255, 170, 170, 0.5)', fontWeight: 'bold', fontSize: '1.2rem', textAlign: 'right', color: '#1A5319' }}
               placeholder={loading ? '' : '0.00'}
             />
             {loading && (
-              <InputGroup.Text style={{ background: '#D6EFD8', border: 'none' }}>
+              <InputGroup.Text style={{ background: 'rgba(255, 170, 170, 0.5)', border: 'none' }}>
                 <Spinner animation="border" size="sm" />
               </InputGroup.Text>
             )}
@@ -195,7 +195,7 @@ const CryptoPurchaseComponent = ({ userToken, onAssetSelect, asset, refetchUserA
         </Form.Group>
       </div>
 
-      <Button style={{ width: '100%', background: 'black ' }} onClick={handleConvert}>
+      <Button style={{ width: '100%', background: ' ' }} onClick={handleConvert}>
         Convert
       </Button>
     </div>
