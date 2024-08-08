@@ -60,9 +60,9 @@ const DepositCp = ({ currency }) => {
         accessor: 'balance',
         Cell: ({ row }) => {
           const assetId = row.original.id;
-          const balance = Array.isArray(allUserAssets) && allUserAssets.find(asset => asset.asset_id === assetId)?.balance || 0;
+          const balance = Array.isArray(allUserAssets) && allUserAssets.find(asset => asset.asset_id === assetId)?.balance;
           return (
-            <span style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>{balance.toLocaleString('en-US', { maximumFractionDigits: 2 })}</span>
+            <span style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>{balance ? balance.toLocaleString('en-US', { maximumFractionDigits: 2 }) : <Spinner />}</span>
           )
         }
       },

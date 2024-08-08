@@ -8,7 +8,7 @@ import AdminTable from '../../jsx/components/table/FilteringTable/AdminTable';
 import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
 import { BASE_URL } from '../../api';
 
-const UserDeposits = ({ adminToken, user_id }) => {
+const UserDeposits = ({ adminToken, user_id, fetchUserBalancesAndAssets }) => {
   const { data, error, isLoading, refetch } = useGetAllDepositsQuery({ token: adminToken, user_id: user_id });
   const [statuses, setStatuses] = useState({});
 
@@ -24,6 +24,7 @@ const UserDeposits = ({ adminToken, user_id }) => {
       });
       if (response.data.status === 'success') {
         refetch()
+        fetchUserBalancesAndAssets()
         Swal.fire('Success', response.data.message, 'success');
       } else {
         Swal.fire('Error', response.data.message, 'error');
@@ -72,7 +73,7 @@ const UserDeposits = ({ adminToken, user_id }) => {
             <DropdownButton id="dropdown-basic-button" title={statuses[row.original.id] || 'Select Status'}>
               <Dropdown.Item onClick={() => setStatuses(prev => ({ ...prev, [row.original.id]: 'pending' }))}>Pending</Dropdown.Item>
               <Dropdown.Item onClick={() => setStatuses(prev => ({ ...prev, [row.original.id]: 'approved' }))}>Approved</Dropdown.Item>
-              <Dropdown.Item onClick={() => setStatuses(prev => ({ ...prev, [row.original.id]: 'declined' }))}>Declined</Dropdown.Item>
+              <Dropdown.Item onClick={() => setStatuses(prev => ({ ...prev, [row.original.id]: 'not approved' }))}>Not Approved</Dropdown.Item>
             </DropdownButton>
             <Button
               variant="primary"

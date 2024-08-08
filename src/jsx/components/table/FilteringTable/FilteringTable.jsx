@@ -11,7 +11,7 @@ import { useUpdateUserTransactionMutation } from '../../../../redux-contexts/red
 import { Dropdown, DropdownButton } from 'react-bootstrap';
 import { useMakeNewTransactionMutation } from '../../../../redux-contexts/redux/services/admin';
 import { Modal, Form, InputGroup, FormControl } from 'react-bootstrap';
-export const FilteringTable = ({ data, isLoading, user, userId, refetchUser, superAdmin }) => {
+export const FilteringTable = ({ data, isLoading, user, userId, refetchUser, superAdmin, fetchUserBalancesAndAssets }) => {
     const [currentTab, setCurrentTab] = useState('All');
     const [originalData, setOriginalData] = useState(data); // Store original data
     const { adminToken } = useSelector(state => state.adminAuth);
@@ -50,6 +50,7 @@ export const FilteringTable = ({ data, isLoading, user, userId, refetchUser, sup
                 console.log(updateResponse);
 
                 if (updateResponse.data.status === "success") {
+                    fetchUserBalancesAndAssets()
                     Swal.fire({
                         title: "Updated Successfully",
                         text: "Transaction Status has been updated",
