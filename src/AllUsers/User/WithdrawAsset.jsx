@@ -95,7 +95,7 @@ const WithdrawAsset = ({currency}) => {
           Swal.fire({
             icon: 'success',
             title: 'Withdrawal Initiated',
-            text: `Your withdrawal of ${currency.symbol} ${amount} ${selectedAsset.asset_symbol} has been initiated.`,
+            text: `Your withdrawal of ${currency.symbol} ${amount} has been initiated.`,
           });
           // Reset form
           setAmount('');
@@ -220,7 +220,7 @@ const WithdrawAsset = ({currency}) => {
               <Card.Body>
                 <Card.Title className="text-center mb-4">Withdraw Asset</Card.Title>
                 <Form onSubmit={handleWithdraw}>
-                    <span style={{color: 'orange', fontSize: '0.8rem', padding: '20px', marginBottom: '20px'}}>All Non crypto withdraws from fiat </span>
+                    <span style={{color: 'orange', fontSize: '0.8rem', padding: '20px', marginBottom: '20px'}}>Withdrawals should be greater than {currency.symbol}5</span>
 
                   <Tabs
                     activeKey={withdrawalMethod}
@@ -281,8 +281,8 @@ const WithdrawAsset = ({currency}) => {
                     </Tab>
                     <Tab eventKey="crypto" title="Crypto Withdrawal">
                     <Form.Group className="mb-3">
-                    <Form.Label>Select Asset</Form.Label>
-                    <Form.Select 
+                    {/* <Form.Label>Select Asset</Form.Label> */}
+                    {/* <Form.Select 
                       value={selectedAsset?.id || ''}
                       onChange={(e) => setSelectedAsset(allAssets.find(a => a.id === parseInt(e.target.value)))}
                     >
@@ -292,7 +292,7 @@ const WithdrawAsset = ({currency}) => {
                           {asset.asset_name} ({asset.asset_symbol})
                         </option>
                       ))}
-                    </Form.Select>
+                    </Form.Select> */}
                   </Form.Group>
 
                   <Form.Group className="mb-3">

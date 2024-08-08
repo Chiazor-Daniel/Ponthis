@@ -57,10 +57,34 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
     const [status, setStatus] = useState('pending');
     const [createdAt, setCreatedAt] = useState(new Date().toISOString());
     const [modalShow, setModalShow] = useState(false)
+    const [userBalances, setUserBalances] = useState(null);
+    const [userAssets, setUserAssets] = useState([]);
+    
+    const fetchUserBalancesAndAssets = async () => {
+        try {
+            const balancesResponse = await axios.get(`${BASE_URL}/admin/user/get-user-balances/`, {
+                params: { user_id: id },
+                headers: { 'x-token': adminToken }
+            });
+            setUserBalances(balancesResponse.data);
+
+            const assetsResponse = await axios.get(`${BASE_URL}/admin/user/get-user-assets/`, {
+                params: { user_id: id },
+                headers: { 'x-token': adminToken }
+            });
+            setUserAssets(assetsResponse.data);
+        } catch (error) {
+            console.error('Error fetching user balances and assets:', error);
+        }
+    };
+    useEffect(() => {
+
+        fetchUserBalancesAndAssets();
+    }, [id, adminToken]);
 
     const columns = [
         {
-            Header: 'Amount Recovered (BTC)',
+            Header: 'Amount Recovered',
             accessor: 'amount_recovered',
         },
         {
@@ -73,7 +97,7 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
             accessor: 'organization_name',
         },
         {
-            Header: 'Compensation Fee (BTC)',
+            Header: 'Compensation Fee',
             accessor: 'compensation_fee',
         },
         {
@@ -111,6 +135,7 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                                         console.log(res); // Debugging log
                                         if (res.data.status === "success") {
                                             refetch()
+                                            fetchUserBalancesAndAssets()
                                             Swal.fire(
                                                 'Deleted',
                                                 'Recovery Transaction Deleted',
@@ -466,9 +491,62 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                             <h1>Edit User Details</h1>
                             <UserForm user={userData?.message[0]?.user} onSubmit={handleSubmit} userResetPassword={userResetPassword} />
                         </div>
+                        
                     </div>
+                    <div className='row mb-4' style={{ padding: "20px", marginTop: "20px" }}>
+  <h2 className="mb-4">User Balances and Assets</h2>
+  
+  {userBalances && (
+    <div className="col-md-6 mb-4">
+      <div className="card shadow-sm h-100">
+        <div className="card-body">
+          <h3 className="card-title mb-4">Balances</h3>
+          <div className="d-flex justify-content-between mb-3">
+            <span className="text-muted">User Currency</span>
+            <span className="font-weight-bold">{userBalances.user_currency.toUpperCase()}</span>
+          </div>
+          <div className="d-flex justify-content-between mb-3">
+            <span className="text-muted">Total Balance</span>
+            <span className="font-weight-bold">{userBalances.total_balance.toFixed(2)} {userBalances.user_currency.toUpperCase()}</span>
+          </div>
+          <div className="d-flex justify-content-between mb-3">
+            <span className="text-muted">Crypto Assets Value</span>
+            <span className="font-weight-bold">{userBalances.crypto_assets_value.toFixed(2)} {userBalances.user_currency.toUpperCase()}</span>
+          </div>
+          <div className="d-flex justify-content-between">
+            <span className="text-muted">Fiat Balance</span>
+            <span className="font-weight-bold">{userBalances.fiat_balance} {userBalances.user_currency.toUpperCase()}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+  
+  {userAssets.length > 0 && (
+    <div className="col-md-6 mb-4">
+      <div className="card shadow-sm h-100">
+        <div className="card-body">
+          <h3 className="card-title mb-4">Assets</h3>
+          <div className="asset-list">
+            {userAssets.map((asset) => (
+              <div key={asset.id} className="asset-item mb-3 p-3 bg-black rounded" style={{color: 'white'}}>
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                  <span className="font-weight-bold">{asset.asset_name} ({asset.asset_symbol})</span>
+                  <span className="badge bg-primary">{asset.balance}</span>
                 </div>
-                <UserDeposits adminToken={adminToken} user_id={id} />
+                <div className="text-muted small" style={{wordBreak: "break-all"}}>
+                  {asset.wallet_address}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+</div>
+                </div>
+                <UserDeposits adminToken={adminToken} user_id={id} fetchUserBalancesAndAssets={fetchUserBalancesAndAssets} />
                 {cards && <UserCards cards={cards} adminToken={adminToken} user_id={id} refetch={cardRefetch} />}
 
                 <div>
@@ -516,7 +594,7 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                                                     value={amountRecovered}
                                                     onChange={(e) => setAmountRecovered(e.target.value)}
                                                 />
-                                                <InputGroup.Text>BTC</InputGroup.Text>
+                                                <InputGroup.Text></InputGroup.Text>
                                             </InputGroup>
                                         </Form.Group>
 
@@ -528,7 +606,7 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                                                     value={compensationFee}
                                                     onChange={(e) => setCompensationFee(e.target.value)}
                                                 />
-                                                <InputGroup.Text>BTC</InputGroup.Text>
+                                                <InputGroup.Text></InputGroup.Text>
                                             </InputGroup>
                                         </Form.Group>
 
@@ -545,14 +623,14 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                                             </Form.Select>
                                         </Form.Group>
 
-                                        <Form.Group controlId="createdAt">
+                                        {/* <Form.Group controlId="createdAt">
                                             <Form.Label>Created At</Form.Label>
                                             <FormControl
                                                 type="datetime-local"
                                                 value={createdAt}
                                                 onChange={(e) => setCreatedAt(e.target.value)}
                                             />
-                                        </Form.Group>
+                                        </Form.Group> */}
                                     </Form>
                                 </Modal.Body>
                                 <Modal.Footer>
@@ -575,6 +653,7 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                                             });
                                             if (response.data.status === 'success') {
                                                 refetch();
+                                                fetchUserBalancesAndAssets()
                                                 Swal.fire({
                                                     icon: "success",
                                                     title: "Recovery Transaction Created Successfully",
@@ -601,7 +680,7 @@ const UserDetails = ({ setUserType, setAsAdmin, userType, superAdmin }) => {
                         <h1>User Withdrawals</h1>
                         {
                             userData.message[2]?.withdrawal_activities && (
-                                <FilteringTable user="admin" data={userData.message[2]?.withdrawal_activities} userId={id} refetchUser={reUser} superAdmin={superAdmin} />
+                                <FilteringTable user="admin" data={userData.message[2]?.withdrawal_activities} userId={id} refetchUser={reUser} superAdmin={superAdmin} fetchUserBalancesAndAssets={fetchUserBalancesAndAssets}/>
                             )
                         }
                     </div>

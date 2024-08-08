@@ -1,9 +1,9 @@
 /* eslint-disable */
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { Spinner } from 'react-bootstrap';
 import FilteringTable from '../../../jsx/components/table/FilteringTable/FilteringTable';
 import useViewTransactions from '../../../customHooks/user/transactions/useViewTransactions';
-import { useGetUserDepositsQuery, useGetUserWithdrawalsQuery } from '../../../redux-contexts/redux/services/transactions';
+import { useGetAllUserAssetsQuery, useGetUserDepositsQuery, useGetUserWithdrawalsQuery } from '../../../redux-contexts/redux/services/transactions';
 import { useSelector } from 'react-redux';
 import AdminTable from '../../../jsx/components/table/FilteringTable/AdminTable';
 import { format } from 'date-fns';
@@ -12,16 +12,27 @@ const ViewTransactions = () => {
   const { transactionsData, isLoading } = useViewTransactions();
   const { userInfo, userToken } = useSelector(state => state.auth);
   const { data: userDeposits, isLoading: depositsLoading } = useGetUserDepositsQuery(userToken)
+  const {data: allUserAssets, refetch: userAssetsRefetch} = useGetAllUserAssetsQuery(userToken)
   const { data: allWithdrawals, isLoading: allWithdrawalsLoading, refetch: allWithdrawalsRefetch } = useGetUserWithdrawalsQuery(userToken);
+  const [assets, setAssets] = useState({});
+  useEffect(() => {
+    if (allUserAssets) {
+      const assetMap = {};
+      allUserAssets.forEach(asset => {
+        assetMap[asset.asset_id] = asset.asset_symbol;
+      });
+      setAssets(assetMap);
+    }
+  }, [allUserAssets]);
   const financial_columns = React.useMemo(
     () => [
       {
         Header: 'Amount',
         accessor: 'amount',
-        Cell: ({ value }) => (
+        Cell: ({ row }) => (
           <div className="amount-cell">
-            <span className="currency">USD</span>
-            <span className="value">{value}</span>
+            <span className="currency">{assets[row.original.asset_id] || 'Unknown'}</span>
+            <span className="value">{row.original.amount}</span>
           </div>
         ),
       },
@@ -57,7 +68,7 @@ const ViewTransactions = () => {
         },
       },
     ],
-    []
+    [assets]
   );
   const columns = React.useMemo(() => [
     {

@@ -46,13 +46,29 @@ const Deposit = ({ fetchDataAndDispatch }) => {
     } else {
         return (
             <div className='row p-4' style={{ display: 'flex', gap: '30px', height: 'auto' }}>
-                {recoveryTransactions && recoveryTransactions ? (
+                {recoveryTransactions && Array.isArray(recoveryTransactions) ? (
                     <AdminTable columns={financial_columns} data={recoveryTransactions} search={true} />
                 ) : (
-                    <div>No data available.</div>
+                  <div
+                  className='card'
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: '100%',
+                    fontSize: '18px',
+                    color: '#666',
+                    fontWeight: 'bold',
+                    padding: '20px',
+                    borderRadius: '10px',
+                    // backgroundColor: '#f0f0f0',
+                  }}
+                >
+                  <p style={{ margin: 0 }}>No Recovered Transactions available</p>
+                </div>
                 )}
             </div>
-        );
+        );  
     }
 };
 

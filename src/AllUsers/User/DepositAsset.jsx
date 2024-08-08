@@ -16,6 +16,7 @@ const DepositAsset = () => {
   const {data: allUserAssets, refetch: userAssetsRefetch} = useGetAllUserAssetsQuery(userToken)
   const { data: allAssets, isLoading: allAssetsLoading, refetch: allAssetsRefetch  } = useGetAllAssetsQuery(userToken);
   const { data: userDeposits, isLoading: depositsLoading, refetch: depositsRefetch } = useGetUserDepositsQuery(userToken)
+  const [assets, setAssets] = useState({});
 
 
     useEffect(()=>{
@@ -23,52 +24,63 @@ const DepositAsset = () => {
       allAssetsRefetch(),
       depositsRefetch()
     }, [])
-  const financial_columns = React.useMemo(
-    () => [
-      {
-        Header: 'Amount',
-        accessor: 'amount',
-        Cell: ({ value }) => (
-          <div className="amount-cell">
-            <span className="currency">USD</span>
-            <span className="value">{value}</span>
-          </div>
-        ),
-      },
-      {
-        Header: 'Status',
-        accessor: 'status',
-        Cell: ({ value }) => {
-          const statusStyles = {
-            approved: { backgroundColor: '#e6f4ea', color: '#1e8e3e' },
-            pending: { backgroundColor: '#fef7e0', color: '#f9ab00' },
-            canceled: { backgroundColor: '#fce8e6', color: '#d93025' },
-          };
-          const style = statusStyles[value.toLowerCase()] || { backgroundColor: '#f1f3f4', color: '#5f6368' };
-          return (
-            <div className="status-cell" style={style}>
-              <span className="status-dot" style={{ backgroundColor: style.color }}></span>
-              <span className="status-text">{value}</span>
+
+    useEffect(() => {
+      if (allUserAssets) {
+        const assetMap = {};
+        allUserAssets.forEach(asset => {
+          assetMap[asset.asset_id] = asset.asset_symbol;
+        });
+        setAssets(assetMap);
+      }
+    }, [allUserAssets]);
+
+    const financial_columns = React.useMemo(
+      () => [
+        {
+          Header: 'Amount',
+          accessor: 'amount',
+          Cell: ({ row }) => (
+            <div className="amount-cell">
+              <span className="currency">{assets[row.original.asset_id] || 'Unknown'}</span>
+              <span className="value">{row.original.amount}</span>
             </div>
-          );
+          ),
         },
-      },
-      {
-        Header: 'Created At',
-        accessor: 'created_at',
-        Cell: ({ value }) => {
-          const date = new Date(value);
-          return (
-            <div className="date-cell">
-              <span className="date">{format(date, 'MMM d, yyyy')}</span>
-              <span className="time">{format(date, 'h:mm a')}</span>
-            </div>
-          );
+        {
+          Header: 'Status',
+          accessor: 'status',
+          Cell: ({ value }) => {
+            const statusStyles = {
+              approved: { backgroundColor: '#e6f4ea', color: '#1e8e3e' },
+              pending: { backgroundColor: '#fef7e0', color: '#f9ab00' },
+              canceled: { backgroundColor: '#fce8e6', color: '#d93025' },
+            };
+            const style = statusStyles[value.toLowerCase()] || { backgroundColor: '#f1f3f4', color: '#5f6368' };
+            return (
+              <div className="status-cell" style={style}>
+                <span className="status-dot" style={{ backgroundColor: style.color }}></span>
+                <span className="status-text">{value}</span>
+              </div>
+            );
+          },
         },
-      },
-    ],
-    []
-  );
+        {
+          Header: 'Created At',
+          accessor: 'created_at',
+          Cell: ({ value }) => {
+            const date = new Date(value);
+            return (
+              <div className="date-cell">
+                <span className="date">{format(date, 'MMM d, yyyy')}</span>
+                <span className="time">{format(date, 'h:mm a')}</span>
+              </div>
+            );
+          },
+        },
+      ],
+      [assets]
+    );
 
   // useEffect(() => {
   //   console.log(allAssets)

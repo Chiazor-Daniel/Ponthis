@@ -23,6 +23,7 @@ import { IoIosArrowForward } from "react-icons/io";
 import { format } from 'date-fns';
 import { BeatLoader } from 'react-spinners';
 import { BASE_URL } from '../../api';
+import Deposit from './transactions/deposit';
 
 const Home = ({ theme, fetchDataAndDispatch, currency }) => {
   const { userInfo, userToken } = useSelector(state => state.auth);
@@ -241,11 +242,7 @@ const Home = ({ theme, fetchDataAndDispatch, currency }) => {
                         )
                       }
                     </div>
-                    {/* <div className='col-1' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                      <div className='card' style={{ margin: '', cursor: 'pointer', padding: '10px', borderRadius: '100%', height: '50px', width: '50px' }}>
-                        <IoIosArrowForward size={30} />
-                      </div>
-                    </div> */}
+                  
                   </div>
                   <div className='' style={{ height: isMobile ? 'auto' : '465px' }}>
                     {
@@ -279,13 +276,7 @@ const Home = ({ theme, fetchDataAndDispatch, currency }) => {
             </div>
             <WalletCard userToken={userToken} refetchUserAssets={refetchUserAssets} currency={currency} refetchAllAssets={refetchAllAssets}/>
           </div>
-          {
-            Array.isArray(userDeposits) && (
-              <>
-                <AdminTable columns={financial_columns} data={userDeposits?.slice(0, 8)} search={true} />
-              </>
-            )
-          }
+         <Deposit />
         </>
     );
   // }
