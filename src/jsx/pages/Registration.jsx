@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { NavLink, Link } from "react-router-dom";
-import bg6 from '../../assets/images/background/bg6.jpg';
+import bg6 from '../../assets/real.jpg';
 import Spinner from 'react-bootstrap/Spinner';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -33,8 +33,19 @@ function Register(props) {
             <div className="page-wraper">
                 <ToastContainer />
                 <div className="browse-job login-style3">
-                    <div className="bg-img-fix overflow-hidden" style={{ background: '#fff url(' + bg6 + ')', height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                        <div className="col-6 bg-white rounded">
+                <div className="bg-img-fix overflow-hidden" style={{
+                   background: `url(${bg6})`,
+                   height: "100vh",
+                   display: "flex",
+                   justifyContent: "center",
+                   alignItems: "center",
+                   objectFit: 'cover',
+                   backgroundRepeat: 'no-repeat',
+                   backgroundSize: '100%',
+                   backgroundBlendMode: 'multiply',
+                   backgroundColor: 'rgba(0, 0, 0, 0.5)' // Add this line
+                }}>
+                    <div className="row col-lg-6 col-11 rounded card" style={{ height: "auto" }} >
                             <div className="col-12">
                                 <div className="card-body">
                                     <nav className="nav nav-tabs border-bottom-0">
@@ -45,7 +56,7 @@ function Register(props) {
                                                     <div className="dz-separator-outer m-b5">
                                                         <div className="dz-separator bg-primary style-liner"></div>
                                                     </div>
-                                                    <p>Enter your personal details below: </p>
+                                                    <p style={{color: 'white'}}>Enter your personal details below: </p>
                                                     <div className="form-group mt-3">
                                                         <input value={firstName} onChange={(e) => setFirstName(e.target.value)} className="form-control" placeholder="First Name" type="text" />
                                                     </div>
@@ -79,9 +90,9 @@ function Register(props) {
                                                     <div className="mb-3 mt-3">
                                                         <span className="form-check float-start me-2">
                                                             <input type="checkbox" className="form-check-input mt-0" id="check2" name="example1" />
-                                                            <label className="form-check-label d-unset" htmlFor="check2">I agree to the</label>
+                                                            <label className="form-check-label d-unset" htmlFor="check2" style={{color: 'white'}}>I agree to the</label>
                                                         </span>
-                                                        <label><Link to={"#"}>Terms of Service </Link>&amp; <Link to={"#"}>Privacy Policy</Link></label>
+                                                        <label style={{color: 'white'}}><Link to={"#"} style={{color: 'white'}}>Terms of Service </Link>&amp; <Link to={"#"} style={{color: 'white'}}>Privacy Policy</Link></label>
                                                     </div>
                                                     <div className="form-group clearfix text-left">
                                                         <NavLink to="/" className="btn btn-primary outline gray" type="button">Back</NavLink >

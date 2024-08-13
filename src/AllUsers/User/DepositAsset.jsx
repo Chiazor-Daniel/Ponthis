@@ -28,7 +28,7 @@ const DepositAsset = () => {
     useEffect(() => {
       if (allUserAssets) {
         const assetMap = {};
-        allUserAssets.forEach(asset => {
+       Array.isArray(allUserAssets) && allUserAssets?.forEach(asset => {
           assetMap[asset.asset_id] = asset.asset_symbol;
         });
         setAssets(assetMap);

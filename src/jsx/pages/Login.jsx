@@ -9,7 +9,7 @@ import { IoEyeSharp } from "react-icons/io5";
 import { FaEyeSlash } from "react-icons/fa";
 import { BASE_URL } from '../../api';
 import SetLogo from '../../setLogo';
-import bg6 from '../../assets/images/background/bg6.jpg';
+import bg6 from '../../assets/real.jpg';
 import useAuth from '../../customHooks/user/auth/useAuth';
 
 function Login(props) {
@@ -19,7 +19,7 @@ function Login(props) {
     let errorsObj = { email: '', password: '' };
     const [errors, setErrors] = useState(errorsObj);
     const [password, setPassword] = useState('');
-    
+
     function onLogin(e) {
         e.preventDefault();
         loginUser(email, password, navigate, props);
@@ -46,14 +46,24 @@ function Login(props) {
         <div className="page-wraper">
             <ToastContainer />
             <div className="browse-job login-style3">
-                <div className="bg-img-fix overflow-hidden" style={{ background: '#fff url(' + bg6 + ')', height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                    <div className="row col-lg-6 col-11 rounded bg-white" >
+                <div className="bg-img-fix overflow-hidden" style={{
+                    background: `url(${bg6})`,
+                    height: "100vh",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    objectFit: 'cover',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundSize: '100%',
+                    backgroundBlendMode: 'multiply',
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)' // Add this line
+                }}>
+                    <div className="row col-lg-6 col-11 rounded card" style={{ height: "600px" }} >
                         <div className="col-12">
                             <div className="card-body">
-                                <div className="logo-header" style={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                                    <Link to={"#"} className="logo" style={{display: 'flex', alignItems: 'center', gap: '20px',}}>
-                                        <img src='logo.png'  style={{width:'100px', margin: 'auto'}}/>
-                                        <h1>LEDGER SAFE AI</h1>
+                                <div className="logo-header" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <Link to={"#"} className="logo" style={{ display: 'flex', alignItems: 'center', gap: '20px', }}>
+                                        <img src='apexlogo2.png' style={{ width: '400px', margin: 'auto' }} />
                                     </Link>
                                 </div>
                                 <div className="nav nav-tabs border-bottom-0" >
@@ -76,18 +86,18 @@ function Login(props) {
                                                 </div>
                                                 <p>Enter your e-mail address and your password. </p>
                                                 <div className="form-group mb-3">
-                                                    <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} placeholder='Enter Email Address'/>
+                                                    <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} placeholder='Enter Email Address' />
                                                     {errors.email && <div className="text-danger fs-12">{errors.email}</div>}
                                                 </div>
-                                                <div className="form-group mb-3" style={{position: "relative"}}>
+                                                <div className="form-group mb-3" style={{ position: "relative" }}>
                                                     {
                                                         (showPass && password.length > 0) ? (
-                                                            <FaEyeSlash style={{position: "absolute", right: 8, top: 10, cursor: "pointer"}} size={30} onClick={()=> setShowPass(false)} />
-                                                        ): (
-                                                            <IoEyeSharp style={{position: "absolute", right: 8, top: 10, cursor: "pointer"}} size={30} onClick={()=> setShowPass(true)}/>
+                                                            <FaEyeSlash style={{ position: "absolute", right: 8, top: 10, cursor: "pointer" }} size={30} onClick={() => setShowPass(false)} />
+                                                        ) : (
+                                                            <IoEyeSharp style={{ position: "absolute", right: 8, top: 10, cursor: "pointer" }} size={30} onClick={() => setShowPass(true)} />
                                                         )
                                                     }
-                                                    <input type={showPass ? "text" : "password"} className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Enter Password'/>
+                                                    <input type={showPass ? "text" : "password"} className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Enter Password' />
                                                     {errors.password && <div className="text-danger fs-12">{errors.password}</div>}
                                                 </div>
                                                 <div className="form-group text-left mb-5">
@@ -103,10 +113,10 @@ function Login(props) {
                                                     </button>
                                                     <span className="form-check d-inline-block ms-2">
                                                         <input type="checkbox" className="form-check-input" id="check1" name="example1" checked={rememberMe} onChange={() => setRememberMe(!rememberMe)} />
-                                                        <label className="form-check-label" htmlFor="check1">Remember me</label>
+                                                        <label className="form-check-label" htmlFor="check1" style={{color: 'white'}}>Remember me</label>
                                                     </span>
-                                                    <div className='row' style={{ padding: "10px" }}>
-                                                        <Link to="/forgot-password">
+                                                    <div className='row' style={{ padding: "10px", color: 'white' }}>
+                                                        <Link to="/forgot-password" style={{color: 'white'}}>
                                                             Forgot password ?
                                                         </Link>
                                                         {/* <Link to="/admin/admin-login">
@@ -114,7 +124,7 @@ function Login(props) {
                                                         </Link> */}
                                                     </div>
                                                 </div>
-                                        
+
                                             </form>
                                             <div className="text-center">
                                                 <NavLink to="/register" className="btn btn-primary button-md btn-block" >
