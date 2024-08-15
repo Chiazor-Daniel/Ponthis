@@ -16,11 +16,11 @@ const UserManagement = ({ superAdmin }) => {
   const [createUser] = useCreateUserMutation()
   const [showModal, setShowModal] = useState(false);
   const [newUser, setNewUser] = useState({
-    email: 'flavor123@gmail.com',
-    firstName: 'Fraudster',
-    lastName: 'Ken',
-    address: '22dfnoefjeo',
-    country: 'Asia',
+    email: '',
+    firstName: '',
+    lastName: '',
+    address: '',
+    country: '',
     phoneNumber: '',
     dateOfBirth: '',
     password: '',
