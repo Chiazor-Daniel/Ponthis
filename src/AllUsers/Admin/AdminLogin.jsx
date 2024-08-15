@@ -4,11 +4,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { adminLoginStart, adminLoginSuccess, adminLoginFailure } from '../../redux-contexts/redux/features/auth/admin-authSlice';
 import axios from 'axios';
-import bg6 from '../../assets/images/background/bg6.jpg';
 import Spinner from 'react-bootstrap/Spinner';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { BASE_URL } from '../../api';
+import bg6 from '../../assets/real.jpg';
 import SetLogo from '../../setLogo';
 
 function AdminLogin(props) {
@@ -88,14 +88,25 @@ function AdminLogin(props) {
     <div className="page-wraper">
       <ToastContainer />
       <div className="browse-job login-style3">
-        <div className="bg-img-fix overflow-hidden" style={{ background: '#fff url(' + bg6 + ')', height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <div className="row col-lg-6 col-12 rounded bg-white">
+      <div className="bg-img-fix overflow-hidden" style={{
+                    background: `url(${bg6})`,
+                    height: "100vh",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    objectFit: 'cover',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundSize: '100%',
+                    backgroundBlendMode: 'multiply',
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)' // Add this line
+                }}>
+                    <div className="row col-lg-6 col-11 rounded card" style={{ height: "auto" }} >
             <div className="col-12">
               <div className="card-body">
               <div className="logo-header" style={{width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
               <Link to={"#"} className="logo" style={{display: 'flex', alignItems: 'center', gap: '20px',}}>
-                                        <img src='../../../public/logo.png'  style={{width:'100px', margin: 'auto'}}/>
-                                        <h1>LEDGER SAFE AI</h1>
+              <img src='/apexlogo2.png' style={{ width: '400px', margin: 'auto' }} />
+                                     
                                     </Link>
                                 </div>
                 <div className="nav nav-tabs border-bottom-0" >
@@ -122,13 +133,13 @@ function AdminLogin(props) {
                             ) : "Login"}
                           </button>
                           <span className="form-check d-inline-block ms-2">
-                            <input type="checkbox" className="form-check-input" id="check1" name="example1" />
-                            <label className="form-check-label" htmlFor="check1">Remember me</label>
+                            {/* <input type="checkbox" className="form-check-input" id="check1" name="example1" /> */}
+                            {/* <label className="form-check-label" htmlFor="check1">Remember me</label> */}
                           </span>
                           <div className='row' style={{ padding: "10px" }}>
-                            <Link to="/forgot-password">
+                            {/* <Link to="/forgot-password">
                               Forgot password ?
-                            </Link>
+                            </Link> */}
                           </div>
                         </div>
                       </form>

@@ -136,12 +136,7 @@ const DepositCp = ({ currency }) => {
   return (
     <Container fluid>
       <Row style={{ height: isMobile ? 'auto' : '500px', marginBottom: '20px' }}>
-        <Col md={8}>
-          <Card style={{ padding: '20px', overflow: 'hidden', height: isMobile ? '400px' : '' }}>
-            <MyCryptoChart cryptoPair={cryptoPair} currency={currency} /> {/* Pass currentCryptoPair to MyCryptoChart */}
-          </Card>
-        </Col>
-        <Col md={4}>
+      <Col md={4}>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <img src='/value.png' style={{ width: '100px', margin: 'auto' }} />
           </div>
@@ -149,6 +144,12 @@ const DepositCp = ({ currency }) => {
             <CryptoPurchaseComponent currency={currency} asset={asset} userToken={userToken} onAssetSelect={(sym) => setCryptoPair(sym?.toUpperCase())} /> {/* Pass setCryptoPair */}
           </div>
         </Col>
+        <Col md={8}>
+          <Card style={{ padding: '20px', overflow: 'hidden', height: isMobile ? '400px' : '' }}>
+            <MyCryptoChart cryptoPair={cryptoPair} currency={currency} /> {/* Pass currentCryptoPair to MyCryptoChart */}
+          </Card>
+        </Col>
+      
       </Row>
       <Row>
         <div className='' style={{ height: isMobile ? 'auto' : '465px' }}>
