@@ -155,12 +155,12 @@ export const FilteringTable = ({ data, isLoading, user, userId, refetchUser, sup
                 return (
                     <p style={{
                         padding: "4px",
-                        backgroundColor: value === 'approved' ? 'green' : value === 'not_approved' ? 'red' : '#F3CA52',
+                        backgroundColor: value === 'approved' ? 'green' : value === 'not approved' ? 'red' : '#F3CA52',
                         color: "white",
                         textAlign: "center",
                         borderRadius: "20px"
                     }}>
-                        {value}
+                         <span className="status-text">{value === 'not approved' ? "reversed" : value}</span>
                     </p>
 
                 );

@@ -92,7 +92,7 @@ const ViewTransactions = () => {
         return (
           <div className="status-cell" style={style}>
             <span className="status-dot" style={{ backgroundColor: style.color }}></span>
-            <span className="status-text">{value}</span>
+         <span className="status-text">{value === 'not approved' ? "reversed" : value}</span>
           </div>
         );
       },
