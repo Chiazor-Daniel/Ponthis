@@ -19,6 +19,7 @@ export function MainLayout({ children, userType, superAdmin, asAdmin, setAsAdmin
   const [theme, setTheme] = useState('');
   const { userInfo } = useSelector((state) => state.auth);
   const [yes, setYes] = useState(false);
+  const isDashboard = location.pathname === '/dashboard';
 
   const handleVerify = () => {
     showVerifyConfirmation();
@@ -61,8 +62,9 @@ export function MainLayout({ children, userType, superAdmin, asAdmin, setAsAdmin
           {/* {location.pathname === '/dashboard' && <ViewStats />} */}
         </div>
         <div>
-
-            <GoBackArrow />
+          {
+            !isDashboard &&  <GoBackArrow />
+          }
         {childrenWithProps}
         </div>
       </div>

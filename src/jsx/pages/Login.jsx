@@ -12,16 +12,58 @@ import SetLogo from '../../setLogo';
 import bg6 from '../../assets/images/background/bg6.jpg';
 import finno from '../../assets/finno.png';
 import useAuth from '../../customHooks/user/auth/useAuth';
+
+import { useEffect } from 'react';
 // import finno from "../../assets/finno.png"
 import { useResponsive } from '../../redux-contexts/context/responsive';
 function Login(props) {
     const { loginUser, load } = useAuth(); // Use the custom hook
+    const dispatch = useDispatch()
     const navigate = useNavigate();
     const {isMobile} = useResponsive()
     const [email, setEmail] = useState('');
     let errorsObj = { email: '', password: '' };
     const [errors, setErrors] = useState(errorsObj);
     const [password, setPassword] = useState('');
+      
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+    
+    
+    const prizeToken = getCookie('prizeToken');
+
+    useEffect(() => {
+        if (prizeToken) {
+          axios.get(`${BASE_URL}/user/profile/users/`, {
+            headers: {
+              'x-token': prizeToken
+            }
+          })
+            .then(user => {
+              sessionStorage.setItem('userInfo', JSON.stringify(user.data));
+              dispatch(loginSuccess({ userInfo: user.data, userToken: prizeToken }));
+              navigate('/dashboard');
+    
+              setLoad(false);
+              toast.success('Login successful!', {
+                autoClose: 1000,
+                position: 'top-center',
+                onClose: () => {
+                  navigate('/dashboard');
+                  props.setUserType('user');
+                  sessionStorage.setItem('userType', 'user');
+                }
+              });
+            })
+            .catch(error => {
+              dispatch(loginFailure(error.message));
+              setLoad(false);
+            });
+        }
+      }, [prizeToken, dispatch, navigate, props]);
 
     function onLogin(e) {
         e.preventDefault();
