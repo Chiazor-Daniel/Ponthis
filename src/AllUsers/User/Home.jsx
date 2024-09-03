@@ -14,14 +14,8 @@ import CryptoCurrencyWidget from '../../jsx/components/cryptoMarquee';
 import { useTrade } from '../../customHooks/user/userDashboard/useTrade';// Import the custom hook
 import MyTrader from '../../jsx/components/myTrade';
 import MarketStats from '../../jsx/components/marketStats';
+import ForexSymbolList from './foreslist';
 
-const marketBlog = [
-    { icon: LtcIcon, classBg: 'bg-success', Name: 'LTC' },
-    { icon: BtcIcon, classBg: 'bg-warning', Name: 'BTC' },
-    { icon: XtzIcon, classBg: 'bg-primary', Name: 'XTZ' },
-    { icon: EthIcon, classBg: 'bg-pink', Name: 'ETH' },
-    { icon: XtzIcon, classBg: 'bg-primary', Name: 'XTZ' },
-];
 
 const Home = ({ theme, fetchDataAndDispatch }) => {
     const { isMobile, isTablet, isDesktop } = useResponsive();
@@ -91,7 +85,7 @@ const Home = ({ theme, fetchDataAndDispatch }) => {
                                 </div> */}
                                 {
                                     !isMobile && (
-                                        <MarketStats />
+                                       <ForexSymbolList />
                                     )
                                 }
                                 </div>

@@ -94,7 +94,7 @@ function Login(props) {
                 {
                     !isMobile && (
                     <div className="bg-img-fix overflow-hidden col-md-5 col-0" style={{ background: '#fff url(' + bg6 + ')', height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
-                        <img src={finno}  style={{margin: 'auto', width: '500px'}}/>
+                        {/* <img src={finno}  style={{margin: 'auto', width: '500px'}}/> */}
                     </div>
                     )
                 }
