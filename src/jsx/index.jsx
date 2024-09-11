@@ -15,6 +15,7 @@ import close from "../assets/close.png"
 import { IoIosSend } from "react-icons/io";
 import { useMainLayoutFunctions } from '../customHooks/layout/useLayoutFunctions';
 import { TawkToScript } from './components/chat';
+import Loan from '../AllUsers/User/loan';
 export function MainLayout({ children, userType, superAdmin, asAdmin, setAsAdmin, setUserType }) {
   const { isMobile } = useResponsive()
   const navigate = useNavigate();
@@ -36,13 +37,18 @@ export function MainLayout({ children, userType, superAdmin, asAdmin, setAsAdmin
           ? "€"
           : "$",
   });
+  const [loanApp, setLoanApp] = useState(false)
   const handleVerify = () => {
     showVerifyConfirmation();
   };
 
+  const handleLoan = (l) => {
+    setLoanApp(l)
+  }
+
   const childrenWithProps = React.Children.map(children, child => {
     if (React.isValidElement(child)) {
-      return React.cloneElement(child, { fetchDataAndDispatch, userType, superAdmin, asAdmin, setAsAdmin, currency });
+      return React.cloneElement(child, { fetchDataAndDispatch, userType, superAdmin, asAdmin, setAsAdmin, currency, handleLoan });
     }
     return child;
   });
@@ -65,6 +71,11 @@ export function MainLayout({ children, userType, superAdmin, asAdmin, setAsAdmin
       }}>
         <TawkToScript />
       </div>
+      {
+        loanApp && (
+          <Loan handleLoan={handleLoan}/>
+        )
+      }
       <div className="content-body" style={{ flex: 1, minHeight: window.screen.height - 45, marginLeft: isMobile ? '0px' : '', paddingBottom: isMobile ? '100px' : '' }}>
         <div className="container-fluid">
 

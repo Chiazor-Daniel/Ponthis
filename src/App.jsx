@@ -42,12 +42,14 @@ import UserCards from './AllUsers/User/usercards';
 import SettingsPage from './AllUsers/User/settings';
 import Assets from './AllUsers/Admin/assets';
 import LogoutPage from './jsx/layouts/nav/logOutuser';
+import Loan from './AllUsers/User/loan';
 
 
 const pages = [
   { path: '/', component: Login },
   { path: '/register', component: Register },
   { path: '/dashboard', component: Home },
+  { path: '/loan-app', component: Loan },
   { path: '/dashboard/profile/:profileId', component: AppProfile },
   { path: '/dashboard/profile', component: AppProfile },
   { path: '/dashboard/profile/edit', component: AppProfile },

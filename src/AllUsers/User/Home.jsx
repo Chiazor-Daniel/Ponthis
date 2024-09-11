@@ -24,8 +24,9 @@ import { format } from 'date-fns';
 import { BeatLoader } from 'react-spinners';
 import { BASE_URL } from '../../api';
 import Deposit from './transactions/deposit';
+import Loan from './loan';
 
-const Home = ({ theme, fetchDataAndDispatch, currency }) => {
+const Home = ({ theme, fetchDataAndDispatch, currency, handleLoan }) => {
   const { userInfo, userToken } = useSelector(state => state.auth);
   const { data: allUserAssets, isLoading: allUserAssetsLoading, refetch: refetchAllUserAssets } = useGetAllUserAssetsQuery(userToken);
   const navigate = useNavigate();
@@ -170,37 +171,40 @@ const Home = ({ theme, fetchDataAndDispatch, currency }) => {
         },
       },
       {
-  Header: currency.curr,
-  accessor: 'asset_id',
-  Cell: ({ row }) => {
-    const assetId = row.original.id;
-    const balance = balances[assetId] || 0;
-    const [usdValue, setUsdValue] = React.useState(0);
-    const [loading, setLoading] = React.useState(true);
-
-    React.useEffect(() => {
-      const intervalId = setInterval(() => {
-        if (balance !== 0) {
-          fetchUsdValue(row.original.symbol, balance).then((value) => {
-            setUsdValue(value);
-            setLoading(false);
-          });
-          clearInterval(intervalId);
-        }
-      }, 1000); // Try every 1 second
-
-      return () => clearInterval(intervalId);
-    }, [row.original.symbol, balance]);
-
-    return (
-      <div>
-        <div style={{ color: '#1A5319', fontWeight: 'bold' }}>
-          {loading ? <BeatLoader /> : usdValue ? `${currency.symbol}${usdValue.toLocaleString('en-US', { maximumFractionDigits: 2 })}` : `${currency.symbol}0.00`}
-        </div>
-      </div>
-    );
-  },
-},
+        Header: currency.curr,
+        accessor: 'asset_id',
+        Cell: ({ row }) => {
+          const assetId = row.original.id;
+          const balance = Array.isArray(allUserAssets) && allUserAssets.find(asset => asset.asset_id === assetId)?.balance || 0;
+          const [usdValue, setUsdValue] = React.useState(0);
+          const [loading, setLoading] = React.useState(true);
+      
+          React.useEffect(() => {
+            const timer = setTimeout(() => {
+              setLoading(false);
+            }, 5000);
+      
+            fetchUsdValue(row.original.symbol, balance).then((value) => {
+              setUsdValue(value);
+              setLoading(false);
+            });
+      
+            return () => clearTimeout(timer);
+          }, [row.original.symbol, balance]);
+      
+          return (
+            <div>
+              {loading || usdValue === 0 ? (
+                <BeatLoader />
+              ) : (
+                <div style={{ color: '#1A5319', fontWeight: 'bold' }}>
+                  {currency.symbol}{usdValue.toLocaleString('en-US', { maximumFractionDigits: 2 })}
+                </div>
+              )}
+            </div>
+          );
+        },
+      },         
       {
         Header: '',
         accessor: 'action',
@@ -228,7 +232,36 @@ const Home = ({ theme, fetchDataAndDispatch, currency }) => {
 
     return (
         <>
+        
           <div className="row" style={{ height: '', overflow: "hidden" }}>
+          <img 
+  src='/loan.png' 
+  style={{
+    position: "absolute",
+    zIndex: 9,
+    width: '200px',
+    right: '-50px',
+    cursor: 'pointer',
+    top: '250px',
+    filter: 'drop-shadow(10px 10px 15px rgba(0, 0, 0, 0.4))',
+    opacity: 0.7,
+    transition: 'right 0.3s ease, opacity 0.3s ease', // Transition for smooth effect
+  }}
+  onMouseEnter={(e) => {
+    e.currentTarget.style.opacity = '1';
+    e.currentTarget.style.right = '-35px';
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.opacity = '0.7';
+    e.currentTarget.style.right = '-50px';
+  }}
+  onClick={()=>{
+    handleLoan(true)
+  }}
+/>
+
+
+
             <div className="col-12 col-xl-8" style={{ overflow: 'hidden' }}>
               <div className="row">
                 <div className="col-12">
