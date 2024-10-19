@@ -198,6 +198,13 @@ function switchThemeByUrl() {
 
             
                 </li>
+                <li className="">
+                      <Link scroll={false} href={'/reviews'} legacyBehavior onClick={toggleActive}>
+
+                        Reviews
+                      </Link>
+                    </li>
+
                     <li className="">
                       <Link href="/services" legacyBehavior onClick={toggleActive}>
                           Services
