@@ -404,4 +404,4 @@ const DepositAsset = () => {
   );
 };
 
-export default Deposit
+export default DepositAsset
