@@ -183,7 +183,7 @@ const Landing1 = () => {
                     </p>
                   </div>
                   <div className="slider-button mt-5">
-                    <Link legacyBehavior href="http://dashboard.apextrustcapital.com">
+                    <Link legacyBehavior href="https://dashboard.apextrustcapital.com">
                       <a>
                         {" "}
                         <i className="bi bi-gear" />  Get Started{" "}
